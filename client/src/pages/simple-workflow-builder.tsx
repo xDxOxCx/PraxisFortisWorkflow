@@ -14,7 +14,11 @@ import {
   Trash2,
   GripVertical,
   ArrowUp,
-  ArrowDown
+  ArrowDown,
+  Zap,
+  TrendingUp,
+  Clock,
+  AlertTriangle
 } from 'lucide-react';
 import Navbar from '@/components/layout/navbar';
 
@@ -28,6 +32,8 @@ export default function WorkflowBuilder() {
   const [workflowName, setWorkflowName] = useState('My Workflow');
   const [workflowDescription, setWorkflowDescription] = useState('');
   const [steps, setSteps] = useState<WorkflowStep[]>([]);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisResult, setAnalysisResult] = useState<any>(null);
   const [textInput, setTextInput] = useState('');
   const [newStepText, setNewStepText] = useState('');
   const { toast } = useToast();
@@ -340,6 +346,23 @@ export default function WorkflowBuilder() {
               >
                 <Save className="w-4 h-4 mr-2" />
                 {saveWorkflowMutation.isPending ? 'Saving...' : 'Save Workflow'}
+              </Button>
+              <Button 
+                onClick={analyzeWorkflow}
+                disabled={isAnalyzing || steps.length === 0}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                {isAnalyzing ? (
+                  <>
+                    <div className="w-4 h-4 mr-2 animate-spin border-2 border-white border-t-transparent rounded-full" />
+                    Analyzing...
+                  </>
+                ) : (
+                  <>
+                    <Zap className="w-4 h-4 mr-2" />
+                    Analyze with AI
+                  </>
+                )}
               </Button>
             </div>
           </CardContent>
