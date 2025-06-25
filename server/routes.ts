@@ -429,6 +429,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // AI Workflow Analysis endpoint
+  app.post('/api/analyze-workflow', bypassAuth, async (req: any, res) => {
+    try {
+      const { name, description, flow_data } = req.body;
+      
+      if (!flow_data?.steps || flow_data.steps.length === 0) {
+        return res.status(400).json({ message: "No workflow steps provided" });
+      }
+
+      // Import the analysis function
+      const { analyzeWorkflow } = await import('./openai');
+      
+      const analysis = await analyzeWorkflow({
+        name,
+        description,
+        steps: flow_data.steps
+      }, name);
+
+      res.json(analysis);
+    } catch (error) {
+      console.error("Error analyzing workflow:", error);
+      res.status(500).json({ message: "Failed to analyze workflow" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

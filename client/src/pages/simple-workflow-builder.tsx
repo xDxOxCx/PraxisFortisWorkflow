@@ -434,6 +434,104 @@ export default function WorkflowBuilder() {
               )}
             </CardContent>
           </Card>
+
+          {/* AI Analysis Results */}
+          {analysisResult && (
+            <Card className="lg:col-span-4">
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Zap className="w-5 h-5 text-emerald-600" />
+                  Lean Six Sigma Analysis
+                </CardTitle>
+                <p className="text-sm text-gray-600">
+                  AI-powered optimization recommendations for your workflow
+                </p>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Summary Metrics */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="p-4 bg-emerald-50 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-5 h-5 text-emerald-600" />
+                      <span className="font-medium">Time Savings</span>
+                    </div>
+                    <p className="text-2xl font-bold text-emerald-600">
+                      {analysisResult.summary?.totalTimeSaved || 0} min
+                    </p>
+                  </div>
+                  <div className="p-4 bg-blue-50 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <TrendingUp className="w-5 h-5 text-blue-600" />
+                      <span className="font-medium">Efficiency Gain</span>
+                    </div>
+                    <p className="text-2xl font-bold text-blue-600">
+                      {analysisResult.summary?.efficiencyGain || 0}%
+                    </p>
+                  </div>
+                  <div className="p-4 bg-yellow-50 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <AlertTriangle className="w-5 h-5 text-yellow-600" />
+                      <span className="font-medium">Risk Areas</span>
+                    </div>
+                    <p className="text-2xl font-bold text-yellow-600">
+                      {analysisResult.summary?.riskAreas?.length || 0}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Improvement Recommendations */}
+                {analysisResult.improvements && analysisResult.improvements.length > 0 && (
+                  <div>
+                    <h3 className="font-semibold text-lg mb-3">Optimization Recommendations</h3>
+                    <div className="space-y-3">
+                      {analysisResult.improvements.map((improvement: any, index: number) => (
+                        <div key={index} className="p-4 border rounded-lg">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <h4 className="font-medium">{improvement.title}</h4>
+                              <p className="text-sm text-gray-600 mt-1">{improvement.description}</p>
+                              <div className="flex items-center gap-4 mt-2">
+                                <span className={`px-2 py-1 text-xs rounded ${
+                                  improvement.impact === 'high' ? 'bg-red-100 text-red-800' :
+                                  improvement.impact === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                                  'bg-green-100 text-green-800'
+                                }`}>
+                                  {improvement.impact} impact
+                                </span>
+                                <span className="text-sm text-gray-500">
+                                  {improvement.category}
+                                </span>
+                                {improvement.timeSaved && (
+                                  <span className="text-sm text-emerald-600">
+                                    +{improvement.timeSaved}min saved
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Key Recommendations */}
+                {analysisResult.summary?.recommendations && (
+                  <div>
+                    <h3 className="font-semibold text-lg mb-3">Key Recommendations</h3>
+                    <ul className="space-y-2">
+                      {analysisResult.summary.recommendations.map((rec: string, index: number) => (
+                        <li key={index} className="flex items-start gap-2">
+                          <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0" />
+                          <span className="text-sm">{rec}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </div>
