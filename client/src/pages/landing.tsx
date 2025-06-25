@@ -222,13 +222,13 @@ export default function Landing() {
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="py-16" style={{backgroundColor: 'hsl(210, 20%, 98%)'}}>
+      <section id="pricing" className="py-16" style={{backgroundColor: 'hsl(210, 15%, 8%)'}}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-montserrat font-bold text-deep-navy mb-4">
+            <h2 className="text-3xl font-montserrat font-bold text-white mb-4">
               Simple, Transparent Pricing
             </h2>
-            <p className="text-xl text-steel-gray">
+            <p className="text-xl text-gray-300">
               Choose the plan that works best for your practice
             </p>
           </div>
@@ -355,7 +355,7 @@ export default function Landing() {
           </div>
 
           <div className="text-center mt-12">
-            <p className="text-steel-gray">All plans include a 14-day free trial. No credit card required.</p>
+            <p className="text-gray-300">All plans include a 14-day free trial. No credit card required.</p>
           </div>
         </div>
       </section>
