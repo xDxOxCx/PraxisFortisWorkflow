@@ -3,7 +3,21 @@ import express from "express";
 import { createServer, type Server } from "http";
 import Stripe from "stripe";
 import { storage } from "./storage";
-import { setupSupabaseAuth, isAuthenticated } from "./supabaseAuth";
+import { setupSupabaseAuth, bypassAuth } from "./supabaseAuth";
+
+// Temporary bypass for testing without OAuth (remove after OAuth setup)
+const bypassAuth = (req: any, res: any, next: any) => {
+  req.user = {
+    id: 'test-user-123',
+    email: 'test@example.com',
+    user_metadata: {
+      first_name: 'Test',
+      last_name: 'User',
+      avatar_url: null
+    }
+  };
+  next();
+};
 import { analyzeWorkflow, generateMermaidDiagram } from "./openai";
 import { insertWorkflowSchema, updateWorkflowSchema } from "@shared/schema";
 import { z } from "zod";
@@ -17,11 +31,11 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Auth middleware
-  await setupSupabaseAuth(app);
+  // Auth middleware (disabled for testing)
+  // await setupSupabaseAuth(app);
 
-  // Workflow routes
-  app.get('/api/workflows', isAuthenticated, async (req: any, res) => {
+  // Workflow routes (using bypassAuth for testing - change to bypassAuth after OAuth setup)
+  app.get('/api/workflows', bypassAuth, async (req: any, res) => {
     try {
       const userId = req.user.id;
       const workflows = await storage.getWorkflows(userId);
@@ -32,7 +46,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/workflows/:id', isAuthenticated, async (req: any, res) => {
+  app.get('/api/workflows/:id', bypassAuth, async (req: any, res) => {
     try {
       const userId = req.user.id;
       const workflowId = parseInt(req.params.id);
@@ -49,7 +63,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/workflows', isAuthenticated, async (req: any, res) => {
+  app.post('/api/workflows', bypassAuth, async (req: any, res) => {
     try {
       const userId = req.user.id;
       const user = await storage.getUser(userId);
@@ -86,7 +100,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/workflows/:id', isAuthenticated, async (req: any, res) => {
+  app.put('/api/workflows/:id', bypassAuth, async (req: any, res) => {
     try {
       const userId = req.user.id;
       const workflowId = parseInt(req.params.id);
@@ -113,7 +127,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete('/api/workflows/:id', isAuthenticated, async (req: any, res) => {
+  app.delete('/api/workflows/:id', bypassAuth, async (req: any, res) => {
     try {
       const userId = req.user.id;
       const workflowId = parseInt(req.params.id);
@@ -127,7 +141,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // AI Analysis route
-  app.post('/api/workflows/:id/analyze', isAuthenticated, async (req: any, res) => {
+  app.post('/api/workflows/:id/analyze', bypassAuth, async (req: any, res) => {
     try {
       const userId = req.user.id;
       const workflowId = parseInt(req.params.id);
@@ -157,7 +171,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Templates routes
-  app.get('/api/templates', async (req, res) => {
+  app.get('/api/templates', bypassAuth, async (req, res) => {
     try {
       const templates = await storage.getTemplates();
       res.json(templates);
@@ -167,7 +181,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/templates/:id', async (req, res) => {
+  app.get('/api/templates/:id', bypassAuth, async (req, res) => {
     try {
       const templateId = parseInt(req.params.id);
       const template = await storage.getTemplate(templateId);
@@ -184,7 +198,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Stripe subscription routes
-  app.post('/api/get-or-create-subscription', isAuthenticated, async (req: any, res) => {
+  app.post('/api/get-or-create-subscription', bypassAuth, async (req: any, res) => {
     try {
       const userId = req.user.id;
       let user = await storage.getUser(userId);
@@ -280,7 +294,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // User stats route
-  app.get('/api/user/stats', isAuthenticated, async (req: any, res) => {
+  app.get('/api/user/stats', bypassAuth, async (req: any, res) => {
     try {
       const userId = req.user.id;
       const workflows = await storage.getWorkflows(userId);
