@@ -5,54 +5,58 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;500;600&display=swap');
 
 :root {
-  --background: hsl(0, 0%, 100%);
-  --foreground: hsl(207, 100%, 11%);
-  --muted: hsl(210, 40%, 95%);
-  --muted-foreground: hsl(215, 16%, 47%);
+  --background: hsl(210, 20%, 98%);
+  --foreground: hsl(215, 25%, 27%);
+  --muted: hsl(220, 13%, 91%);
+  --muted-foreground: hsl(215, 20%, 65%);
   --popover: hsl(0, 0%, 100%);
-  --popover-foreground: hsl(207, 100%, 11%);
+  --popover-foreground: hsl(215, 25%, 27%);
   --card: hsl(0, 0%, 100%);
-  --card-foreground: hsl(207, 100%, 11%);
-  --border: hsl(214, 32%, 91%);
-  --input: hsl(214, 32%, 91%);
-  --primary: hsl(120, 46%, 33%);
-  --primary-foreground: hsl(0, 0%, 98%);
-  --secondary: hsl(210, 40%, 95%);
-  --secondary-foreground: hsl(222, 84%, 5%);
-  --accent: hsl(120, 46%, 33%);
-  --accent-foreground: hsl(0, 0%, 98%);
+  --card-foreground: hsl(215, 25%, 27%);
+  --border: hsl(220, 13%, 91%);
+  --input: hsl(220, 13%, 91%);
+  --primary: hsl(208, 100%, 43%);
+  --primary-foreground: hsl(210, 20%, 98%);
+  --secondary: hsl(210, 14%, 89%);
+  --secondary-foreground: hsl(215, 25%, 27%);
+  --accent: hsl(158, 58%, 48%);
+  --accent-foreground: hsl(210, 20%, 98%);
   --destructive: hsl(0, 84%, 60%);
-  --destructive-foreground: hsl(210, 40%, 98%);
-  --ring: hsl(207, 100%, 11%);
+  --destructive-foreground: hsl(210, 20%, 98%);
+  --ring: hsl(208, 100%, 43%);
   --radius: 0.5rem;
   
-  /* Praxis Fortis Brand Colors */
-  --deep-navy: hsl(207, 100%, 11%);
-  --steel-gray: hsl(213, 15%, 58%);
-  --emerald-green: hsl(120, 46%, 33%);
-  --soft-white: hsl(0, 0%, 96%);
+  /* Praxis Fortis Elegant Brand Colors */
+  --royal-blue: hsl(208, 100%, 43%);
+  --slate-blue: hsl(215, 25%, 27%);
+  --silver-gray: hsl(210, 14%, 53%);
+  --platinum: hsl(210, 14%, 89%);
+  --emerald-green: hsl(158, 58%, 48%);
+  --sage-green: hsl(158, 25%, 65%);
+  --pearl-white: hsl(210, 20%, 98%);
+  --charcoal: hsl(215, 25%, 27%);
 }
 
 .dark {
-  --background: hsl(222, 84%, 5%);
-  --foreground: hsl(210, 40%, 98%);
-  --muted: hsl(217, 33%, 17%);
-  --muted-foreground: hsl(215, 20%, 65%);
-  --popover: hsl(222, 84%, 5%);
-  --popover-foreground: hsl(210, 40%, 98%);
-  --card: hsl(222, 84%, 5%);
-  --card-foreground: hsl(210, 40%, 98%);
-  --border: hsl(217, 33%, 17%);
-  --input: hsl(217, 33%, 17%);
-  --primary: hsl(120, 46%, 33%);
-  --primary-foreground: hsl(0, 0%, 98%);
-  --secondary: hsl(217, 33%, 17%);
-  --secondary-foreground: hsl(210, 40%, 98%);
-  --accent: hsl(217, 33%, 17%);
-  --accent-foreground: hsl(210, 40%, 98%);
-  --destructive: hsl(0, 63%, 31%);
-  --destructive-foreground: hsl(210, 40%, 98%);
-  --ring: hsl(212, 12%, 84%);
+  --background: hsl(215, 25%, 15%);
+  --foreground: hsl(210, 20%, 98%);
+  --muted: hsl(215, 20%, 25%);
+  --muted-foreground: hsl(215, 15%, 65%);
+  --popover: hsl(215, 25%, 18%);
+  --popover-foreground: hsl(210, 20%, 98%);
+  --card: hsl(215, 25%, 18%);
+  --card-foreground: hsl(210, 20%, 98%);
+  --border: hsl(215, 20%, 25%);
+  --input: hsl(215, 20%, 25%);
+  --primary: hsl(208, 100%, 53%);
+  --primary-foreground: hsl(215, 25%, 15%);
+  --secondary: hsl(215, 20%, 25%);
+  --secondary-foreground: hsl(210, 20%, 98%);
+  --accent: hsl(158, 48%, 55%);
+  --accent-foreground: hsl(215, 25%, 15%);
+  --destructive: hsl(0, 63%, 50%);
+  --destructive-foreground: hsl(210, 20%, 98%);
+  --ring: hsl(208, 100%, 53%);
   --radius: 0.5rem;
 }
 
@@ -80,44 +84,68 @@
     font-family: 'Open Sans', sans-serif;
   }
 
-  .text-deep-navy {
-    color: var(--deep-navy);
+  .text-royal-blue {
+    color: var(--royal-blue);
   }
 
-  .text-steel-gray {
-    color: var(--steel-gray);
+  .text-slate-blue {
+    color: var(--slate-blue);
+  }
+
+  .text-silver-gray {
+    color: var(--silver-gray);
   }
 
   .text-emerald-green {
     color: var(--emerald-green);
   }
 
-  .text-soft-white {
-    color: var(--soft-white);
+  .text-sage-green {
+    color: var(--sage-green);
   }
 
-  .bg-deep-navy {
-    background-color: var(--deep-navy);
+  .text-pearl-white {
+    color: var(--pearl-white);
   }
 
-  .bg-steel-gray {
-    background-color: var(--steel-gray);
+  .bg-royal-blue {
+    background-color: var(--royal-blue);
+  }
+
+  .bg-slate-blue {
+    background-color: var(--slate-blue);
+  }
+
+  .bg-silver-gray {
+    background-color: var(--silver-gray);
+  }
+
+  .bg-platinum {
+    background-color: var(--platinum);
   }
 
   .bg-emerald-green {
     background-color: var(--emerald-green);
   }
 
-  .bg-soft-white {
-    background-color: var(--soft-white);
+  .bg-sage-green {
+    background-color: var(--sage-green);
   }
 
-  .border-deep-navy {
-    border-color: var(--deep-navy);
+  .bg-pearl-white {
+    background-color: var(--pearl-white);
   }
 
-  .border-steel-gray {
-    border-color: var(--steel-gray);
+  .border-royal-blue {
+    border-color: var(--royal-blue);
+  }
+
+  .border-slate-blue {
+    border-color: var(--slate-blue);
+  }
+
+  .border-silver-gray {
+    border-color: var(--silver-gray);
   }
 
   .border-emerald-green {
@@ -125,11 +153,15 @@
   }
 
   .hover\:bg-emerald-green\/90:hover {
-    background-color: hsl(120, 46%, 33%, 0.9);
+    background-color: hsl(158, 58%, 48%, 0.9);
   }
 
-  .hover\:bg-deep-navy\/90:hover {
-    background-color: hsl(207, 100%, 11%, 0.9);
+  .hover\:bg-royal-blue\/90:hover {
+    background-color: hsl(208, 100%, 43%, 0.9);
+  }
+
+  .hover\:bg-slate-blue\/90:hover {
+    background-color: hsl(215, 25%, 27%, 0.9);
   }
 }
 
@@ -143,7 +175,7 @@
 }
 
 .react-flow__edge {
-  stroke: var(--steel-gray);
+  stroke: var(--silver-gray);
   stroke-width: 2;
 }
 
@@ -153,11 +185,13 @@
 }
 
 .react-flow__controls {
-  @apply bg-white border border-gray-200 rounded-lg shadow-sm;
+  @apply bg-white rounded-lg shadow-sm;
+  border: 1px solid var(--platinum);
 }
 
 .react-flow__minimap {
-  @apply border border-gray-200 rounded-lg;
+  @apply rounded-lg;
+  border: 1px solid var(--platinum);
 }
 
 /* Component Palette Drag Styles */
@@ -166,7 +200,7 @@
 }
 
 .workflow-canvas {
-  @apply bg-soft-white;
+  background-color: var(--pearl-white);
 }
 
 /* Custom scrollbar */
