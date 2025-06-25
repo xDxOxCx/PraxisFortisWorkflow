@@ -335,8 +335,8 @@ export default function Landing() {
               </p>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Product</h4>
-              <ul className="space-y-2 text-sm text-gray-300">
+              <h4 className="font-semibold mb-4 text-white">Product</h4>
+              <ul className="space-y-2 text-sm text-gray-200">
                 <li><a href="#" className="hover:text-white">Features</a></li>
                 <li><a href="#pricing" className="hover:text-white">Pricing</a></li>
                 <li><a href="#" className="hover:text-white">Templates</a></li>
@@ -344,8 +344,8 @@ export default function Landing() {
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Support</h4>
-              <ul className="space-y-2 text-sm text-gray-300">
+              <h4 className="font-semibold mb-4 text-white">Support</h4>
+              <ul className="space-y-2 text-sm text-gray-200">
                 <li><a href="#" className="hover:text-white">Help Center</a></li>
                 <li><a href="#" className="hover:text-white">Contact Us</a></li>
                 <li><a href="#" className="hover:text-white">Status</a></li>
@@ -353,8 +353,8 @@ export default function Landing() {
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Company</h4>
-              <ul className="space-y-2 text-sm text-gray-300">
+              <h4 className="font-semibold mb-4 text-white">Company</h4>
+              <ul className="space-y-2 text-sm text-gray-200">
                 <li><a href="#" className="hover:text-white">About</a></li>
                 <li><a href="#" className="hover:text-white">Blog</a></li>
                 <li><a href="#" className="hover:text-white">Privacy</a></li>
@@ -363,12 +363,12 @@ export default function Landing() {
             </div>
           </div>
           <div className="border-t border-gray-700 mt-8 pt-8 flex items-center justify-between">
-            <p className="text-gray-400 text-sm">© 2024 Praxis Fortis. All rights reserved.</p>
+            <p className="text-gray-200 text-sm">© 2024 Workflow Optimization Tool. All rights reserved.</p>
             <div className="flex space-x-4">
-              <a href="#" className="text-gray-400 hover:text-white">
+              <a href="#" className="text-gray-200 hover:text-white">
                 <i className="fab fa-linkedin"></i>
               </a>
-              <a href="#" className="text-gray-400 hover:text-white">
+              <a href="#" className="text-gray-200 hover:text-white">
                 <i className="fab fa-twitter"></i>
               </a>
             </div>
