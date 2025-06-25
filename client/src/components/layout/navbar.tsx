@@ -58,11 +58,11 @@ export default function Navbar() {
                     New Workflow
                   </a>
                 </Link>
-                <Link href="/pricing">
+                <Link href="/templates">
                   <a className={`px-3 py-2 text-sm font-medium transition-colors ${
-                    isActive('/pricing') 
-                      ? 'text-deep-navy' 
-                      : 'text-steel-gray hover:text-emerald-green'
+                    isActive('/templates') 
+                      ? 'text-slate-blue' 
+                      : 'text-silver-gray hover:text-emerald-green'
                   }`}>
                     Templates
                   </a>
