@@ -8,6 +8,7 @@ import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
 import Home from "@/pages/home";
 import WorkflowBuilder from "@/pages/simple-workflow-builder";
+import Templates from "@/pages/templates";
 import Settings from "@/pages/settings";
 import Pricing from "@/pages/pricing";
 import Subscribe from "@/pages/subscribe";
@@ -29,6 +30,7 @@ function Router() {
           <Route path="/" component={Home} />
           <Route path="/workflow-builder" component={WorkflowBuilder} />
           <Route path="/workflow-builder/:id" component={WorkflowBuilder} />
+          <Route path="/templates" component={Templates} />
           <Route path="/settings" component={Settings} />
           <Route path="/pricing" component={Pricing} />
           <Route path="/subscribe" component={Subscribe} />
