@@ -47,8 +47,9 @@ export default function WorkflowBuilder() {
   const [analysisResult, setAnalysisResult] = useState<any>(null);
   const [textInput, setTextInput] = useState('');
   const [newStepText, setNewStepText] = useState('');
+  const [selectedImprovements, setSelectedImprovements] = useState<Set<string>>(new Set());
+  const [isGeneratingA3, setIsGeneratingA3] = useState(false);
   const { toast } = useToast();
-  const queryClient = useQueryClient();
 
   // Get template ID or workflow ID from URL params
   const urlParams = new URLSearchParams(window.location.search);
