@@ -1,24 +1,20 @@
-import {
-  users,
-  workflows,
-  templates,
-  type User,
-  type UpsertUser,
-  type Workflow,
-  type InsertWorkflow,
-  type UpdateWorkflow,
-  type Template,
-  type InsertTemplate,
-} from "@shared/schema";
-import { db } from "./db";
-import { eq, and, gte } from "drizzle-orm";
+import { supabaseServiceRole } from "./db";
+import type { Database } from "@shared/database.types";
 
 // Interface for storage operations
+type User = Database['public']['Tables']['users']['Row'];
+type UserInsert = Database['public']['Tables']['users']['Insert'];
+type UserUpdate = Database['public']['Tables']['users']['Update'];
+type Workflow = Database['public']['Tables']['workflows']['Row'];
+type WorkflowInsert = Database['public']['Tables']['workflows']['Insert'];
+type WorkflowUpdate = Database['public']['Tables']['workflows']['Update'];
+type Template = Database['public']['Tables']['templates']['Row'];
+type TemplateInsert = Database['public']['Tables']['templates']['Insert'];
+
 export interface IStorage {
   // User operations
-  // (IMPORTANT) these user operations are mandatory for Replit Auth.
   getUser(id: string): Promise<User | undefined>;
-  upsertUser(user: UpsertUser): Promise<User>;
+  upsertUser(user: UserInsert): Promise<User>;
   updateUserStripeInfo(userId: string, stripeCustomerId: string, stripeSubscriptionId: string): Promise<User>;
   updateSubscriptionStatus(userId: string, status: string): Promise<User>;
   incrementWorkflowUsage(userId: string): Promise<User>;
@@ -27,14 +23,14 @@ export interface IStorage {
   // Workflow operations
   getWorkflows(userId: string): Promise<Workflow[]>;
   getWorkflow(id: number, userId: string): Promise<Workflow | undefined>;
-  createWorkflow(workflow: InsertWorkflow): Promise<Workflow>;
-  updateWorkflow(workflow: UpdateWorkflow): Promise<Workflow>;
+  createWorkflow(workflow: WorkflowInsert): Promise<Workflow>;
+  updateWorkflow(workflow: WorkflowUpdate): Promise<Workflow>;
   deleteWorkflow(id: number, userId: string): Promise<void>;
 
   // Template operations
   getTemplates(): Promise<Template[]>;
   getTemplate(id: number): Promise<Template | undefined>;
-  createTemplate(template: InsertTemplate): Promise<Template>;
+  createTemplate(template: TemplateInsert): Promise<Template>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -180,4 +176,4 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-export const storage = new DatabaseStorage();
+export const storage = new SupabaseStorage();
