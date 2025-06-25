@@ -158,8 +158,14 @@ export default function Landing() {
           <div className="grid md:grid-cols-3 gap-8">
             <Card>
               <CardContent className="p-6 text-center">
-                <div className="w-12 h-12 bg-emerald-green/10 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <i className="fas fa-brain text-emerald-green text-xl"></i>
+                <div className="relative w-16 h-16 mx-auto mb-4">
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-lg"></div>
+                  <div className="absolute inset-1 rounded-xl bg-white flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center">
+                      <i className="fas fa-brain text-white text-sm"></i>
+                    </div>
+                  </div>
+                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-200 rounded-full animate-pulse"></div>
                 </div>
                 <h3 className="text-lg font-montserrat font-semibold text-deep-navy mb-2">
                   AI-Powered Analysis
@@ -172,8 +178,15 @@ export default function Landing() {
 
             <Card>
               <CardContent className="p-6 text-center">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <i className="fas fa-mouse-pointer text-blue-600 text-xl"></i>
+                <div className="relative w-16 h-16 mx-auto mb-4">
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-400 to-blue-600 shadow-lg"></div>
+                  <div className="absolute inset-1 rounded-xl bg-white flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
+                      <i className="fas fa-mouse-pointer text-white text-sm"></i>
+                    </div>
+                  </div>
+                  <div className="absolute -bottom-1 -left-1 w-3 h-3 bg-blue-200 rounded-full"></div>
+                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-300 rounded-full"></div>
                 </div>
                 <h3 className="text-lg font-montserrat font-semibold text-deep-navy mb-2">
                   Drag & Drop Builder
@@ -186,8 +199,15 @@ export default function Landing() {
 
             <Card>
               <CardContent className="p-6 text-center">
-                <div className="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <i className="fas fa-chart-line text-amber-600 text-xl"></i>
+                <div className="relative w-16 h-16 mx-auto mb-4">
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 shadow-lg"></div>
+                  <div className="absolute inset-1 rounded-xl bg-white flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+                      <i className="fas fa-chart-line text-white text-sm"></i>
+                    </div>
+                  </div>
+                  <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-amber-300 rounded-full"></div>
+                  <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-orange-200 rounded-full animate-bounce" style={{animationDelay: '0.5s'}}></div>
                 </div>
                 <h3 className="text-lg font-montserrat font-semibold text-deep-navy mb-2">
                   Measurable Results
