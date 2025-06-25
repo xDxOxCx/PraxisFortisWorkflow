@@ -165,9 +165,9 @@ export default function Pricing() {
           <Card className="border border-gray-200">
             <CardContent className="p-8">
               <div className="text-center mb-8">
-                <h3 className="text-xl font-montserrat font-bold text-deep-navy mb-2">Enterprise</h3>
-                <div className="text-4xl font-montserrat font-bold text-deep-navy">Custom</div>
-                <p className="text-steel-gray">pricing</p>
+                <h3 className="text-xl font-montserrat font-bold text-slate-blue mb-2">Enterprise</h3>
+                <div className="text-4xl font-montserrat font-bold text-slate-blue">Custom</div>
+                <p className="text-muted-foreground">pricing</p>
               </div>
               <ul className="space-y-4 mb-8">
                 <li className="flex items-center space-x-3">
@@ -246,31 +246,31 @@ export default function Pricing() {
                       <td className="text-center py-4"><CheckCircle className="w-4 h-4 text-emerald-green mx-auto" /></td>
                     </tr>
                     <tr className="border-b">
-                      <td className="py-4 text-steel-gray">PDF Export</td>
+                      <td className="py-4 text-muted-foreground">PDF Export</td>
                       <td className="text-center py-4">-</td>
                       <td className="text-center py-4"><CheckCircle className="w-4 h-4 text-emerald-green mx-auto" /></td>
                       <td className="text-center py-4"><CheckCircle className="w-4 h-4 text-emerald-green mx-auto" /></td>
                     </tr>
                     <tr className="border-b">
-                      <td className="py-4 text-steel-gray">Priority Support</td>
+                      <td className="py-4 text-muted-foreground">Priority Support</td>
                       <td className="text-center py-4">-</td>
                       <td className="text-center py-4"><CheckCircle className="w-4 h-4 text-emerald-green mx-auto" /></td>
                       <td className="text-center py-4"><CheckCircle className="w-4 h-4 text-emerald-green mx-auto" /></td>
                     </tr>
                     <tr className="border-b">
-                      <td className="py-4 text-steel-gray">Team Collaboration</td>
+                      <td className="py-4 text-muted-foreground">Team Collaboration</td>
                       <td className="text-center py-4">-</td>
                       <td className="text-center py-4"><CheckCircle className="w-4 h-4 text-emerald-green mx-auto" /></td>
                       <td className="text-center py-4"><CheckCircle className="w-4 h-4 text-emerald-green mx-auto" /></td>
                     </tr>
                     <tr className="border-b">
-                      <td className="py-4 text-steel-gray">Custom Integrations</td>
+                      <td className="py-4 text-muted-foreground">Custom Integrations</td>
                       <td className="text-center py-4">-</td>
                       <td className="text-center py-4">-</td>
                       <td className="text-center py-4"><CheckCircle className="w-4 h-4 text-emerald-green mx-auto" /></td>
                     </tr>
                     <tr>
-                      <td className="py-4 text-steel-gray">White-label Solution</td>
+                      <td className="py-4 text-muted-foreground">White-label Solution</td>
                       <td className="text-center py-4">-</td>
                       <td className="text-center py-4">-</td>
                       <td className="text-center py-4"><CheckCircle className="w-4 h-4 text-emerald-green mx-auto" /></td>
@@ -291,10 +291,10 @@ export default function Pricing() {
           <div className="grid md:grid-cols-2 gap-8">
             <Card>
               <CardContent className="p-6">
-                <h4 className="font-montserrat font-semibold text-deep-navy mb-2">
+                <h4 className="font-montserrat font-semibold text-slate-blue mb-2">
                   Can I change my plan anytime?
                 </h4>
-                <p className="text-steel-gray text-sm">
+                <p className="text-muted-foreground text-sm">
                   Yes, you can upgrade or downgrade your plan at any time. Changes take effect immediately, and billing is prorated.
                 </p>
               </CardContent>
@@ -302,10 +302,10 @@ export default function Pricing() {
             
             <Card>
               <CardContent className="p-6">
-                <h4 className="font-montserrat font-semibold text-deep-navy mb-2">
+                <h4 className="font-montserrat font-semibold text-slate-blue mb-2">
                   What happens to my data if I cancel?
                 </h4>
-                <p className="text-steel-gray text-sm">
+                <p className="text-muted-foreground text-sm">
                   Your workflow data is retained for 30 days after cancellation, giving you time to export or reactivate your account.
                 </p>
               </CardContent>
@@ -313,10 +313,10 @@ export default function Pricing() {
             
             <Card>
               <CardContent className="p-6">
-                <h4 className="font-montserrat font-semibold text-deep-navy mb-2">
+                <h4 className="font-montserrat font-semibold text-slate-blue mb-2">
                   Is there a setup fee?
                 </h4>
-                <p className="text-steel-gray text-sm">
+                <p className="text-muted-foreground text-sm">
                   No setup fees for any plan. You only pay the monthly subscription fee, and you can start with our free tier.
                 </p>
               </CardContent>
@@ -324,10 +324,10 @@ export default function Pricing() {
             
             <Card>
               <CardContent className="p-6">
-                <h4 className="font-montserrat font-semibold text-deep-navy mb-2">
+                <h4 className="font-montserrat font-semibold text-slate-blue mb-2">
                   Do you offer training or onboarding?
                 </h4>
-                <p className="text-steel-gray text-sm">
+                <p className="text-muted-foreground text-sm">
                   Pro and Enterprise plans include onboarding support. We also provide extensive documentation and video tutorials.
                 </p>
               </CardContent>

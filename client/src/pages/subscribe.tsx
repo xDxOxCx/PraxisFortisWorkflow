@@ -73,7 +73,7 @@ const SubscribeForm = () => {
         {isProcessing ? "Processing..." : "Subscribe to Pro - $49/month"}
       </Button>
       
-      <div className="flex items-center justify-center space-x-4 text-xs text-steel-gray">
+      <div className="flex items-center justify-center space-x-4 text-xs text-muted-foreground">
         <div className="flex items-center space-x-1">
           <Shield className="w-3 h-3" />
           <span>Secure Payment</span>
@@ -159,12 +159,12 @@ export default function Subscribe() {
 
   if (loadingSubscription || !clientSecret) {
     return (
-      <div className="min-h-screen bg-soft-white">
+      <div className="min-h-screen bg-background">
         <Navbar />
         <div className="h-screen flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin w-8 h-8 border-4 border-emerald-green border-t-transparent rounded-full mx-auto mb-4" />
-            <p className="text-steel-gray">Setting up your subscription...</p>
+            <p className="text-muted-foreground">Setting up your subscription...</p>
           </div>
         </div>
       </div>
@@ -177,10 +177,10 @@ export default function Subscribe() {
       
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-montserrat font-bold text-deep-navy mb-2">
+          <h2 className="text-3xl font-montserrat font-bold text-slate-blue mb-2">
             Upgrade to Pro
           </h2>
-          <p className="text-steel-gray">
+          <p className="text-muted-foreground">
             Unlock unlimited workflows and advanced features
           </p>
         </div>
@@ -194,13 +194,13 @@ export default function Subscribe() {
                   <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <CreditCard className="w-8 h-8 text-emerald-600" />
                   </div>
-                  <h3 className="text-2xl font-montserrat font-bold text-deep-navy mb-2">Pro Plan</h3>
-                  <div className="text-4xl font-montserrat font-bold text-deep-navy mb-2">$49</div>
-                  <p className="text-steel-gray">per month, billed monthly</p>
+                  <h3 className="text-2xl font-montserrat font-bold text-slate-blue mb-2">Pro Plan</h3>
+                  <div className="text-4xl font-montserrat font-bold text-slate-blue mb-2">$49</div>
+                  <p className="text-muted-foreground">per month, billed monthly</p>
                 </div>
 
                 <div className="space-y-4">
-                  <h4 className="font-montserrat font-semibold text-deep-navy">What's included:</h4>
+                  <h4 className="font-montserrat font-semibold text-slate-blue">What's included:</h4>
                   
                   <ul className="space-y-3">
                     <li className="flex items-center space-x-3">
@@ -255,7 +255,7 @@ export default function Subscribe() {
           <div>
             <Card>
               <CardContent className="p-6">
-                <h3 className="text-lg font-montserrat font-semibold text-deep-navy mb-6">
+                <h3 className="text-lg font-montserrat font-semibold text-slate-blue mb-6">
                   Payment Information
                 </h3>
                 
@@ -282,7 +282,7 @@ export default function Subscribe() {
               </CardContent>
             </Card>
 
-            <div className="mt-6 text-center text-sm text-steel-gray">
+            <div className="mt-6 text-center text-sm text-muted-foreground">
               <p>
                 By subscribing, you agree to our{" "}
                 <a href="#" className="text-emerald-green hover:underline">Terms of Service</a>{" "}
@@ -295,15 +295,15 @@ export default function Subscribe() {
 
         {/* FAQ */}
         <div className="mt-12">
-          <h3 className="text-xl font-montserrat font-bold text-deep-navy text-center mb-6">
+          <h3 className="text-xl font-montserrat font-bold text-slate-blue text-center mb-6">
             Frequently Asked Questions
           </h3>
           
           <div className="grid md:grid-cols-2 gap-6">
             <Card>
               <CardContent className="p-4">
-                <h4 className="font-semibold text-deep-navy mb-2">Can I cancel anytime?</h4>
-                <p className="text-steel-gray text-sm">
+                <h4 className="font-semibold text-slate-blue mb-2">Can I cancel anytime?</h4>
+                <p className="text-muted-foreground text-sm">
                   Yes, you can cancel your subscription at any time. You'll continue to have access to Pro features until the end of your billing period.
                 </p>
               </CardContent>
@@ -311,8 +311,8 @@ export default function Subscribe() {
             
             <Card>
               <CardContent className="p-4">
-                <h4 className="font-semibold text-deep-navy mb-2">What happens to my free workflows?</h4>
-                <p className="text-steel-gray text-sm">
+                <h4 className="font-semibold text-slate-blue mb-2">What happens to my free workflows?</h4>
+                <p className="text-muted-foreground text-sm">
                   All your existing workflows are preserved. With Pro, you'll have unlimited access to create and analyze new workflows.
                 </p>
               </CardContent>
@@ -320,8 +320,8 @@ export default function Subscribe() {
             
             <Card>
               <CardContent className="p-4">
-                <h4 className="font-semibold text-deep-navy mb-2">Is my payment information secure?</h4>
-                <p className="text-steel-gray text-sm">
+                <h4 className="font-semibold text-slate-blue mb-2">Is my payment information secure?</h4>
+                <p className="text-muted-foreground text-sm">
                   Yes, we use Stripe for secure payment processing. Your payment information is encrypted and never stored on our servers.
                 </p>
               </CardContent>
@@ -329,8 +329,8 @@ export default function Subscribe() {
             
             <Card>
               <CardContent className="p-4">
-                <h4 className="font-semibold text-deep-navy mb-2">Do you offer refunds?</h4>
-                <p className="text-steel-gray text-sm">
+                <h4 className="font-semibold text-slate-blue mb-2">Do you offer refunds?</h4>
+                <p className="text-muted-foreground text-sm">
                   We offer a 14-day free trial, so you can test all Pro features before being charged. Contact support for special circumstances.
                 </p>
               </CardContent>

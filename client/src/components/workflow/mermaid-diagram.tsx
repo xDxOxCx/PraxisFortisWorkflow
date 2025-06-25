@@ -36,7 +36,7 @@ export default function MermaidDiagram({ code }: MermaidDiagramProps) {
   if (!code) {
     return (
       <div className="w-full h-64 bg-gray-50 border border-gray-200 rounded-lg flex items-center justify-center">
-        <p className="text-steel-gray">No diagram available</p>
+        <p className="text-muted-foreground">No diagram available</p>
       </div>
     );
   }

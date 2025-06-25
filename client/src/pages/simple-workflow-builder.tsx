@@ -324,7 +324,7 @@ export default function WorkflowBuilder() {
 
     setIsGeneratingA3(true);
     try {
-      const selectedItems = analysisResult?.improvements?.filter(imp => 
+      const selectedItems = analysisResult?.improvements?.filter((imp: any) => 
         selectedImprovements.has(imp.id)
       ) || [];
 

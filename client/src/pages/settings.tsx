@@ -168,8 +168,8 @@ export default function Settings() {
       
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="mb-8">
-          <h2 className="text-3xl font-montserrat font-bold text-deep-navy mb-2">Settings & Billing</h2>
-          <p className="text-steel-gray">Manage your account and subscription</p>
+          <h2 className="text-3xl font-montserrat font-bold text-slate-blue mb-2">Settings & Billing</h2>
+          <p className="text-muted-foreground">Manage your account and subscription</p>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
@@ -178,13 +178,13 @@ export default function Settings() {
             <Card>
               <CardContent className="p-6">
                 <div className="border-b border-gray-200 pb-4 mb-6">
-                  <h3 className="text-lg font-montserrat font-semibold text-deep-navy">Account Information</h3>
+                  <h3 className="text-lg font-montserrat font-semibold text-slate-blue">Account Information</h3>
                 </div>
                 
                 <form onSubmit={handleSaveAccount} className="space-y-6">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="firstName" className="text-sm font-medium text-steel-gray">
+                      <Label htmlFor="firstName" className="text-sm font-medium text-muted-foreground">
                         First Name
                       </Label>
                       <Input
@@ -195,7 +195,7 @@ export default function Settings() {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="lastName" className="text-sm font-medium text-steel-gray">
+                      <Label htmlFor="lastName" className="text-sm font-medium text-muted-foreground">
                         Last Name
                       </Label>
                       <Input
@@ -208,7 +208,7 @@ export default function Settings() {
                   </div>
                   
                   <div>
-                    <Label htmlFor="email" className="text-sm font-medium text-steel-gray">
+                    <Label htmlFor="email" className="text-sm font-medium text-muted-foreground">
                       Email
                     </Label>
                     <Input
@@ -219,11 +219,11 @@ export default function Settings() {
                       className="mt-1"
                       disabled
                     />
-                    <p className="text-xs text-steel-gray mt-1">Email cannot be changed</p>
+                    <p className="text-xs text-muted-foreground mt-1">Email cannot be changed</p>
                   </div>
                   
                   <div>
-                    <Label htmlFor="practiceName" className="text-sm font-medium text-steel-gray">
+                    <Label htmlFor="practiceName" className="text-sm font-medium text-muted-foreground">
                       Practice Name
                     </Label>
                     <Input
@@ -236,7 +236,7 @@ export default function Settings() {
                   </div>
                   
                   <div>
-                    <Label htmlFor="specialty" className="text-sm font-medium text-steel-gray">
+                    <Label htmlFor="specialty" className="text-sm font-medium text-muted-foreground">
                       Specialty
                     </Label>
                     <Select 
@@ -275,12 +275,12 @@ export default function Settings() {
             <Card>
               <CardContent className="p-6">
                 <div className="border-b border-gray-200 pb-4 mb-6">
-                  <h3 className="text-lg font-montserrat font-semibold text-deep-navy">Change Password</h3>
+                  <h3 className="text-lg font-montserrat font-semibold text-slate-blue">Change Password</h3>
                 </div>
                 
                 <form onSubmit={handleChangePassword} className="space-y-4">
                   <div>
-                    <Label htmlFor="currentPassword" className="text-sm font-medium text-steel-gray">
+                    <Label htmlFor="currentPassword" className="text-sm font-medium text-muted-foreground">
                       Current Password
                     </Label>
                     <Input
@@ -293,7 +293,7 @@ export default function Settings() {
                   </div>
                   
                   <div>
-                    <Label htmlFor="newPassword" className="text-sm font-medium text-steel-gray">
+                    <Label htmlFor="newPassword" className="text-sm font-medium text-muted-foreground">
                       New Password
                     </Label>
                     <Input
@@ -306,7 +306,7 @@ export default function Settings() {
                   </div>
                   
                   <div>
-                    <Label htmlFor="confirmPassword" className="text-sm font-medium text-steel-gray">
+                    <Label htmlFor="confirmPassword" className="text-sm font-medium text-muted-foreground">
                       Confirm New Password
                     </Label>
                     <Input
@@ -337,7 +337,7 @@ export default function Settings() {
             <Card>
               <CardContent className="p-6">
                 <div className="border-b border-gray-200 pb-4 mb-6">
-                  <h3 className="text-lg font-montserrat font-semibold text-deep-navy">Current Plan</h3>
+                  <h3 className="text-lg font-montserrat font-semibold text-slate-blue">Current Plan</h3>
                 </div>
                 
                 <div className="text-center mb-6">
@@ -348,27 +348,27 @@ export default function Settings() {
                       <CreditCard className="w-8 h-8 text-emerald-600" />
                     )}
                   </div>
-                  <h4 className="text-xl font-montserrat font-bold text-deep-navy">
+                  <h4 className="text-xl font-montserrat font-bold text-slate-blue">
                     {user?.subscriptionStatus === 'free' ? 'Free Plan' : 'Pro Plan'}
                   </h4>
-                  <p className="text-steel-gray text-sm">
+                  <p className="text-muted-foreground text-sm">
                     {user?.subscriptionStatus === 'free' ? '1 workflow per month' : 'Unlimited workflows'}
                   </p>
                 </div>
 
                 <div className="space-y-3 mb-6">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-steel-gray">Workflows Used</span>
-                    <span className="font-medium text-deep-navy">
+                    <span className="text-muted-foreground">Workflows Used</span>
+                    <span className="font-medium text-slate-blue">
                       {user?.workflowsUsedThisMonth || 0} / {user?.subscriptionStatus === 'free' ? '1' : '∞'}
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-steel-gray">AI Analysis</span>
+                    <span className="text-muted-foreground">AI Analysis</span>
                     <CheckCircle className="w-4 h-4 text-emerald-green" />
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-steel-gray">PDF Export</span>
+                    <span className="text-muted-foreground">PDF Export</span>
                     {user?.subscriptionStatus === 'free' ? (
                       <X className="w-4 h-4 text-red-500" />
                     ) : (
@@ -376,7 +376,7 @@ export default function Settings() {
                     )}
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-steel-gray">Priority Support</span>
+                    <span className="text-muted-foreground">Priority Support</span>
                     {user?.subscriptionStatus === 'free' ? (
                       <X className="w-4 h-4 text-red-500" />
                     ) : (
@@ -403,7 +403,7 @@ export default function Settings() {
                 )}
 
                 <div className="text-center">
-                  <a href="/pricing" className="text-sm text-steel-gray hover:text-deep-navy">
+                  <a href="/pricing" className="text-sm text-muted-foreground hover:text-slate-blue">
                     View all plans
                   </a>
                 </div>
@@ -414,14 +414,14 @@ export default function Settings() {
             <Card>
               <CardContent className="p-6">
                 <div className="border-b border-gray-200 pb-4 mb-6">
-                  <h3 className="text-lg font-montserrat font-semibold text-deep-navy">Billing History</h3>
+                  <h3 className="text-lg font-montserrat font-semibold text-slate-blue">Billing History</h3>
                 </div>
                 
                 <div className="text-center py-8">
                   <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
                     <Receipt className="w-6 h-6 text-gray-400" />
                   </div>
-                  <p className="text-steel-gray text-sm">
+                  <p className="text-muted-foreground text-sm">
                     {user?.subscriptionStatus === 'free' ? 'No billing history yet' : 'Billing history will appear here'}
                   </p>
                 </div>

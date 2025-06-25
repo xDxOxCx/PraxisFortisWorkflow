@@ -220,7 +220,7 @@ export default function WorkflowBuilder() {
 
   if (workflowId && workflowLoading) {
     return (
-      <div className="min-h-screen bg-soft-white">
+      <div className="min-h-screen bg-background">
         <Navbar />
         <div className="h-screen flex items-center justify-center">Loading workflow...</div>
       </div>
@@ -228,13 +228,13 @@ export default function WorkflowBuilder() {
   }
 
   return (
-    <div className="min-h-screen bg-soft-white">
+    <div className="min-h-screen bg-background">
       <Navbar />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="mb-6">
-          <h2 className="text-3xl font-montserrat font-bold text-deep-navy mb-2">Workflow Builder</h2>
-          <p className="text-steel-gray">Drag and drop components to create your clinic workflow</p>
+          <h2 className="text-3xl font-montserrat font-bold text-slate-blue mb-2">Workflow Builder</h2>
+          <p className="text-muted-foreground">Drag and drop components to create your clinic workflow</p>
         </div>
 
         <div className="grid lg:grid-cols-5 gap-6 h-[800px]">
@@ -252,9 +252,9 @@ export default function WorkflowBuilder() {
                     <Input 
                       value={workflowName}
                       onChange={(e) => setWorkflowName(e.target.value)}
-                      className="text-lg font-montserrat font-semibold text-deep-navy bg-transparent border-none outline-none p-0 h-auto"
+                      className="text-lg font-montserrat font-semibold text-slate-blue bg-transparent border-none outline-none p-0 h-auto"
                     />
-                    <p className="text-sm text-steel-gray">Drag components from the left panel to build your workflow</p>
+                    <p className="text-sm text-muted-foreground">Drag components from the left panel to build your workflow</p>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Button variant="ghost" size="sm" disabled>
@@ -305,7 +305,7 @@ export default function WorkflowBuilder() {
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-montserrat font-semibold text-deep-navy">
+                  <h3 className="text-lg font-montserrat font-semibold text-slate-blue">
                     AI Analysis Results
                   </h3>
                   <Button 
@@ -320,7 +320,7 @@ export default function WorkflowBuilder() {
                 
                 <div className="grid lg:grid-cols-2 gap-8">
                   <div>
-                    <h4 className="font-semibold text-deep-navy mb-4">Improvement Recommendations</h4>
+                    <h4 className="font-semibold text-slate-blue mb-4">Improvement Recommendations</h4>
                     <div className="space-y-3">
                       {aiAnalysis.improvements.map((improvement) => (
                         <div 
@@ -353,14 +353,14 @@ export default function WorkflowBuilder() {
                     </div>
 
                     <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-                      <h5 className="font-semibold text-deep-navy mb-2">Summary</h5>
+                      <h5 className="font-semibold text-slate-blue mb-2">Summary</h5>
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div>
-                          <span className="text-steel-gray">Total Time Saved:</span>
+                          <span className="text-muted-foreground">Total Time Saved:</span>
                           <div className="font-medium text-emerald-green">{aiAnalysis.summary.totalTimeSaved} minutes</div>
                         </div>
                         <div>
-                          <span className="text-steel-gray">Efficiency Gain:</span>
+                          <span className="text-muted-foreground">Efficiency Gain:</span>
                           <div className="font-medium text-emerald-green">{aiAnalysis.summary.efficiencyGain}%</div>
                         </div>
                       </div>
@@ -368,7 +368,7 @@ export default function WorkflowBuilder() {
                   </div>
 
                   <div>
-                    <h4 className="font-semibold text-deep-navy mb-4">Workflow Visualization</h4>
+                    <h4 className="font-semibold text-slate-blue mb-4">Workflow Visualization</h4>
                     <MermaidDiagram code={aiAnalysis.mermaidCode} />
                   </div>
                 </div>

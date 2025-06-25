@@ -115,7 +115,7 @@ export default function PropertiesPanel({
 
               {selectedNode.type === 'process' && (
                 <div>
-                  <Label htmlFor="duration" className="text-sm font-medium text-steel-gray">
+                  <Label htmlFor="duration" className="text-sm font-medium text-muted-foreground">
                     Duration (minutes)
                   </Label>
                   <Input
@@ -130,7 +130,7 @@ export default function PropertiesPanel({
               )}
 
               <div>
-                <Label htmlFor="assignedRole" className="text-sm font-medium text-steel-gray">
+                <Label htmlFor="assignedRole" className="text-sm font-medium text-muted-foreground">
                   Assigned Role
                 </Label>
                 <Select 
@@ -151,7 +151,7 @@ export default function PropertiesPanel({
               </div>
 
               <div>
-                <Label htmlFor="notes" className="text-sm font-medium text-steel-gray">
+                <Label htmlFor="notes" className="text-sm font-medium text-muted-foreground">
                   Notes
                 </Label>
                 <Textarea
@@ -165,7 +165,7 @@ export default function PropertiesPanel({
               </div>
             </div>
           ) : (
-            <div className="text-center py-8 text-steel-gray">
+            <div className="text-center py-8 text-muted-foreground">
               <p className="text-sm">Select a component to edit its properties</p>
             </div>
           )}
@@ -176,7 +176,7 @@ export default function PropertiesPanel({
       {aiAnalysis && (
         <Card>
           <CardContent className="p-4">
-            <h3 className="font-montserrat font-semibold text-deep-navy mb-4">AI Recommendations</h3>
+            <h3 className="font-montserrat font-semibold text-slate-blue mb-4">AI Recommendations</h3>
             <div className="space-y-3">
               {aiAnalysis.improvements.slice(0, 3).map((improvement) => (
                 <div 

@@ -173,10 +173,10 @@ export default function Landing() {
                   </div>
                   <div className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-200 rounded-full animate-pulse"></div>
                 </div>
-                <h3 className="text-lg font-montserrat font-semibold text-deep-navy mb-2">
+                <h3 className="text-lg font-montserrat font-semibold text-slate-blue mb-2">
                   AI-Powered Analysis
                 </h3>
-                <p className="text-steel-gray">
+                <p className="text-muted-foreground">
                   Get instant insights and improvement recommendations using advanced AI trained on healthcare workflows.
                 </p>
               </CardContent>
@@ -194,10 +194,10 @@ export default function Landing() {
                   <div className="absolute -bottom-1 -left-1 w-3 h-3 bg-blue-200 rounded-full"></div>
                   <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-300 rounded-full"></div>
                 </div>
-                <h3 className="text-lg font-montserrat font-semibold text-deep-navy mb-2">
+                <h3 className="text-lg font-montserrat font-semibold text-slate-blue mb-2">
                   Drag & Drop Builder
                 </h3>
-                <p className="text-steel-gray">
+                <p className="text-muted-foreground">
                   Create professional workflow diagrams in minutes with our intuitive drag-and-drop interface.
                 </p>
               </CardContent>
@@ -215,10 +215,10 @@ export default function Landing() {
                   <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-amber-300 rounded-full"></div>
                   <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-orange-200 rounded-full animate-bounce" style={{animationDelay: '0.5s'}}></div>
                 </div>
-                <h3 className="text-lg font-montserrat font-semibold text-deep-navy mb-2">
+                <h3 className="text-lg font-montserrat font-semibold text-slate-blue mb-2">
                   Measurable Results
                 </h3>
-                <p className="text-steel-gray">
+                <p className="text-muted-foreground">
                   Track time savings and efficiency gains with detailed analytics and professional reports.
                 </p>
               </CardContent>
@@ -244,9 +244,9 @@ export default function Landing() {
             <Card className="border border-gray-200">
               <CardContent className="p-8">
                 <div className="text-center mb-8">
-                  <h3 className="text-xl font-montserrat font-bold text-deep-navy mb-2">Free</h3>
-                  <div className="text-4xl font-montserrat font-bold text-deep-navy">$0</div>
-                  <p className="text-steel-gray">per month</p>
+                  <h3 className="text-xl font-montserrat font-bold text-slate-blue mb-2">Free</h3>
+                  <div className="text-4xl font-montserrat font-bold text-slate-blue">$0</div>
+                  <p className="text-muted-foreground">per month</p>
                 </div>
                 <ul className="space-y-4 mb-8">
                   <li className="flex items-center space-x-3">
@@ -285,9 +285,9 @@ export default function Landing() {
               </div>
               <CardContent className="p-8">
                 <div className="text-center mb-8">
-                  <h3 className="text-xl font-montserrat font-bold text-deep-navy mb-2">Pro</h3>
-                  <div className="text-4xl font-montserrat font-bold text-deep-navy">$49</div>
-                  <p className="text-steel-gray">per month</p>
+                  <h3 className="text-xl font-montserrat font-bold text-slate-blue mb-2">Pro</h3>
+                  <div className="text-4xl font-montserrat font-bold text-slate-blue">$49</div>
+                  <p className="text-muted-foreground">per month</p>
                 </div>
                 <ul className="space-y-4 mb-8">
                   <li className="flex items-center space-x-3">
@@ -324,9 +324,9 @@ export default function Landing() {
             <Card className="border border-gray-200">
               <CardContent className="p-8">
                 <div className="text-center mb-8">
-                  <h3 className="text-xl font-montserrat font-bold text-deep-navy mb-2">Enterprise</h3>
-                  <div className="text-4xl font-montserrat font-bold text-deep-navy">Custom</div>
-                  <p className="text-steel-gray">pricing</p>
+                  <h3 className="text-xl font-montserrat font-bold text-slate-blue mb-2">Enterprise</h3>
+                  <div className="text-4xl font-montserrat font-bold text-slate-blue">Custom</div>
+                  <p className="text-muted-foreground">pricing</p>
                 </div>
                 <ul className="space-y-4 mb-8">
                   <li className="flex items-center space-x-3">
@@ -352,7 +352,7 @@ export default function Landing() {
                 </ul>
                 <Button 
                   variant="outline"
-                  className="w-full border-2 border-deep-navy text-deep-navy hover:bg-deep-navy hover:text-white"
+                  className="w-full border-2 border-deep-navy text-slate-blue hover:bg-deep-navy hover:text-white"
                 >
                   Contact Sales
                 </Button>
