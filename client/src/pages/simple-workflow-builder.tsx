@@ -355,29 +355,12 @@ export default function WorkflowBuilder() {
           {/* Component Palette */}
           <Card className="lg:col-span-1">
             <CardHeader>
-              <CardTitle className="text-lg">Components</CardTitle>
+              <CardTitle className="text-lg">How to Use</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              {componentTypes.map((component) => (
-                <div
-                  key={component.type}
-                  draggable
-                  onDragStart={() => setDraggedType(component.type)}
-                  className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg cursor-grab hover:bg-gray-50 transition-colors active:cursor-grabbing"
-                  style={{ backgroundColor: component.color + '20' }}
-                >
-                  <div 
-                    className="w-8 h-8 rounded flex items-center justify-center text-white text-sm font-bold"
-                    style={{ backgroundColor: component.color }}
-                  >
-                    {component.icon}
-                  </div>
-                  <div>
-                    <div className="font-medium text-sm">{component.label}</div>
-                    <div className="text-xs text-gray-500">{component.description}</div>
-                  </div>
-                </div>
-              ))}
+              <div className="text-sm text-gray-600">
+                This is the simplified workflow builder. Add steps using the text input below, then reorder them with the arrow buttons.
+              </div>
             </CardContent>
           </Card>
 
