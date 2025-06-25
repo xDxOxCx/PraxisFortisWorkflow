@@ -33,8 +33,8 @@ export default function Navbar() {
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <Link href="/">
-                <h1 className="text-xl font-montserrat font-bold text-deep-navy cursor-pointer">
-                  Praxis Fortis
+                <h1 className="text-xl font-montserrat font-bold cursor-pointer" style={{color: 'hsl(215, 25%, 27%)'}}>
+                  Workflow Optimization Tool
                 </h1>
               </Link>
             </div>
@@ -43,8 +43,8 @@ export default function Navbar() {
                 <Link href="/">
                   <a className={`px-3 py-2 text-sm font-medium transition-colors ${
                     isActive('/') 
-                      ? 'text-deep-navy' 
-                      : 'text-steel-gray hover:text-emerald-green'
+                      ? 'text-slate-blue' 
+                      : 'text-silver-gray hover:text-emerald-green'
                   }`}>
                     Dashboard
                   </a>
@@ -52,8 +52,8 @@ export default function Navbar() {
                 <Link href="/workflow-builder">
                   <a className={`px-3 py-2 text-sm font-medium transition-colors ${
                     isActive('/workflow-builder') || location.startsWith('/workflow-builder')
-                      ? 'text-deep-navy' 
-                      : 'text-steel-gray hover:text-emerald-green'
+                      ? 'text-slate-blue' 
+                      : 'text-silver-gray hover:text-emerald-green'
                   }`}>
                     New Workflow
                   </a>

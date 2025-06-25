@@ -8,18 +8,18 @@ export default function Landing() {
   };
 
   return (
-    <div className="min-h-screen bg-soft-white">
+    <div className="min-h-screen" style={{backgroundColor: 'hsl(210, 20%, 98%)'}}>
       {/* Navigation */}
       <nav className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <h1 className="text-xl font-montserrat font-bold text-deep-navy">
-                Praxis Fortis
+              <h1 className="text-xl font-montserrat font-bold" style={{color: 'hsl(215, 25%, 27%)'}}>
+                Workflow Optimization Tool
               </h1>
             </div>
             <div className="flex items-center space-x-4">
-              <a href="#pricing" className="text-steel-gray hover:text-emerald-green px-3 py-2 text-sm font-medium">
+              <a href="#pricing" className="px-3 py-2 text-sm font-medium hover:text-emerald-green" style={{color: 'hsl(210, 14%, 53%)'}}>
                 Pricing
               </a>
               <Button 
@@ -34,14 +34,14 @@ export default function Landing() {
       </nav>
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-deep-navy to-deep-navy/90 text-white py-20">
+      <section className="py-20" style={{background: 'linear-gradient(to bottom right, hsl(215, 25%, 27%), hsl(208, 100%, 43%))'}}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h1 className="text-4xl lg:text-5xl font-montserrat font-bold leading-tight mb-6">
+              <h1 className="text-4xl lg:text-5xl font-montserrat font-bold leading-tight mb-6 text-white">
                 Your Workflow Hub
               </h1>
-              <p className="text-xl text-gray-200 mb-8 font-open-sans">
+              <p className="text-xl text-white/90 mb-8 font-open-sans">
                 Create, Analyze & Improve your clinic operations — no Lean training needed. 
                 AI-powered workflow optimization for specialty practices.
               </p>

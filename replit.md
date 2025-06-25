@@ -69,7 +69,10 @@ The Vite configuration handles client-side routing and API proxying in developme
 
 ## Recent Changes
 
-- **June 25, 2025 - Brand Color Update**: Updated color palette to elegant blues, silver, and emerald green theme
+- **June 25, 2025 - Brand Updates**: 
+  - Updated application name from "Praxis Fortis" to "Workflow Optimization Tool"
+  - Implemented elegant color palette with blues, silver, and emerald green theme
+  - Fixed text contrast issues on landing page hero section
   - Royal Blue (primary): hsl(208, 100%, 43%)
   - Slate Blue (foreground): hsl(215, 25%, 27%)
   - Silver Gray: hsl(210, 14%, 53%)  
