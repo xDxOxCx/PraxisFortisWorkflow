@@ -278,7 +278,7 @@ export default function Home() {
                       <div 
                         key={template.id} 
                         className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
-                        onClick={() => navigate(`/workflow-builder?template=${template.id}`)}
+                        onClick={() => window.location.href = `/workflow-builder?template=${template.id}`}
                       >
                         <div className="flex items-start space-x-3">
                           <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mt-1">
