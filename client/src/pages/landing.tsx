@@ -56,19 +56,32 @@ export default function Landing() {
                 <Button 
                   variant="outline" 
                   size="lg"
-                  className="border-2 border-white text-white hover:bg-white hover:text-deep-navy text-lg px-8 py-4"
+                  className="border-2 text-lg px-8 py-4"
+                  style={{
+                    borderColor: 'hsl(158, 58%, 48%)',
+                    color: 'hsl(158, 58%, 48%)',
+                    backgroundColor: 'transparent'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'hsl(158, 58%, 48%)';
+                    e.currentTarget.style.color = 'white';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.color = 'hsl(158, 58%, 48%)';
+                  }}
                 >
                   <Play className="w-5 h-5 mr-2" />
                   Watch Demo
                 </Button>
               </div>
-              <div className="mt-8 flex items-center space-x-6 text-sm text-gray-300">
+              <div className="mt-8 flex items-center space-x-6 text-sm text-white/90">
                 <div className="flex items-center space-x-2">
-                  <CheckCircle className="w-5 h-5 text-emerald-green" />
+                  <CheckCircle className="w-5 h-5" style={{color: 'hsl(158, 58%, 48%)'}} />
                   <span>No credit card required</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <CheckCircle className="w-5 h-5 text-emerald-green" />
+                  <CheckCircle className="w-5 h-5" style={{color: 'hsl(158, 58%, 48%)'}} />
                   <span>1 workflow free monthly</span>
                 </div>
               </div>
@@ -77,16 +90,19 @@ export default function Landing() {
               <Card className="bg-white shadow-2xl">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-montserrat font-semibold text-deep-navy">
+                    <h3 className="font-montserrat font-semibold" style={{color: 'hsl(215, 25%, 27%)'}}>
                       Patient Check-in Workflow
                     </h3>
-                    <span className="bg-emerald-green/10 text-emerald-green px-3 py-1 rounded-full text-sm font-medium">
+                    <span className="px-3 py-1 rounded-full text-sm font-medium" style={{
+                      backgroundColor: 'hsl(158, 58%, 48%, 0.1)',
+                      color: 'hsl(158, 58%, 48%)'
+                    }}>
                       Optimized
                     </span>
                   </div>
                   <div className="space-y-3">
                     <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 bg-emerald-green rounded-full flex items-center justify-center">
+                      <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{backgroundColor: 'hsl(158, 58%, 48%)'}}>
                         <Play className="w-4 h-4 text-white" />
                       </div>
                       <span className="text-gray-700 text-sm">Patient Arrival</span>
@@ -116,8 +132,8 @@ export default function Landing() {
                   </div>
                   <div className="mt-4 pt-4 border-t border-gray-200">
                     <div className="flex justify-between text-xs text-gray-500">
-                      <span>Time Saved: <strong className="text-emerald-green">12 minutes</strong></span>
-                      <span>Efficiency: <strong className="text-emerald-green">+34%</strong></span>
+                      <span>Time Saved: <strong style={{color: 'hsl(158, 58%, 48%)'}}>12 minutes</strong></span>
+                      <span>Efficiency: <strong style={{color: 'hsl(158, 58%, 48%)'}}>+34%</strong></span>
                     </div>
                   </div>
                 </CardContent>
@@ -131,10 +147,10 @@ export default function Landing() {
       <section className="py-16 bg-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-montserrat font-bold text-deep-navy mb-4">
-              Why Practice Managers Choose Praxis Fortis
+            <h2 className="text-3xl font-montserrat font-bold mb-4" style={{color: 'hsl(215, 25%, 27%)'}}>
+              Why Practice Managers Choose Our Tool
             </h2>
-            <p className="text-xl text-steel-gray">
+            <p className="text-xl" style={{color: 'hsl(210, 14%, 53%)'}}>
               Professional workflow optimization without the complexity
             </p>
           </div>
@@ -186,7 +202,7 @@ export default function Landing() {
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="py-16 bg-soft-white">
+      <section id="pricing" className="py-16" style={{backgroundColor: 'hsl(210, 20%, 98%)'}}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-montserrat font-bold text-deep-navy mb-4">
