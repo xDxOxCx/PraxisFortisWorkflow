@@ -34,7 +34,7 @@ export default function Pricing() {
       
       {/* Header */}
       {!isAuthenticated && (
-        <nav className="bg-white shadow-sm border-b border-gray-200">
+        <nav className="bg-white shadow-sm border-b border">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
               <div className="flex items-center">
@@ -70,7 +70,7 @@ export default function Pricing() {
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Free Plan */}
-          <Card className="border border-gray-200">
+          <Card className="border border">
             <CardContent className="p-8">
               <div className="text-center mb-8">
                 <h3 className="text-xl font-montserrat font-bold text-slate-blue mb-2">Free</h3>
@@ -80,29 +80,29 @@ export default function Pricing() {
               <ul className="space-y-4 mb-8">
                 <li className="flex items-center space-x-3">
                   <CheckCircle className="w-5 h-5 text-emerald-green" />
-                  <span className="text-gray-700">1 workflow per month</span>
+                  <span className="text-slate-blue">1 workflow per month</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <CheckCircle className="w-5 h-5 text-emerald-green" />
-                  <span className="text-gray-700">AI-powered analysis</span>
+                  <span className="text-slate-blue">AI-powered analysis</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <CheckCircle className="w-5 h-5 text-emerald-green" />
-                  <span className="text-gray-700">Basic visualization</span>
+                  <span className="text-slate-blue">Basic visualization</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <CheckCircle className="w-5 h-5 text-emerald-green" />
-                  <span className="text-gray-700">Template library access</span>
+                  <span className="text-slate-blue">Template library access</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <CheckCircle className="w-5 h-5 text-emerald-green" />
-                  <span className="text-gray-700">Email support</span>
+                  <span className="text-slate-blue">Email support</span>
                 </li>
               </ul>
               <Button 
                 onClick={handleGetStarted}
                 variant="outline" 
-                className="w-full border-2 border-gray-300 hover:border-emerald-green hover:text-emerald-green"
+                className="w-full border-2 border hover:border-emerald-green hover:text-emerald-green"
               >
                 Get Started Free
               </Button>
@@ -112,7 +112,7 @@ export default function Pricing() {
           {/* Pro Plan */}
           <Card className="border-2 border-emerald-green relative">
             <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-              <span className="bg-emerald-green text-white px-4 py-1 rounded-full text-sm font-medium">
+              <span className="bg-emerald-green text-primary-foreground px-4 py-1 rounded-full text-sm font-medium">
                 Most Popular
               </span>
             </div>
@@ -125,31 +125,31 @@ export default function Pricing() {
               <ul className="space-y-4 mb-8">
                 <li className="flex items-center space-x-3">
                   <CheckCircle className="w-5 h-5 text-emerald-green" />
-                  <span className="text-gray-700">Unlimited workflows</span>
+                  <span className="text-slate-blue">Unlimited workflows</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <CheckCircle className="w-5 h-5 text-emerald-green" />
-                  <span className="text-gray-700">Advanced AI recommendations</span>
+                  <span className="text-slate-blue">Advanced AI recommendations</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <CheckCircle className="w-5 h-5 text-emerald-green" />
-                  <span className="text-gray-700">PDF & DOC exports</span>
+                  <span className="text-slate-blue">PDF & DOC exports</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <CheckCircle className="w-5 h-5 text-emerald-green" />
-                  <span className="text-gray-700">Priority support</span>
+                  <span className="text-slate-blue">Priority support</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <CheckCircle className="w-5 h-5 text-emerald-green" />
-                  <span className="text-gray-700">Team collaboration</span>
+                  <span className="text-slate-blue">Team collaboration</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <CheckCircle className="w-5 h-5 text-emerald-green" />
-                  <span className="text-gray-700">Advanced analytics</span>
+                  <span className="text-slate-blue">Advanced analytics</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <CheckCircle className="w-5 h-5 text-emerald-green" />
-                  <span className="text-gray-700">Custom templates</span>
+                  <span className="text-slate-blue">Custom templates</span>
                 </li>
               </ul>
               <Button 
@@ -162,7 +162,7 @@ export default function Pricing() {
           </Card>
 
           {/* Enterprise Plan */}
-          <Card className="border border-gray-200">
+          <Card className="border border">
             <CardContent className="p-8">
               <div className="text-center mb-8">
                 <h3 className="text-xl font-montserrat font-bold text-slate-blue mb-2">Enterprise</h3>
@@ -172,37 +172,37 @@ export default function Pricing() {
               <ul className="space-y-4 mb-8">
                 <li className="flex items-center space-x-3">
                   <CheckCircle className="w-5 h-5 text-emerald-green" />
-                  <span className="text-gray-700">Multi-clinic management</span>
+                  <span className="text-slate-blue">Multi-clinic management</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <CheckCircle className="w-5 h-5 text-emerald-green" />
-                  <span className="text-gray-700">White-label solution</span>
+                  <span className="text-slate-blue">White-label solution</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <CheckCircle className="w-5 h-5 text-emerald-green" />
-                  <span className="text-gray-700">Custom integrations</span>
+                  <span className="text-slate-blue">Custom integrations</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <CheckCircle className="w-5 h-5 text-emerald-green" />
-                  <span className="text-gray-700">Dedicated support</span>
+                  <span className="text-slate-blue">Dedicated support</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <CheckCircle className="w-5 h-5 text-emerald-green" />
-                  <span className="text-gray-700">Advanced analytics</span>
+                  <span className="text-slate-blue">Advanced analytics</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <CheckCircle className="w-5 h-5 text-emerald-green" />
-                  <span className="text-gray-700">API access</span>
+                  <span className="text-slate-blue">API access</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <CheckCircle className="w-5 h-5 text-emerald-green" />
-                  <span className="text-gray-700">Custom reporting</span>
+                  <span className="text-slate-blue">Custom reporting</span>
                 </li>
               </ul>
               <Button 
                 onClick={handleContactSales}
                 variant="outline"
-                className="w-full border-2 border-slate-blue text-slate-blue hover:bg-slate-blue hover:text-white"
+                className="w-full border-2 border-slate-blue text-slate-blue hover:bg-slate-blue hover:text-primary-foreground"
               >
                 Contact Sales
               </Button>

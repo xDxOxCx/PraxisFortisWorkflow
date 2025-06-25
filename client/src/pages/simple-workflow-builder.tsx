@@ -552,7 +552,7 @@ export default function WorkflowBuilder() {
               <Button 
                 onClick={() => saveWorkflowMutation.mutate()}
                 disabled={saveWorkflowMutation.isPending}
-                className="bg-emerald-green hover:bg-emerald-green/90 text-white"
+                className="bg-emerald-green hover:bg-emerald-green/90 text-primary-foreground"
               >
                 <Save className="w-4 h-4 mr-2" />
                 {saveWorkflowMutation.isPending ? 'Saving...' : 'Save Workflow'}
@@ -560,7 +560,7 @@ export default function WorkflowBuilder() {
               <Button 
                 onClick={analyzeWorkflow}
                 disabled={isAnalyzing || steps.length === 0}
-                className="bg-royal-blue hover:bg-royal-blue/90 text-white"
+                className="bg-royal-blue hover:bg-royal-blue/90 text-primary-foreground"
               >
                 {isAnalyzing ? (
                   <>
@@ -599,7 +599,7 @@ export default function WorkflowBuilder() {
                 />
                 <Button 
                   onClick={createFromText}
-                  className="bg-emerald-green hover:bg-emerald-green/90 text-white mt-2"
+                  className="bg-emerald-green hover:bg-emerald-green/90 text-primary-foreground mt-2"
                   disabled={!textInput.trim()}
                 >
                   <Type className="w-4 h-4 mr-2" />
@@ -623,7 +623,7 @@ export default function WorkflowBuilder() {
                   <Button 
                     onClick={addStep}
                     disabled={!newStepText.trim()}
-                    className="bg-emerald-green hover:bg-emerald-green/90 text-white"
+                    className="bg-emerald-green hover:bg-emerald-green/90 text-primary-foreground"
                   >
                     <Plus className="w-4 h-4 mr-2" />
                     Add Step
@@ -641,7 +641,7 @@ export default function WorkflowBuilder() {
               <CardTitle className="text-lg">How to Use</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <div className="text-sm text-gray-600">
+              <div className="text-sm text-muted-foreground">
                 This is the simplified workflow builder. Add steps using the text input below, then reorder them with the arrow buttons.
               </div>
             </CardContent>
@@ -651,13 +651,13 @@ export default function WorkflowBuilder() {
           <Card className="lg:col-span-3">
             <CardHeader>
               <CardTitle className="text-lg">Workflow Steps</CardTitle>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-muted-foreground">
                 Your workflow steps in order - use the arrows to reorder them
               </p>
             </CardHeader>
             <CardContent className="p-4">
               {steps.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
+                <div className="text-center py-8 text-muted-foreground">
                   No steps created yet. Add some steps using the form on the left.
                 </div>
               ) : (
@@ -726,7 +726,7 @@ export default function WorkflowBuilder() {
                   <Zap className="w-5 h-5 text-emerald-600" />
                   Lean Six Sigma Analysis
                 </CardTitle>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-muted-foreground">
                   AI-powered optimization recommendations for your workflow
                 </p>
               </CardHeader>
@@ -778,7 +778,7 @@ export default function WorkflowBuilder() {
                         <Button
                           onClick={generateA3ActionPlan}
                           disabled={selectedImprovements.size === 0 || isGeneratingA3}
-                          className="bg-blue-600 hover:bg-blue-700 text-white"
+                          className="bg-primary hover:bg-primary/90 text-primary-foreground"
                           size="sm"
                         >
                           {isGeneratingA3 ? (
@@ -808,7 +808,7 @@ export default function WorkflowBuilder() {
                               <div className="flex items-start justify-between">
                                 <div className="flex-1">
                                   <h4 className="font-medium">{improvement.title}</h4>
-                                  <p className="text-sm text-gray-600 mt-1">{improvement.description}</p>
+                                  <p className="text-sm text-muted-foreground mt-1">{improvement.description}</p>
                                   <div className="flex items-center gap-4 mt-2">
                                     <span className={`px-2 py-1 text-xs rounded ${
                                       improvement.impact === 'high' ? 'bg-red-100 text-red-800' :
@@ -817,7 +817,7 @@ export default function WorkflowBuilder() {
                                     }`}>
                                       {improvement.impact} impact
                                     </span>
-                                    <span className="text-sm text-gray-500">
+                                    <span className="text-sm text-muted-foreground">
                                       {improvement.category}
                                     </span>
                                     {improvement.timeSaved && (
@@ -845,7 +845,7 @@ export default function WorkflowBuilder() {
 
                               {/* Implementation Steps */}
                               {improvement.implementationSteps && improvement.implementationSteps.length > 0 && (
-                                <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+                                <div className="mt-4 p-3 bg-muted rounded-lg">
                                   <h5 className="font-medium text-sm mb-2 flex items-center gap-2">
                                     <CheckSquare className="w-4 h-4" />
                                     Implementation Steps
@@ -853,10 +853,10 @@ export default function WorkflowBuilder() {
                                   <div className="space-y-2">
                                     {improvement.implementationSteps.map((step: any, stepIndex: number) => (
                                       <div key={stepIndex} className="text-sm">
-                                        <div className="font-medium text-gray-700 mb-1">
+                                        <div className="font-medium text-slate-blue mb-1">
                                           {stepIndex + 1}. {step.step}
                                         </div>
-                                        <div className="ml-4 space-y-1 text-gray-600">
+                                        <div className="ml-4 space-y-1 text-muted-foreground">
                                           <div className="flex items-center gap-4">
                                             <span>📅 {step.timeRequired}</span>
                                             <span>👤 {step.owner}</span>
@@ -885,7 +885,7 @@ export default function WorkflowBuilder() {
                     <ul className="space-y-2">
                       {analysisResult.summary.recommendations.map((rec: string, index: number) => (
                         <li key={index} className="flex items-start gap-2">
-                          <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0" />
+                          <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0" />
                           <span className="text-sm">{rec}</span>
                         </li>
                       ))}

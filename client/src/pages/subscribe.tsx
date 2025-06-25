@@ -60,7 +60,7 @@ const SubscribeForm = () => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="p-4 border border-gray-200 rounded-lg">
+      <div className="p-4 border border rounded-lg">
         <PaymentElement />
       </div>
       
@@ -205,31 +205,31 @@ export default function Subscribe() {
                   <ul className="space-y-3">
                     <li className="flex items-center space-x-3">
                       <CheckCircle className="w-5 h-5 text-emerald-green" />
-                      <span className="text-gray-700">Unlimited workflow creation and analysis</span>
+                      <span className="text-slate-blue">Unlimited workflow creation and analysis</span>
                     </li>
                     <li className="flex items-center space-x-3">
                       <CheckCircle className="w-5 h-5 text-emerald-green" />
-                      <span className="text-gray-700">Advanced AI recommendations and insights</span>
+                      <span className="text-slate-blue">Advanced AI recommendations and insights</span>
                     </li>
                     <li className="flex items-center space-x-3">
                       <CheckCircle className="w-5 h-5 text-emerald-green" />
-                      <span className="text-gray-700">PDF and DOC export capabilities</span>
+                      <span className="text-slate-blue">PDF and DOC export capabilities</span>
                     </li>
                     <li className="flex items-center space-x-3">
                       <CheckCircle className="w-5 h-5 text-emerald-green" />
-                      <span className="text-gray-700">Priority email and chat support</span>
+                      <span className="text-slate-blue">Priority email and chat support</span>
                     </li>
                     <li className="flex items-center space-x-3">
                       <CheckCircle className="w-5 h-5 text-emerald-green" />
-                      <span className="text-gray-700">Team collaboration features</span>
+                      <span className="text-slate-blue">Team collaboration features</span>
                     </li>
                     <li className="flex items-center space-x-3">
                       <CheckCircle className="w-5 h-5 text-emerald-green" />
-                      <span className="text-gray-700">Advanced analytics and reporting</span>
+                      <span className="text-slate-blue">Advanced analytics and reporting</span>
                     </li>
                     <li className="flex items-center space-x-3">
                       <CheckCircle className="w-5 h-5 text-emerald-green" />
-                      <span className="text-gray-700">Custom workflow templates</span>
+                      <span className="text-slate-blue">Custom workflow templates</span>
                     </li>
                   </ul>
                 </div>
@@ -241,9 +241,9 @@ export default function Subscribe() {
                   </p>
                 </div>
 
-                <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-                  <h5 className="font-semibold text-gray-800 mb-2">Flexible Billing</h5>
-                  <p className="text-gray-700 text-sm">
+                <div className="mt-6 p-4 bg-muted rounded-lg">
+                  <h5 className="font-semibold text-slate-blue mb-2">Flexible Billing</h5>
+                  <p className="text-slate-blue text-sm">
                     Cancel or change your plan anytime. No long-term contracts or hidden fees.
                   </p>
                 </div>

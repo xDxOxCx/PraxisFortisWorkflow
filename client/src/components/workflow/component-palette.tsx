@@ -23,24 +23,24 @@ export default function ComponentPalette({ onAnalyze, analyzing }: ComponentPale
       case 'amber':
         return 'border-amber-300 hover:bg-amber-50';
       case 'gray':
-        return 'border-gray-300 hover:bg-gray-50';
+        return 'border hover:bg-muted';
       default:
-        return 'border-gray-300 hover:bg-gray-50';
+        return 'border hover:bg-muted';
     }
   };
 
   const getIconColorClasses = (color: string) => {
     switch (color) {
       case 'emerald':
-        return 'bg-emerald-500 text-white';
+        return 'bg-emerald-500 text-primary-foreground';
       case 'blue':
-        return 'bg-blue-500 text-white';
+        return 'bg-blue-500 text-primary-foreground';
       case 'amber':
-        return 'bg-amber-500 text-white';
+        return 'bg-amber-500 text-primary-foreground';
       case 'gray':
-        return 'bg-gray-500 text-white';
+        return 'bg-muted0 text-primary-foreground';
       default:
-        return 'bg-gray-500 text-white';
+        return 'bg-muted0 text-primary-foreground';
     }
   };
 
@@ -67,7 +67,7 @@ export default function ComponentPalette({ onAnalyze, analyzing }: ComponentPale
           ))}
         </div>
 
-        <div className="mt-6 pt-4 border-t border-gray-200">
+        <div className="mt-6 pt-4 border-t border">
           <Button 
             onClick={onAnalyze}
             disabled={analyzing}

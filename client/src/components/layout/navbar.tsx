@@ -27,7 +27,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-white shadow-sm border-b border-gray-200">
+    <nav className="bg-white shadow-sm border-b border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
@@ -104,11 +104,11 @@ export default function Navbar() {
                 <div className="flex items-center space-x-2 cursor-pointer">
                   <Avatar className="w-8 h-8">
                     <AvatarImage src={user?.profileImageUrl} />
-                    <AvatarFallback className="bg-steel-gray text-white">
+                    <AvatarFallback className="bg-steel-gray text-primary-foreground">
                       {user?.firstName?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="text-sm font-medium text-gray-700">
+                  <span className="text-sm font-medium text-slate-blue">
                     {user?.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : user?.email}
                   </span>
                 </div>

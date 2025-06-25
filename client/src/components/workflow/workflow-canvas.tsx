@@ -20,12 +20,12 @@ const StartNode = ({ data }: { data: any }) => (
   <div className="p-3 bg-white border-2 border-emerald-500 rounded-lg shadow-sm min-w-[120px]">
     <div className="flex items-center space-x-2">
       <div className="w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center">
-        <Play className="w-3 h-3 text-white" />
+        <Play className="w-3 h-3 text-primary-foreground" />
       </div>
-      <span className="text-sm font-medium text-gray-800">{data.label || 'Start'}</span>
+      <span className="text-sm font-medium text-slate-blue">{data.label || 'Start'}</span>
     </div>
     {data.description && (
-      <p className="text-xs text-gray-600 mt-1">{data.description}</p>
+      <p className="text-xs text-muted-foreground mt-1">{data.description}</p>
     )}
   </div>
 );
@@ -34,12 +34,12 @@ const ProcessNode = ({ data }: { data: any }) => (
   <div className="p-3 bg-white border-2 border-blue-500 rounded-lg shadow-sm min-w-[120px]">
     <div className="flex items-center space-x-2">
       <div className="w-6 h-6 bg-blue-500 rounded flex items-center justify-center">
-        <Cog className="w-3 h-3 text-white" />
+        <Cog className="w-3 h-3 text-primary-foreground" />
       </div>
-      <span className="text-sm font-medium text-gray-800">{data.label || 'Process'}</span>
+      <span className="text-sm font-medium text-slate-blue">{data.label || 'Process'}</span>
     </div>
     {data.description && (
-      <p className="text-xs text-gray-600 mt-1">{data.description}</p>
+      <p className="text-xs text-muted-foreground mt-1">{data.description}</p>
     )}
     {data.duration && (
       <p className="text-xs text-blue-600 mt-1">{data.duration} min</p>
@@ -51,26 +51,26 @@ const DecisionNode = ({ data }: { data: any }) => (
   <div className="p-3 bg-white border-2 border-amber-500 rounded-lg shadow-sm min-w-[120px]">
     <div className="flex items-center space-x-2">
       <div className="w-6 h-6 bg-amber-500 rounded-full flex items-center justify-center">
-        <HelpCircle className="w-3 h-3 text-white" />
+        <HelpCircle className="w-3 h-3 text-primary-foreground" />
       </div>
-      <span className="text-sm font-medium text-gray-800">{data.label || 'Decision'}</span>
+      <span className="text-sm font-medium text-slate-blue">{data.label || 'Decision'}</span>
     </div>
     {data.description && (
-      <p className="text-xs text-gray-600 mt-1">{data.description}</p>
+      <p className="text-xs text-muted-foreground mt-1">{data.description}</p>
     )}
   </div>
 );
 
 const EndNode = ({ data }: { data: any }) => (
-  <div className="p-3 bg-white border-2 border-gray-500 rounded-lg shadow-sm min-w-[120px]">
+  <div className="p-3 bg-white border-2 border rounded-lg shadow-sm min-w-[120px]">
     <div className="flex items-center space-x-2">
-      <div className="w-6 h-6 bg-gray-500 rounded-full flex items-center justify-center">
-        <Square className="w-3 h-3 text-white" />
+      <div className="w-6 h-6 bg-muted0 rounded-full flex items-center justify-center">
+        <Square className="w-3 h-3 text-primary-foreground" />
       </div>
-      <span className="text-sm font-medium text-gray-800">{data.label || 'End'}</span>
+      <span className="text-sm font-medium text-slate-blue">{data.label || 'End'}</span>
     </div>
     {data.description && (
-      <p className="text-xs text-gray-600 mt-1">{data.description}</p>
+      <p className="text-xs text-muted-foreground mt-1">{data.description}</p>
     )}
   </div>
 );
@@ -168,15 +168,15 @@ export default function WorkflowCanvas({
   if (nodes.length === 0) {
     return (
       <div 
-        className="w-full h-full bg-gray-50 border-2 border-dashed border-gray-300 flex items-center justify-center"
+        className="w-full h-full bg-muted border-2 border-dashed border flex items-center justify-center"
         onDrop={onDrop}
         onDragOver={onDragOver}
       >
         <div className="text-center">
-          <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Play className="w-8 h-8 text-gray-400" />
+          <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+            <Play className="w-8 h-8 text-muted-foreground" />
           </div>
-          <h4 className="text-lg font-montserrat font-semibold text-gray-700 mb-2">Start Building</h4>
+          <h4 className="text-lg font-montserrat font-semibold text-slate-blue mb-2">Start Building</h4>
           <p className="text-muted-foreground">Drag a "Start" component here to begin your workflow</p>
         </div>
       </div>

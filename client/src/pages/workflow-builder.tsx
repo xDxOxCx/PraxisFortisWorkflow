@@ -247,7 +247,7 @@ export default function WorkflowBuilder() {
           <div className="lg:col-span-3">
             <Card className="h-full">
               <CardContent className="p-0 h-full">
-                <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+                <div className="p-4 border-b border flex items-center justify-between">
                   <div>
                     <Input 
                       value={workflowName}
@@ -266,7 +266,7 @@ export default function WorkflowBuilder() {
                     <Button 
                       onClick={handleSaveWorkflow}
                       disabled={saveWorkflowMutation.isPending}
-                      className="bg-deep-navy text-white hover:bg-deep-navy/90"
+                      className="bg-deep-navy text-primary-foreground hover:bg-deep-navy/90"
                       size="sm"
                     >
                       <Save className="w-4 h-4 mr-2" />
@@ -345,14 +345,14 @@ export default function WorkflowBuilder() {
                           }`}>
                             {improvement.description}
                           </p>
-                          <div className="mt-2 text-xs font-medium text-gray-600">
+                          <div className="mt-2 text-xs font-medium text-muted-foreground">
                             Time saved: {improvement.timeSaved} minutes
                           </div>
                         </div>
                       ))}
                     </div>
 
-                    <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+                    <div className="mt-6 p-4 bg-muted rounded-lg">
                       <h5 className="font-semibold text-slate-blue mb-2">Summary</h5>
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div>

@@ -177,7 +177,7 @@ export default function Settings() {
           <div className="lg:col-span-2 space-y-6">
             <Card>
               <CardContent className="p-6">
-                <div className="border-b border-gray-200 pb-4 mb-6">
+                <div className="border-b border pb-4 mb-6">
                   <h3 className="text-lg font-montserrat font-semibold text-slate-blue">Account Information</h3>
                 </div>
                 
@@ -274,7 +274,7 @@ export default function Settings() {
             {/* Password Change */}
             <Card>
               <CardContent className="p-6">
-                <div className="border-b border-gray-200 pb-4 mb-6">
+                <div className="border-b border pb-4 mb-6">
                   <h3 className="text-lg font-montserrat font-semibold text-slate-blue">Change Password</h3>
                 </div>
                 
@@ -322,7 +322,7 @@ export default function Settings() {
                     <Button 
                       type="submit"
                       disabled={isChangingPassword}
-                      className="bg-deep-navy text-white hover:bg-deep-navy/90"
+                      className="bg-deep-navy text-primary-foreground hover:bg-deep-navy/90"
                     >
                       {isChangingPassword ? "Updating..." : "Update Password"}
                     </Button>
@@ -336,7 +336,7 @@ export default function Settings() {
           <div className="space-y-6">
             <Card>
               <CardContent className="p-6">
-                <div className="border-b border-gray-200 pb-4 mb-6">
+                <div className="border-b border pb-4 mb-6">
                   <h3 className="text-lg font-montserrat font-semibold text-slate-blue">Current Plan</h3>
                 </div>
                 
@@ -413,13 +413,13 @@ export default function Settings() {
             {/* Billing History */}
             <Card>
               <CardContent className="p-6">
-                <div className="border-b border-gray-200 pb-4 mb-6">
+                <div className="border-b border pb-4 mb-6">
                   <h3 className="text-lg font-montserrat font-semibold text-slate-blue">Billing History</h3>
                 </div>
                 
                 <div className="text-center py-8">
-                  <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <Receipt className="w-6 h-6 text-gray-400" />
+                  <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center mx-auto mb-3">
+                    <Receipt className="w-6 h-6 text-muted-foreground" />
                   </div>
                   <p className="text-muted-foreground text-sm">
                     {user?.subscriptionStatus === 'free' ? 'No billing history yet' : 'Billing history will appear here'}

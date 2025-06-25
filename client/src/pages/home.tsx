@@ -102,7 +102,7 @@ export default function Home() {
     switch (status) {
       case 'analyzed': return 'bg-emerald-100 text-emerald-700';
       case 'exported': return 'bg-blue-100 text-blue-700';
-      default: return 'bg-gray-100 text-gray-700';
+      default: return 'bg-muted text-slate-blue';
     }
   };
 
@@ -217,10 +217,10 @@ export default function Home() {
                   <div className="text-center py-8">Loading workflows...</div>
                 ) : workflows.length === 0 ? (
                   <div className="text-center py-12">
-                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <ChartGantt className="w-8 h-8 text-gray-400" />
+                    <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                      <ChartGantt className="w-8 h-8 text-muted-foreground" />
                     </div>
-                    <h4 className="text-lg font-montserrat font-semibold text-gray-900 mb-2">No workflows yet</h4>
+                    <h4 className="text-lg font-montserrat font-semibold text-slate-blue mb-2">No workflows yet</h4>
                     <p className="text-muted-foreground mb-6">Create your first workflow to start optimizing your clinic operations.</p>
                     <Button 
                       onClick={handleCreateWorkflow}
@@ -234,7 +234,7 @@ export default function Home() {
                     {workflows.map((workflow) => (
                       <div 
                         key={workflow.id} 
-                        className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+                        className="flex items-center justify-between p-4 border border rounded-lg hover:bg-muted transition-colors cursor-pointer"
                         onClick={() => window.location.href = `/workflow-builder/${workflow.id}`}
                       >
                         <div className="flex items-center space-x-4">
@@ -285,7 +285,7 @@ export default function Home() {
                     {templates.slice(0, 4).map((template) => (
                       <div 
                         key={template.id} 
-                        className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+                        className="p-4 border border rounded-lg hover:bg-muted transition-colors cursor-pointer"
                         onClick={() => window.location.href = `/workflow-builder?template=${template.id}`}
                       >
                         <div className="flex items-start space-x-3">
@@ -314,7 +314,7 @@ export default function Home() {
                     {stats?.monthlyWorkflows || 0} / {stats?.subscriptionStatus === 'free' ? '1' : '∞'}
                   </span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="w-full bg-muted rounded-full h-2">
                   <div 
                     className="bg-emerald-green h-2 rounded-full" 
                     style={{ 
