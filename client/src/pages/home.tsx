@@ -200,13 +200,13 @@ export default function Home() {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Recent Workflows */}
           <div className="lg:col-span-2">
-            <Card>
+            <Card className="shadow-sleek">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-montserrat font-semibold text-slate-blue">Your Workflows</h3>
+                  <h3 className="text-lg font-montserrat font-semibold text-navy">Your Workflows</h3>
                   <Button 
                     onClick={handleCreateWorkflow}
-                    className="bg-emerald-green text-white hover:bg-emerald-green/90"
+                    className="bg-emerald text-white hover:bg-emerald/90 shadow-sleek"
                   >
                     <Plus className="w-4 h-4 mr-2" />
                     New Workflow
@@ -217,14 +217,14 @@ export default function Home() {
                   <div className="text-center py-8">Loading workflows...</div>
                 ) : workflows.length === 0 ? (
                   <div className="text-center py-12">
-                    <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-                      <ChartGantt className="w-8 h-8 text-muted-foreground" />
+                    <div className="w-16 h-16 bg-light-silver rounded-full flex items-center justify-center mx-auto mb-4">
+                      <ChartGantt className="w-8 h-8 text-silver" />
                     </div>
-                    <h4 className="text-lg font-montserrat font-semibold text-slate-blue mb-2">No workflows yet</h4>
-                    <p className="text-muted-foreground mb-6">Create your first workflow to start optimizing your clinic operations.</p>
+                    <h4 className="text-lg font-montserrat font-semibold text-navy mb-2">No workflows yet</h4>
+                    <p className="text-silver mb-6">Create your first workflow to start optimizing your clinic operations.</p>
                     <Button 
                       onClick={handleCreateWorkflow}
-                      className="bg-emerald-green text-white hover:bg-emerald-green/90"
+                      className="bg-emerald text-white hover:bg-emerald/90 shadow-sleek"
                     >
                       Create First Workflow
                     </Button>
