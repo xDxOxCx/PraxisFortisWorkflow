@@ -43,7 +43,7 @@ export default function Landing() {
               </h1>
               <p className="text-xl text-white/90 mb-8 font-open-sans">
                 Create, Analyze & Improve your clinic operations — no Lean training needed. 
-                AI-powered workflow optimization for every business!
+                AI-powered workflow optimization for healthcare professionals.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button 
