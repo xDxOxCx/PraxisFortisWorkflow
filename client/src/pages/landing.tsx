@@ -325,12 +325,12 @@ export default function Landing() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-deep-navy text-white py-12">
+      <footer className="text-white py-12" style={{backgroundColor: 'hsl(215, 25%, 27%)'}}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
-              <h3 className="text-lg font-montserrat font-bold mb-4">Praxis Fortis</h3>
-              <p className="text-gray-300 text-sm">
+              <h3 className="text-lg font-montserrat font-bold mb-4 text-white">Workflow Optimization Tool</h3>
+              <p className="text-gray-200 text-sm">
                 AI-powered workflow optimization for specialty clinic practice managers.
               </p>
             </div>
