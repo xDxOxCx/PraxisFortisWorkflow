@@ -1,13 +1,18 @@
 # Supabase Database Setup Instructions
 
-Please set up the database tables in your Supabase project by following these steps:
+**IMPORTANT**: The database tables need to be created manually in your Supabase dashboard for the application to work properly.
+
+Connection string: `postgresql://postgres.drfgolabfqynwkoatcim:[YOUR-PASSWORD]@aws-0-us-east-2.pooler.supabase.com:6543/postgres`
+
+## Required Setup Steps:
 
 ## 1. Go to Supabase SQL Editor
 1. Open your Supabase project dashboard at https://supabase.com/dashboard
-2. Navigate to the SQL Editor section
-3. Create a new query
+2. Click on your project: `drfgolabfqynwkoatcim`
+3. Navigate to the SQL Editor section in the left sidebar
+4. Click "New Query"
 
-## 2. Run the Database Setup Script
+## 2. Copy and Run the Database Setup Script
 Copy and paste the following SQL script to create the necessary tables:
 
 ```sql
@@ -116,4 +121,17 @@ CREATE POLICY "Users can delete own workflows" ON workflows FOR DELETE USING (au
 CREATE POLICY "Templates are readable by all authenticated users" ON templates FOR SELECT TO authenticated;
 ```
 
-Once you've run these commands in the Supabase SQL Editor, your database will be ready for the Workflow Optimization Tool!
+## 3. Enable Google OAuth (Required)
+1. In your Supabase dashboard, go to Authentication > Providers
+2. Find Google and click to configure it
+3. Enable the Google provider
+4. Add these URLs to your Google OAuth configuration:
+   - Authorized redirect URI: `https://drfgolabfqynwkoatcim.supabase.co/auth/v1/callback`
+
+## 4. Test the Setup
+After running the SQL script and enabling Google OAuth:
+1. Your application should be able to authenticate users
+2. Users can create and manage workflows
+3. Database operations will work properly
+
+**Status**: The Supabase integration is complete on the application side. The database tables just need to be created using the SQL script above.

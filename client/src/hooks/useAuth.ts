@@ -4,19 +4,19 @@ import { supabase } from "@/lib/supabaseClient";
 
 export function useAuth() {
   const [session, setSession] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   const { data: user, isLoading: userLoading } = useQuery({
     queryKey: ["/api/auth/user"],
     retry: false,
-    enabled: !!session,
+    enabled: !!session?.user,
   });
 
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
-      setLoading(false);
+      setIsLoading(false);
     });
 
     // Listen for auth changes
@@ -24,7 +24,7 @@ export function useAuth() {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
-      setLoading(false);
+      setIsLoading(false);
     });
 
     return () => subscription.unsubscribe();
@@ -33,7 +33,7 @@ export function useAuth() {
   return {
     user,
     session,
-    isLoading: loading || userLoading,
-    isAuthenticated: !!session,
+    isLoading: isLoading || (!!session?.user && userLoading),
+    isAuthenticated: !!session?.user,
   };
 }
