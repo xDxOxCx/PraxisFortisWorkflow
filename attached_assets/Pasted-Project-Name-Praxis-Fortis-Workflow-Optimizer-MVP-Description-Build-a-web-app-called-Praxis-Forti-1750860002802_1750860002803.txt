@@ -1,0 +1,64 @@
+Project Name: Praxis Fortis Workflow Optimizer MVP
+
+Description:
+Build a web app called Praxis Fortis Workflow Optimizer—an intuitive, AI-backed drag‑and‑drop workflow optimization tool for specialty clinic practice managers. Users can log in, create and save multiple workflows per month, export visual maps and improvement recommendations, and subscribe for premium features via Stripe.
+
+Tech Stack:
+	•	Frontend: React with drag‑and‑drop workflow builder (e.g. React Flow or similar)
+	•	Visual Export: Mermaid.js (or Lucidchart embed if possible)
+	•	Backend: Supabase for user authentication, database, and asset storage
+	•	AI: GPT‑4 API for NLP processing of workflows
+	•	Payments: Stripe for tiered subscription
+	•	Styling: Praxis Fortis branding — Deep Navy (#0B1F3A), Steel Gray (#6B7C8C), Emerald Green (#2E7D32), Soft White (#F5F5F5); fonts like Montserrat (headings) and Open Sans (body); flat, modern UI
+
+Features:
+	1.	Authentication & User Dashboard
+	•	Email/password signup via Supabase
+	•	Dashboard listing saved workflows and templates library
+	2.	Workflow Builder Page
+	•	React drag‑and‑drop palette: “Start”, “Process Step”, “Decision”, “End” blocks
+	•	Users label blocks in natural language
+	•	“Analyze” button sends serialized workflow JSON + labels to GPT with prompt:
+"Analyze this clinical workflow, visualize inefficiencies, suggest lean improvements, and output Mermaid.js code for visual mapping."
+	3.	Mermaid.js Map & Recommendations Display
+	•	Show diagram and GPT‑generated list of improvements
+	•	“Export as PDF” feature saves artifacts to user’s workspace
+	4.	Usage Limits & Payment Wall
+	•	Free tier: 1 workflow/month
+	•	Subscribe via Stripe in-app to unlock unlimited workflows
+	•	Stripe handles billing and access via webhook/integration logic
+	5.	Settings & Billing
+	•	“Settings” page: view plan, update card, cancel subscription
+	•	Supabase records user stripe role (free vs. paid) and enforces limits
+
+UI/UX Styling:
+	•	Layout: minimal, centered card-based pages, accent Emerald or Navy buttons
+	•	Typography: headings in Montserrat bold; body in Open Sans regular
+	•	Tone: confident, professional copy — e.g.
+	•	“Your Workflow Hub”
+	•	“Create, Analyze & Improve your clinic operations — no Lean training needed.”
+	•	CTAs: “Analyze my workflow”, “View recommendations”
+
+Marketing & Positioning (to embed in website copy and blog/post skeleton):
+	•	Target Customers: Practice Managers, Clinic Directors, and Healthcare Administrators in small to mid-size specialty practices (e.g., GI, ortho, endocrine, pain mgmt)
+	•	Pain Points: Too little time, manual workflows, lack of Lean/Six Sigma expertise
+	•	Value Props:
+	•	“AI-powered, no‑fluff process optimization”
+	•	“Create and improve workflows in minutes — no tech or Lean training required.”
+	•	Pricing Tiers:
+	•	Free: 1 workflow/month, basic visualization
+	•	Pro: $49/month — unlimited workflows, advanced recommendations, PDF/DOC exports, priority support
+	•	Enterprise: Custom pricing — multi‑clinic management, white‑labeling, team accounts
+	•	Go‑to‑Market Steps:
+	1.	Beta launch to local specialty clinic managers
+	2.	Collect testimonials and usage data
+	3.	Publish targeted LinkedIn posts, healthcare ops blogs, and podcast interviews
+	4.	Launch lightweight referral/affiliate program
+
+Deliverables:
+	•	React frontend + Mermaid.js visualizer
+	•	Supabase backend with user auth, workflows table, Stripe integration
+	•	GPT‑4 endpoint integration with robust prompt
+	•	Basic styling per Praxis Fortis brand
+	•	Navigation: Dashboard, New Workflow, Settings/Billing, Help & Templates
+	•	Starter marketing pages: Home/Landing + Pricing + About
