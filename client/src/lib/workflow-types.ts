@@ -71,6 +71,14 @@ export interface AIAnalysis {
     impact: 'high' | 'medium' | 'low';
     timeSaved: number;
     category: 'efficiency' | 'bottleneck' | 'automation' | 'lean';
+    implementationSteps: Array<{
+      step: string;
+      timeRequired: string;
+      resources: string[];
+      owner: string;
+    }>;
+    priority: number;
+    effort: 'low' | 'medium' | 'high';
   }>;
   mermaidCode: string;
   summary: {

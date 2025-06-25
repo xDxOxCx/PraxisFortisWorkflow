@@ -13,6 +13,14 @@ export interface WorkflowAnalysis {
     impact: "high" | "medium" | "low";
     timeSaved: number; // minutes
     category: "efficiency" | "bottleneck" | "automation" | "lean";
+    implementationSteps: Array<{
+      step: string;
+      timeRequired: string;
+      resources: string[];
+      owner: string;
+    }>;
+    priority: number; // 1-5 scale
+    effort: "low" | "medium" | "high";
   }>;
   mermaidCode: string;
   summary: {
@@ -43,11 +51,29 @@ Please analyze this workflow and provide:
 
 Focus on specialty clinic contexts like gastroenterology, orthopedics, endocrinology, and pain management.
 
+For each improvement, provide 3-5 specific implementation steps with clear ownership, timeframes, and resource requirements. These will be used to generate A3 action plans.
+
 Respond with valid JSON in this exact format:
 {
   "improvements": [
     {
       "id": "unique_id",
+      "title": "Improvement Title",
+      "description": "Brief description",
+      "impact": "high|medium|low",
+      "timeSaved": 15,
+      "category": "efficiency|bottleneck|automation|lean",
+      "implementationSteps": [
+        {
+          "step": "Specific action to take",
+          "timeRequired": "2-3 weeks",
+          "resources": ["Staff training", "Software update"],
+          "owner": "Practice Manager"
+        }
+      ],
+      "priority": 3,
+      "effort": "medium"
+    }
       "title": "Improvement Title",
       "description": "Detailed description of the improvement",
       "impact": "high|medium|low",
