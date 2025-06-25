@@ -121,13 +121,13 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-soft-white">
+    <div className="min-h-screen bg-background">
       <Navbar />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="mb-8">
-          <h2 className="text-3xl font-montserrat font-bold text-deep-navy mb-2">Dashboard</h2>
-          <p className="text-steel-gray">Manage your workflows and track optimization progress</p>
+          <h2 className="text-3xl font-montserrat font-bold text-slate-blue mb-2">Dashboard</h2>
+          <p className="text-muted-foreground">Manage your workflows and track optimization progress</p>
         </div>
 
         {/* Stats Cards */}
@@ -136,13 +136,13 @@ export default function Home() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-steel-gray">Total Workflows</p>
-                  <p className="text-2xl font-bold text-deep-navy">
+                  <p className="text-sm font-medium text-muted-foreground">Total Workflows</p>
+                  <p className="text-2xl font-bold text-slate-blue">
                     {statsLoading ? "..." : stats?.totalWorkflows || 0}
                   </p>
                 </div>
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <ChartGantt className="w-6 h-6 text-blue-600" />
+                <div className="w-12 h-12 bg-royal-blue/10 rounded-lg flex items-center justify-center">
+                  <ChartGantt className="w-6 h-6 text-royal-blue" />
                 </div>
               </div>
             </CardContent>
@@ -152,13 +152,13 @@ export default function Home() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-steel-gray">This Month</p>
-                  <p className="text-2xl font-bold text-deep-navy">
+                  <p className="text-sm font-medium text-muted-foreground">This Month</p>
+                  <p className="text-2xl font-bold text-slate-blue">
                     {statsLoading ? "..." : stats?.monthlyWorkflows || 0}
                   </p>
                 </div>
-                <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
-                  <Calendar className="w-6 h-6 text-emerald-600" />
+                <div className="w-12 h-12 bg-emerald-green/10 rounded-lg flex items-center justify-center">
+                  <Calendar className="w-6 h-6 text-emerald-green" />
                 </div>
               </div>
             </CardContent>
@@ -168,13 +168,13 @@ export default function Home() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-steel-gray">Time Saved</p>
+                  <p className="text-sm font-medium text-muted-foreground">Time Saved</p>
                   <p className="text-2xl font-bold text-emerald-green">
                     {statsLoading ? "..." : `${stats?.timeSaved || 0} min`}
                   </p>
                 </div>
-                <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
-                  <Clock className="w-6 h-6 text-emerald-600" />
+                <div className="w-12 h-12 bg-emerald-green/10 rounded-lg flex items-center justify-center">
+                  <Clock className="w-6 h-6 text-emerald-green" />
                 </div>
               </div>
             </CardContent>
@@ -184,13 +184,13 @@ export default function Home() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-steel-gray">Efficiency Gain</p>
+                  <p className="text-sm font-medium text-muted-foreground">Efficiency Gain</p>
                   <p className="text-2xl font-bold text-emerald-green">
                     {statsLoading ? "..." : `${stats?.efficiency || 0}%`}
                   </p>
                 </div>
-                <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
-                  <TrendingUp className="w-6 h-6 text-emerald-600" />
+                <div className="w-12 h-12 bg-emerald-green/10 rounded-lg flex items-center justify-center">
+                  <TrendingUp className="w-6 h-6 text-emerald-green" />
                 </div>
               </div>
             </CardContent>
@@ -203,7 +203,7 @@ export default function Home() {
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-montserrat font-semibold text-deep-navy">Your Workflows</h3>
+                  <h3 className="text-lg font-montserrat font-semibold text-slate-blue">Your Workflows</h3>
                   <Button 
                     onClick={handleCreateWorkflow}
                     className="bg-emerald-green text-white hover:bg-emerald-green/90"
@@ -221,7 +221,7 @@ export default function Home() {
                       <ChartGantt className="w-8 h-8 text-gray-400" />
                     </div>
                     <h4 className="text-lg font-montserrat font-semibold text-gray-900 mb-2">No workflows yet</h4>
-                    <p className="text-steel-gray mb-6">Create your first workflow to start optimizing your clinic operations.</p>
+                    <p className="text-muted-foreground mb-6">Create your first workflow to start optimizing your clinic operations.</p>
                     <Button 
                       onClick={handleCreateWorkflow}
                       className="bg-emerald-green text-white hover:bg-emerald-green/90"
@@ -238,12 +238,12 @@ export default function Home() {
                         onClick={() => window.location.href = `/workflow-builder/${workflow.id}`}
                       >
                         <div className="flex items-center space-x-4">
-                          <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
-                            <ChartGantt className="w-5 h-5 text-emerald-600" />
+                          <div className="w-10 h-10 bg-emerald-green/10 rounded-lg flex items-center justify-center">
+                            <ChartGantt className="w-5 h-5 text-emerald-green" />
                           </div>
                           <div>
-                            <h4 className="font-medium text-deep-navy">{workflow.name}</h4>
-                            <p className="text-sm text-steel-gray">Modified {formatDate(workflow.updatedAt)}</p>
+                            <h4 className="font-medium text-slate-blue">{workflow.name}</h4>
+                            <p className="text-sm text-muted-foreground">Modified {formatDate(workflow.updatedAt)}</p>
                           </div>
                         </div>
                         <div className="flex items-center space-x-2">
@@ -274,8 +274,8 @@ export default function Home() {
             <Card>
               <CardContent className="p-6">
                 <div className="mb-6">
-                  <h3 className="text-lg font-montserrat font-semibold text-deep-navy">Quick Start Templates</h3>
-                  <p className="text-sm text-steel-gray mt-1">Common clinic workflows to get started</p>
+                  <h3 className="text-lg font-montserrat font-semibold text-slate-blue">Quick Start Templates</h3>
+                  <p className="text-sm text-muted-foreground mt-1">Common clinic workflows to get started</p>
                 </div>
 
                 {templatesLoading ? (
@@ -293,8 +293,8 @@ export default function Home() {
                             {getTemplateIcon(template.icon, template.category)}
                           </div>
                           <div className="flex-1">
-                            <h4 className="font-medium text-deep-navy text-sm">{template.name}</h4>
-                            <p className="text-xs text-steel-gray mt-1">{template.description}</p>
+                            <h4 className="font-medium text-slate-blue text-sm">{template.name}</h4>
+                            <p className="text-xs text-muted-foreground mt-1">{template.description}</p>
                           </div>
                         </div>
                       </div>
@@ -307,10 +307,10 @@ export default function Home() {
             {/* Usage Tracker */}
             <Card className="mt-6">
               <CardContent className="p-6">
-                <h3 className="text-lg font-montserrat font-semibold text-deep-navy mb-4">Monthly Usage</h3>
+                <h3 className="text-lg font-montserrat font-semibold text-slate-blue mb-4">Monthly Usage</h3>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-steel-gray">Workflows Created</span>
-                  <span className="text-sm font-medium text-deep-navy">
+                  <span className="text-sm text-muted-foreground">Workflows Created</span>
+                  <span className="text-sm font-medium text-slate-blue">
                     {stats?.monthlyWorkflows || 0} / {stats?.subscriptionStatus === 'free' ? '1' : '∞'}
                   </span>
                 </div>

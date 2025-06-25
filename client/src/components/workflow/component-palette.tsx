@@ -47,7 +47,7 @@ export default function ComponentPalette({ onAnalyze, analyzing }: ComponentPale
   return (
     <Card className="h-full">
       <CardContent className="p-4">
-        <h3 className="font-montserrat font-semibold text-deep-navy mb-4">Components</h3>
+        <h3 className="font-montserrat font-semibold text-slate-blue mb-4">Components</h3>
         <div className="space-y-3">
           {componentTypes.map((component) => (
             <div
@@ -60,9 +60,9 @@ export default function ComponentPalette({ onAnalyze, analyzing }: ComponentPale
                 <div className={`w-6 h-6 rounded-full flex items-center justify-center ${getIconColorClasses(component.color)}`}>
                   <i className={`${component.icon} text-xs`}></i>
                 </div>
-                <span className="text-sm font-medium text-deep-navy">{component.label}</span>
+                <span className="text-sm font-medium text-slate-blue">{component.label}</span>
               </div>
-              <p className="text-xs text-steel-gray mt-1">{component.description}</p>
+              <p className="text-xs text-muted-foreground mt-1">{component.description}</p>
             </div>
           ))}
         </div>

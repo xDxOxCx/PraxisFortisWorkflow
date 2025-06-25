@@ -82,12 +82,12 @@ export default function PropertiesPanel({
       {/* Properties Panel */}
       <Card>
         <CardContent className="p-4">
-          <h3 className="font-montserrat font-semibold text-deep-navy mb-4">Properties</h3>
+          <h3 className="font-montserrat font-semibold text-slate-blue mb-4">Properties</h3>
           
           {selectedNode ? (
             <div className="space-y-4">
               <div>
-                <Label htmlFor="label" className="text-sm font-medium text-steel-gray">
+                <Label htmlFor="label" className="text-sm font-medium text-muted-foreground">
                   Component Label
                 </Label>
                 <Input
@@ -100,7 +100,7 @@ export default function PropertiesPanel({
               </div>
 
               <div>
-                <Label htmlFor="description" className="text-sm font-medium text-steel-gray">
+                <Label htmlFor="description" className="text-sm font-medium text-muted-foreground">
                   Description
                 </Label>
                 <Textarea

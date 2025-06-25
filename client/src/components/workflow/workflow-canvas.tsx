@@ -177,7 +177,7 @@ export default function WorkflowCanvas({
             <Play className="w-8 h-8 text-gray-400" />
           </div>
           <h4 className="text-lg font-montserrat font-semibold text-gray-700 mb-2">Start Building</h4>
-          <p className="text-steel-gray">Drag a "Start" component here to begin your workflow</p>
+          <p className="text-muted-foreground">Drag a "Start" component here to begin your workflow</p>
         </div>
       </div>
     );

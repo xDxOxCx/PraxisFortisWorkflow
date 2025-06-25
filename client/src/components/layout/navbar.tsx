@@ -33,7 +33,7 @@ export default function Navbar() {
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <Link href="/">
-                <h1 className="text-xl font-montserrat font-bold cursor-pointer" style={{color: 'hsl(215, 25%, 27%)'}}>
+                <h1 className="text-xl font-montserrat font-bold cursor-pointer text-slate-blue">
                   Workflow Optimization Tool
                 </h1>
               </Link>
@@ -44,7 +44,7 @@ export default function Navbar() {
                   <a className={`px-3 py-2 text-sm font-medium transition-colors ${
                     isActive('/') 
                       ? 'text-slate-blue' 
-                      : 'text-silver-gray hover:text-emerald-green'
+                      : 'text-muted-foreground hover:text-emerald-green'
                   }`}>
                     Dashboard
                   </a>
@@ -62,7 +62,7 @@ export default function Navbar() {
                   <a className={`px-3 py-2 text-sm font-medium transition-colors ${
                     isActive('/templates') 
                       ? 'text-slate-blue' 
-                      : 'text-silver-gray hover:text-emerald-green'
+                      : 'text-muted-foreground hover:text-emerald-green'
                   }`}>
                     Templates
                   </a>
@@ -70,8 +70,8 @@ export default function Navbar() {
                 <Link href="/settings">
                   <a className={`px-3 py-2 text-sm font-medium transition-colors ${
                     isActive('/settings') 
-                      ? 'text-deep-navy' 
-                      : 'text-steel-gray hover:text-emerald-green'
+                      ? 'text-slate-blue' 
+                      : 'text-muted-foreground hover:text-emerald-green'
                   }`}>
                     Settings
                   </a>
@@ -83,7 +83,7 @@ export default function Navbar() {
           <div className="flex items-center space-x-4">
             {user?.subscriptionStatus === 'free' && (
               <>
-                <div className="text-sm text-steel-gray">
+                <div className="text-sm text-muted-foreground">
                   <span className="font-medium">Free Plan</span> • 
                   <span className="text-emerald-green ml-1">
                     {user.workflowsUsedThisMonth || 0}/1 workflows used
