@@ -3,7 +3,7 @@ import express from "express";
 import { createServer, type Server } from "http";
 import Stripe from "stripe";
 import { storage } from "./storage";
-import { setupAuth, isAuthenticated } from "./replitAuth";
+import { setupSupabaseAuth, isAuthenticated } from "./supabaseAuth";
 import { analyzeWorkflow, generateMermaidDiagram } from "./openai";
 import { insertWorkflowSchema, updateWorkflowSchema } from "@shared/schema";
 import { z } from "zod";
@@ -23,7 +23,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Workflow routes
   app.get('/api/workflows', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const workflows = await storage.getWorkflows(userId);
       res.json(workflows);
     } catch (error) {
@@ -34,7 +34,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/workflows/:id', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const workflowId = parseInt(req.params.id);
       const workflow = await storage.getWorkflow(workflowId, userId);
       
@@ -51,7 +51,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/workflows', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
       
       if (!user) {
@@ -66,12 +66,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      const workflowData = insertWorkflowSchema.parse({
+      const workflow_data = insertWorkflowSchema.parse({
         ...req.body,
-        userId,
+        user_id: userId,
       });
 
-      const workflow = await storage.createWorkflow(workflowData);
+      const workflow = await storage.createWorkflow(workflow_data);
       
       // Increment usage counter
       await storage.incrementWorkflowUsage(userId);
@@ -88,7 +88,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put('/api/workflows/:id', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const workflowId = parseInt(req.params.id);
       
       // Verify ownership
@@ -97,12 +97,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Workflow not found" });
       }
 
-      const workflowData = updateWorkflowSchema.parse({
+      const workflow_data = updateWorkflowSchema.parse({
         ...req.body,
         id: workflowId,
       });
 
-      const workflow = await storage.updateWorkflow(workflowData);
+      const workflow = await storage.updateWorkflow(workflow_data);
       res.json(workflow);
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -115,7 +115,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete('/api/workflows/:id', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const workflowId = parseInt(req.params.id);
       
       await storage.deleteWorkflow(workflowId, userId);
@@ -129,7 +129,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // AI Analysis route
   app.post('/api/workflows/:id/analyze', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const workflowId = parseInt(req.params.id);
       
       const workflow = await storage.getWorkflow(workflowId, userId);
@@ -137,13 +137,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Workflow not found" });
       }
 
-      const analysis = await analyzeWorkflow(workflow.flowData, workflow.name);
+      const analysis = await analyzeWorkflow(workflow.flow_data, workflow.name);
       
       // Update workflow with analysis results
       await storage.updateWorkflow({
         id: workflowId,
-        aiAnalysis: analysis,
-        mermaidCode: analysis.mermaidCode,
+        ai_analysis: analysis,
+        mermaid_code: analysis.mermaid_code,
         status: "analyzed",
         timeSaved: analysis.summary.totalTimeSaved,
         efficiencyGain: analysis.summary.efficiencyGain,
@@ -186,7 +186,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Stripe subscription routes
   app.post('/api/get-or-create-subscription', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       let user = await storage.getUser(userId);
 
       if (!user) {
@@ -282,7 +282,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User stats route
   app.get('/api/user/stats', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const workflows = await storage.getWorkflows(userId);
       const user = await storage.getUser(userId);
       

@@ -10,8 +10,8 @@ The application follows a full-stack monorepo architecture with clear separation
 
 - **Frontend**: React with TypeScript, using Vite for build tooling
 - **Backend**: Express.js server with TypeScript
-- **Database**: PostgreSQL with Drizzle ORM
-- **Authentication**: Replit Auth with OpenID Connect
+- **Database**: Supabase PostgreSQL 
+- **Authentication**: Supabase Auth with Google OAuth
 - **AI Integration**: OpenAI GPT-4o for workflow analysis
 - **Payment Processing**: Stripe for subscription management
 - **UI Framework**: Tailwind CSS with shadcn/ui components
@@ -28,20 +28,20 @@ The application follows a full-stack monorepo architecture with clear separation
 
 ### Backend Architecture
 - **Express Server**: RESTful API with middleware for logging and error handling
-- **Database Layer**: Drizzle ORM with connection pooling via Neon
-- **Authentication**: Passport.js with OpenID Connect strategy
-- **Session Management**: PostgreSQL-backed sessions with connect-pg-simple
+- **Database Layer**: Supabase client with built-in connection pooling
+- **Authentication**: Supabase Auth with JWT token validation
+- **Session Management**: Supabase Auth session management
 - **AI Services**: OpenAI integration for workflow analysis
 
 ### Database Schema
 - **Users Table**: User profiles with subscription status and usage tracking
 - **Workflows Table**: User-created workflows with JSON data storage
 - **Templates Table**: Pre-built workflow templates
-- **Sessions Table**: Authentication session storage (required for Replit Auth)
+- **Auth Tables**: Managed by Supabase Auth service
 
 ## Data Flow
 
-1. **User Authentication**: Users authenticate via Replit Auth (OpenID Connect)
+1. **User Authentication**: Users authenticate via Supabase Auth (Google OAuth)
 2. **Workflow Creation**: Users build workflows using drag-and-drop interface
 3. **AI Analysis**: Workflows are analyzed by OpenAI for optimization suggestions
 4. **Data Persistence**: Workflows and analysis results stored in PostgreSQL
@@ -49,10 +49,9 @@ The application follows a full-stack monorepo architecture with clear separation
 
 ## External Dependencies
 
-- **Neon Database**: PostgreSQL database hosting
+- **Supabase**: PostgreSQL database hosting and authentication service
 - **OpenAI API**: GPT-4o for workflow analysis and optimization suggestions
 - **Stripe**: Payment processing and subscription management
-- **Replit Auth**: Authentication service
 - **React Flow**: Workflow visualization library
 - **Mermaid.js**: Diagram generation
 
@@ -68,6 +67,13 @@ The application is configured for deployment on Replit with autoscaling:
 The Vite configuration handles client-side routing and API proxying in development, while the Express server serves static files in production.
 
 ## Recent Changes
+
+- **June 25, 2025 - Supabase Integration**: 
+  - Migrated from Neon database and Replit Auth to Supabase
+  - Implemented Supabase Auth with Google OAuth provider
+  - Updated database layer to use Supabase client instead of Drizzle ORM
+  - Created database tables for users, workflows, and templates
+  - Enhanced authentication flow with auth callback handling
 
 - **June 25, 2025 - Brand Updates**: 
   - Updated application name from "Praxis Fortis" to "Workflow Optimization Tool"

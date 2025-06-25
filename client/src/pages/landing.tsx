@@ -3,8 +3,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle, Play, ArrowRight, Star } from "lucide-react";
 
 export default function Landing() {
-  const handleGetStarted = () => {
-    window.location.href = "/api/login";
+  const handleGetStarted = async () => {
+    const { supabase } = await import('@/lib/supabaseClient');
+    await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`
+      }
+    });
   };
 
   return (

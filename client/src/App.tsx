@@ -11,12 +11,14 @@ import WorkflowBuilder from "@/pages/workflow-builder";
 import Settings from "@/pages/settings";
 import Pricing from "@/pages/pricing";
 import Subscribe from "@/pages/subscribe";
+import AuthCallback from "@/pages/auth-callback";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
 
   return (
     <Switch>
+      <Route path="/auth/callback" component={AuthCallback} />
       {isLoading || !isAuthenticated ? (
         <>
           <Route path="/" component={Landing} />

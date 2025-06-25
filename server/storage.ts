@@ -33,11 +33,19 @@ export interface IStorage {
   createTemplate(template: TemplateInsert): Promise<Template>;
 }
 
-export class DatabaseStorage implements IStorage {
-  // User operations
+export class SupabaseStorage implements IStorage {
   async getUser(id: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.id, id));
-    return user;
+    const { data, error } = await supabaseServiceRole
+      .from('users')
+      .select('*')
+      .eq('id', id)
+      .single();
+    
+    if (error) {
+      if (error.code === 'PGRST116') return undefined;
+      throw error;
+    }
+    return data;
   }
 
   async upsertUser(userData: UpsertUser): Promise<User> {
