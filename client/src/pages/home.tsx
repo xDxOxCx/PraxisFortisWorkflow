@@ -17,7 +17,8 @@ import {
   FileText,
   PillBottle,
   CalendarCheck,
-  Info
+  Info,
+  Edit
 } from "lucide-react";
 
 interface UserStats {
@@ -231,7 +232,11 @@ export default function Home() {
                 ) : (
                   <div className="space-y-4">
                     {workflows.map((workflow) => (
-                      <div key={workflow.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                      <div 
+                        key={workflow.id} 
+                        className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+                        onClick={() => window.location.href = `/workflow-builder/${workflow.id}`}
+                      >
                         <div className="flex items-center space-x-4">
                           <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
                             <ChartGantt className="w-5 h-5 text-emerald-600" />
@@ -248,9 +253,12 @@ export default function Home() {
                           <Button 
                             variant="ghost" 
                             size="sm"
-                            onClick={() => navigate(`/workflow-builder/${workflow.id}`)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              window.location.href = `/workflow-builder/${workflow.id}`;
+                            }}
                           >
-                            <i className="fas fa-ellipsis-v"></i>
+                            <Edit className="w-4 h-4" />
                           </Button>
                         </div>
                       </div>

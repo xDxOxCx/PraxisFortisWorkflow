@@ -33,9 +33,12 @@ export default function WorkflowBuilder() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Get template ID from URL params if exists
+  // Get template ID or workflow ID from URL params
   const urlParams = new URLSearchParams(window.location.search);
   const templateId = urlParams.get('template');
+  const workflowId = window.location.pathname.includes('/workflow-builder/') 
+    ? window.location.pathname.split('/').pop() 
+    : null;
 
   // Add a new step
   const addStep = () => {
@@ -88,9 +91,10 @@ export default function WorkflowBuilder() {
     ));
   };
 
-  // Load template if templateId is provided
+  // Load template or existing workflow
   useEffect(() => {
     if (templateId) {
+      // Load template
       fetch(`/api/templates/${templateId}`)
         .then(res => res.json())
         .then(template => {
@@ -112,8 +116,39 @@ export default function WorkflowBuilder() {
         .catch(err => {
           console.error('Failed to load template:', err);
         });
+    } else if (workflowId && workflowId !== 'undefined') {
+      // Load existing workflow
+      fetch(`/api/workflows/${workflowId}`)
+        .then(res => res.json())
+        .then(workflow => {
+          if (workflow) {
+            setWorkflowName(workflow.name);
+            setWorkflowDescription(workflow.description || '');
+            
+            // Convert workflow data to steps
+            if (workflow.flow_data?.steps) {
+              setSteps(workflow.flow_data.steps);
+            } else if (workflow.flow_data?.nodes) {
+              // Legacy format - convert nodes to steps
+              const workflowSteps: WorkflowStep[] = workflow.flow_data.nodes.map((node: any, index: number) => ({
+                id: `step-${Date.now()}-${index}`,
+                text: node.data?.label || `Step ${index + 1}`,
+                type: index === 0 ? 'start' : index === workflow.flow_data.nodes.length - 1 ? 'end' : 'process'
+              }));
+              setSteps(workflowSteps);
+            }
+          }
+        })
+        .catch(err => {
+          console.error('Failed to load workflow:', err);
+          toast({
+            title: "Error",
+            description: "Failed to load workflow",
+            variant: "destructive"
+          });
+        });
     }
-  }, [templateId]);
+  }, [templateId, workflowId, toast]);
 
   // Create workflow from text input
   const createFromText = () => {
@@ -169,12 +204,19 @@ export default function WorkflowBuilder() {
           }))
         }
       };
-      return await apiRequest('POST', '/api/workflows', workflowData);
+      
+      if (workflowId && workflowId !== 'undefined') {
+        // Update existing workflow
+        return await apiRequest('PUT', `/api/workflows/${workflowId}`, workflowData);
+      } else {
+        // Create new workflow
+        return await apiRequest('POST', '/api/workflows', workflowData);
+      }
     },
     onSuccess: () => {
       toast({
         title: "Workflow Saved",
-        description: "Your workflow has been saved successfully."
+        description: workflowId ? "Your workflow has been updated successfully." : "Your workflow has been saved successfully."
       });
       queryClient.invalidateQueries({ queryKey: ["/api/workflows"] });
     },
@@ -196,10 +238,10 @@ export default function WorkflowBuilder() {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-3xl font-montserrat font-bold mb-2" style={{color: 'hsl(215, 25%, 27%)'}}>
-                Workflow Builder
+                {workflowId ? 'Edit Workflow' : 'Workflow Builder'}
               </h2>
               <p style={{color: 'hsl(210, 14%, 53%)'}}>
-                Create workflows by typing workflow steps and rearranging them
+                {workflowId ? 'Edit your existing workflow steps and rearrange them' : 'Create workflows by typing workflow steps and rearranging them'}
               </p>
             </div>
             <div className="flex gap-2">
