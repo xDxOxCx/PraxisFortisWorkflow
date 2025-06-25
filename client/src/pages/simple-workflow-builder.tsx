@@ -385,7 +385,7 @@ export default function WorkflowBuilder() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => moveStep(index, index - 1)}
+                          onClick={() => moveStepUp(index)}
                           disabled={index === 0}
                           className="p-1 h-6 w-6"
                         >
@@ -394,7 +394,7 @@ export default function WorkflowBuilder() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => moveStep(index, index + 1)}
+                          onClick={() => moveStepDown(index)}
                           disabled={index === steps.length - 1}
                           className="p-1 h-6 w-6"
                         >
