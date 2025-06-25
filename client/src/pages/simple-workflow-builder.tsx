@@ -1,17 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
-import { 
-  ReactFlow, 
-  MiniMap, 
-  Controls, 
-  Background, 
-  useNodesState, 
-  useEdgesState, 
-  addEdge,
-  type Connection,
-  type Edge,
-  type Node
-} from 'reactflow';
-import 'reactflow/dist/style.css';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -23,28 +10,26 @@ import {
   Save, 
   ArrowLeft,
   Type,
-  Play,
-  Square,
-  Diamond,
-  StopCircle
+  Plus,
+  Trash2,
+  GripVertical,
+  ArrowUp,
+  ArrowDown
 } from 'lucide-react';
 import Navbar from '@/components/layout/navbar';
 
-const componentTypes = [
-  { type: 'start', label: 'Start', icon: '▶', color: '#10b981', description: 'Beginning of process' },
-  { type: 'process', label: 'Process', icon: '□', color: '#3b82f6', description: 'Process step' },
-  { type: 'decision', label: 'Decision', icon: '◊', color: '#f59e0b', description: 'Decision point' },
-  { type: 'end', label: 'End', icon: '⏹', color: '#ef4444', description: 'End of process' }
-];
+interface WorkflowStep {
+  id: string;
+  text: string;
+  type: 'start' | 'process' | 'decision' | 'end';
+}
 
 export default function WorkflowBuilder() {
   const [workflowName, setWorkflowName] = useState('My Workflow');
   const [workflowDescription, setWorkflowDescription] = useState('');
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  const [draggedType, setDraggedType] = useState<string | null>(null);
+  const [steps, setSteps] = useState<WorkflowStep[]>([]);
   const [textInput, setTextInput] = useState('');
-  const [showTextInput, setShowTextInput] = useState(false);
+  const [newStepText, setNewStepText] = useState('');
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -52,54 +37,56 @@ export default function WorkflowBuilder() {
   const urlParams = new URLSearchParams(window.location.search);
   const templateId = urlParams.get('template');
 
-  const onConnect = useCallback((params: Connection) => {
-    const edge: Edge = {
-      ...params,
-      id: `edge-${params.source}-${params.target}`,
-      type: 'default',
+  // Add a new step
+  const addStep = () => {
+    if (!newStepText.trim()) return;
+    
+    const newStep: WorkflowStep = {
+      id: `step-${Date.now()}`,
+      text: newStepText.trim(),
+      type: steps.length === 0 ? 'start' : 'process'
     };
-    setEdges((eds) => addEdge(edge, eds));
-  }, [setEdges]);
+    
+    setSteps([...steps, newStep]);
+    setNewStepText('');
+    
+    toast({
+      title: "Step Added",
+      description: "New workflow step has been added"
+    });
+  };
 
-  const onDragOver = useCallback((event: React.DragEvent) => {
-    event.preventDefault();
-    event.dataTransfer.dropEffect = 'move';
-  }, []);
+  // Remove a step
+  const removeStep = (stepId: string) => {
+    setSteps(steps.filter(step => step.id !== stepId));
+    toast({
+      title: "Step Removed",
+      description: "Workflow step has been removed"
+    });
+  };
 
-  const onDrop = useCallback((event: React.DragEvent) => {
-    event.preventDefault();
+  // Move step up
+  const moveStepUp = (index: number) => {
+    if (index === 0) return;
+    const newSteps = [...steps];
+    [newSteps[index], newSteps[index - 1]] = [newSteps[index - 1], newSteps[index]];
+    setSteps(newSteps);
+  };
 
-    if (!draggedType) return;
+  // Move step down
+  const moveStepDown = (index: number) => {
+    if (index === steps.length - 1) return;
+    const newSteps = [...steps];
+    [newSteps[index], newSteps[index + 1]] = [newSteps[index + 1], newSteps[index]];
+    setSteps(newSteps);
+  };
 
-    const reactFlowBounds = event.currentTarget.getBoundingClientRect();
-    const position = {
-      x: event.clientX - reactFlowBounds.left - 100,
-      y: event.clientY - reactFlowBounds.top - 50,
-    };
-
-    const componentInfo = componentTypes.find(c => c.type === draggedType);
-    const newNode: Node = {
-      id: `${draggedType}-${Date.now()}`,
-      type: 'default',
-      position,
-      data: {
-        label: componentInfo?.label || draggedType,
-      },
-      style: {
-        background: componentInfo?.color || '#ffffff',
-        color: '#ffffff',
-        border: '2px solid #333',
-        borderRadius: '8px',
-        padding: '10px',
-        minWidth: '120px',
-        textAlign: 'center',
-        fontWeight: 'bold'
-      }
-    };
-
-    setNodes((nds) => nds.concat(newNode));
-    setDraggedType(null);
-  }, [draggedType, setNodes]);
+  // Update step text
+  const updateStepText = (stepId: string, newText: string) => {
+    setSteps(steps.map(step => 
+      step.id === stepId ? { ...step, text: newText } : step
+    ));
+  };
 
   // Load template if templateId is provided
   useEffect(() => {
@@ -110,23 +97,15 @@ export default function WorkflowBuilder() {
           if (template && template.flow_data) {
             setWorkflowName(template.name);
             setWorkflowDescription(template.description);
+            
+            // Convert template nodes to steps
             if (template.flow_data.nodes) {
-              setNodes(template.flow_data.nodes.map((node: any) => ({
-                ...node,
-                style: {
-                  background: '#3b82f6',
-                  color: '#ffffff',
-                  border: '2px solid #333',
-                  borderRadius: '8px',
-                  padding: '10px',
-                  minWidth: '120px',
-                  textAlign: 'center',
-                  fontWeight: 'bold'
-                }
-              })));
-            }
-            if (template.flow_data.edges) {
-              setEdges(template.flow_data.edges);
+              const templateSteps: WorkflowStep[] = template.flow_data.nodes.map((node: any, index: number) => ({
+                id: `step-${Date.now()}-${index}`,
+                text: node.data?.label || `Step ${index + 1}`,
+                type: index === 0 ? 'start' : index === template.flow_data.nodes.length - 1 ? 'end' : 'process'
+              }));
+              setSteps(templateSteps);
             }
           }
         })
@@ -134,57 +113,27 @@ export default function WorkflowBuilder() {
           console.error('Failed to load template:', err);
         });
     }
-  }, [templateId, setNodes, setEdges]);
+  }, [templateId]);
 
   // Create workflow from text input
-  const createFromText = useCallback(() => {
+  const createFromText = () => {
     if (!textInput.trim()) return;
 
-    const steps = textInput.split('\n').filter(step => step.trim());
-    const newNodes: Node[] = [];
-    const newEdges: Edge[] = [];
+    const stepTexts = textInput.split('\n').filter(step => step.trim());
+    const newSteps: WorkflowStep[] = stepTexts.map((stepText, index) => ({
+      id: `step-${Date.now()}-${index}`,
+      text: stepText.trim(),
+      type: index === 0 ? 'start' : index === stepTexts.length - 1 ? 'end' : 'process'
+    }));
 
-    steps.forEach((step, index) => {
-      const nodeType = index === 0 ? 'start' : index === steps.length - 1 ? 'end' : 'process';
-      const componentInfo = componentTypes.find(c => c.type === nodeType);
-      
-      newNodes.push({
-        id: `step-${index}`,
-        type: 'default',
-        position: { x: 200, y: 100 + (index * 120) },
-        data: { label: step.trim() },
-        style: {
-          background: componentInfo?.color || '#3b82f6',
-          color: '#ffffff',
-          border: '2px solid #333',
-          borderRadius: '8px',
-          padding: '10px',
-          minWidth: '200px',
-          textAlign: 'center',
-          fontWeight: 'bold'
-        }
-      });
-
-      if (index > 0) {
-        newEdges.push({
-          id: `edge-${index-1}-${index}`,
-          source: `step-${index-1}`,
-          target: `step-${index}`,
-          type: 'default'
-        });
-      }
-    });
-
-    setNodes(newNodes);
-    setEdges(newEdges);
+    setSteps(newSteps);
     setTextInput('');
-    setShowTextInput(false);
     
     toast({
       title: "Success",
-      description: `Created workflow with ${steps.length} steps`
+      description: `Created workflow with ${stepTexts.length} steps`
     });
-  }, [textInput, setNodes, setEdges, toast]);
+  };
 
   // Save workflow mutation
   const saveWorkflowMutation = useMutation({
@@ -192,7 +141,33 @@ export default function WorkflowBuilder() {
       const workflowData = {
         name: workflowName,
         description: workflowDescription,
-        flow_data: { nodes, edges }
+        flow_data: { 
+          steps: steps,
+          nodes: steps.map((step, index) => ({
+            id: step.id,
+            type: 'default',
+            position: { x: 200, y: 100 + (index * 120) },
+            data: { label: step.text },
+            style: {
+              background: step.type === 'start' ? '#10b981' : 
+                         step.type === 'end' ? '#ef4444' : 
+                         step.type === 'decision' ? '#f59e0b' : '#3b82f6',
+              color: '#ffffff',
+              border: '2px solid #333',
+              borderRadius: '8px',
+              padding: '10px',
+              minWidth: '200px',
+              textAlign: 'center',
+              fontWeight: 'bold'
+            }
+          })),
+          edges: steps.slice(0, -1).map((step, index) => ({
+            id: `edge-${index}`,
+            source: step.id,
+            target: steps[index + 1].id,
+            type: 'default'
+          }))
+        }
       };
       return await apiRequest('POST', '/api/workflows', workflowData);
     },
@@ -224,7 +199,7 @@ export default function WorkflowBuilder() {
                 Workflow Builder
               </h2>
               <p style={{color: 'hsl(210, 14%, 53%)'}}>
-                Create workflows by dragging components or typing steps
+                Create workflows by typing workflow steps and rearranging them
               </p>
             </div>
             <div className="flex gap-2">
@@ -235,14 +210,6 @@ export default function WorkflowBuilder() {
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Dashboard
-              </Button>
-              <Button 
-                onClick={() => setShowTextInput(!showTextInput)}
-                variant="outline"
-                className="border-emerald-green text-emerald-green hover:bg-emerald-green hover:text-white"
-              >
-                <Type className="w-4 h-4 mr-2" />
-                Create from Text
               </Button>
             </div>
           </div>
@@ -286,40 +253,61 @@ export default function WorkflowBuilder() {
           </CardContent>
         </Card>
 
-        {/* Text Input Panel */}
-        {showTextInput && (
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle className="text-lg">Create Workflow from Text</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
+        {/* Text Input Section */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="text-lg">Create Workflow Steps</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {/* Bulk text input */}
+              <div>
+                <label className="block text-sm font-medium mb-2" style={{color: 'hsl(215, 25%, 27%)'}}>
+                  Paste or type multiple steps (one per line)
+                </label>
                 <Textarea
                   placeholder="Enter each step on a new line, for example:&#10;Patient arrives at clinic&#10;Check insurance verification&#10;Complete registration forms&#10;Wait for provider&#10;Consultation begins"
                   value={textInput}
                   onChange={(e) => setTextInput(e.target.value)}
-                  rows={6}
+                  rows={4}
                   className="w-full"
                 />
+                <Button 
+                  onClick={createFromText}
+                  className="bg-emerald-green hover:bg-emerald-green/90 text-white mt-2"
+                  disabled={!textInput.trim()}
+                >
+                  <Type className="w-4 h-4 mr-2" />
+                  Create Steps from Text
+                </Button>
+              </div>
+              
+              {/* Single step input */}
+              <div className="border-t pt-4">
+                <label className="block text-sm font-medium mb-2" style={{color: 'hsl(215, 25%, 27%)'}}>
+                  Add individual step
+                </label>
                 <div className="flex gap-2">
+                  <Input
+                    placeholder="Enter a single workflow step"
+                    value={newStepText}
+                    onChange={(e) => setNewStepText(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && addStep()}
+                    className="flex-1"
+                  />
                   <Button 
-                    onClick={createFromText}
+                    onClick={addStep}
+                    disabled={!newStepText.trim()}
                     className="bg-emerald-green hover:bg-emerald-green/90 text-white"
-                    disabled={!textInput.trim()}
                   >
-                    Create Workflow
-                  </Button>
-                  <Button 
-                    onClick={() => setShowTextInput(false)}
-                    variant="outline"
-                  >
-                    Cancel
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Step
                   </Button>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        )}
+            </div>
+          </CardContent>
+        </Card>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-300px)]">
           {/* Component Palette */}
