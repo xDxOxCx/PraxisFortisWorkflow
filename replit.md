@@ -93,3 +93,4 @@ The Vite configuration handles client-side routing and API proxying in developme
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+User prefers step-by-step guidance for technical setup processes.
