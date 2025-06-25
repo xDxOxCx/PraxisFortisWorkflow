@@ -38,7 +38,7 @@ export default function Templates() {
   };
 
   return (
-    <div className="min-h-screen bg-pearl-white">
+    <div className="min-h-screen bg-background">
       <Navbar />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -47,7 +47,7 @@ export default function Templates() {
           <h1 className="text-3xl font-bold font-montserrat" style={{color: 'hsl(215, 25%, 27%)'}}>
             Workflow Templates
           </h1>
-          <p className="text-silver-gray mt-2">
+          <p className="text-muted-foreground mt-2">
             Choose from our library of pre-built workflows designed for healthcare practices
           </p>
         </div>
@@ -118,12 +118,12 @@ export default function Templates() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-silver-gray text-sm mb-4 line-clamp-3">
+                  <p className="text-muted-foreground text-sm mb-4 line-clamp-3">
                     {template.description}
                   </p>
                   
                   <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                    <div className="flex items-center gap-4 text-xs text-silver-gray">
+                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
                       <div className="flex items-center gap-1">
                         <Clock className="w-3 h-3" />
                         5-10 min

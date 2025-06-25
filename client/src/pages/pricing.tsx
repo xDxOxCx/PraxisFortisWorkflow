@@ -29,7 +29,7 @@ export default function Pricing() {
   };
 
   return (
-    <div className="min-h-screen bg-soft-white">
+    <div className="min-h-screen bg-background">
       {isAuthenticated && <Navbar />}
       
       {/* Header */}
@@ -38,12 +38,12 @@ export default function Pricing() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
               <div className="flex items-center">
-                <h1 className="text-xl font-montserrat font-bold text-deep-navy">
+                <h1 className="text-xl font-montserrat font-bold text-slate-blue">
                   Praxis Fortis
                 </h1>
               </div>
               <div className="flex items-center space-x-4">
-                <a href="/" className="text-steel-gray hover:text-emerald-green px-3 py-2 text-sm font-medium">
+                <a href="/" className="text-muted-foreground hover:text-emerald-green px-3 py-2 text-sm font-medium">
                   Home
                 </a>
                 <Button 
@@ -60,10 +60,10 @@ export default function Pricing() {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-montserrat font-bold text-deep-navy mb-4">
+          <h2 className="text-3xl font-montserrat font-bold text-slate-blue mb-4">
             Simple, Transparent Pricing
           </h2>
-          <p className="text-xl text-steel-gray">
+          <p className="text-xl text-muted-foreground">
             Choose the plan that works best for your practice
           </p>
         </div>
@@ -73,9 +73,9 @@ export default function Pricing() {
           <Card className="border border-gray-200">
             <CardContent className="p-8">
               <div className="text-center mb-8">
-                <h3 className="text-xl font-montserrat font-bold text-deep-navy mb-2">Free</h3>
-                <div className="text-4xl font-montserrat font-bold text-deep-navy">$0</div>
-                <p className="text-steel-gray">per month</p>
+                <h3 className="text-xl font-montserrat font-bold text-slate-blue mb-2">Free</h3>
+                <div className="text-4xl font-montserrat font-bold text-slate-blue">$0</div>
+                <p className="text-muted-foreground">per month</p>
               </div>
               <ul className="space-y-4 mb-8">
                 <li className="flex items-center space-x-3">
@@ -118,9 +118,9 @@ export default function Pricing() {
             </div>
             <CardContent className="p-8">
               <div className="text-center mb-8">
-                <h3 className="text-xl font-montserrat font-bold text-deep-navy mb-2">Pro</h3>
-                <div className="text-4xl font-montserrat font-bold text-deep-navy">$49</div>
-                <p className="text-steel-gray">per month</p>
+                <h3 className="text-xl font-montserrat font-bold text-slate-blue mb-2">Pro</h3>
+                <div className="text-4xl font-montserrat font-bold text-slate-blue">$49</div>
+                <p className="text-muted-foreground">per month</p>
               </div>
               <ul className="space-y-4 mb-8">
                 <li className="flex items-center space-x-3">
@@ -202,7 +202,7 @@ export default function Pricing() {
               <Button 
                 onClick={handleContactSales}
                 variant="outline"
-                className="w-full border-2 border-deep-navy text-deep-navy hover:bg-deep-navy hover:text-white"
+                className="w-full border-2 border-slate-blue text-slate-blue hover:bg-slate-blue hover:text-white"
               >
                 Contact Sales
               </Button>
@@ -211,12 +211,12 @@ export default function Pricing() {
         </div>
 
         <div className="text-center mt-12">
-          <p className="text-steel-gray">All plans include a 14-day free trial. No credit card required.</p>
+          <p className="text-muted-foreground">All plans include a 14-day free trial. No credit card required.</p>
         </div>
 
         {/* Features Comparison */}
         <div className="mt-16">
-          <h3 className="text-2xl font-montserrat font-bold text-deep-navy text-center mb-8">
+          <h3 className="text-2xl font-montserrat font-bold text-slate-blue text-center mb-8">
             Feature Comparison
           </h3>
           
@@ -226,21 +226,21 @@ export default function Pricing() {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b">
-                      <th className="text-left py-4 font-montserrat font-semibold text-deep-navy">Feature</th>
-                      <th className="text-center py-4 font-montserrat font-semibold text-deep-navy">Free</th>
-                      <th className="text-center py-4 font-montserrat font-semibold text-deep-navy">Pro</th>
-                      <th className="text-center py-4 font-montserrat font-semibold text-deep-navy">Enterprise</th>
+                      <th className="text-left py-4 font-montserrat font-semibold text-slate-blue">Feature</th>
+                      <th className="text-center py-4 font-montserrat font-semibold text-slate-blue">Free</th>
+                      <th className="text-center py-4 font-montserrat font-semibold text-slate-blue">Pro</th>
+                      <th className="text-center py-4 font-montserrat font-semibold text-slate-blue">Enterprise</th>
                     </tr>
                   </thead>
                   <tbody className="text-sm">
                     <tr className="border-b">
-                      <td className="py-4 text-steel-gray">Monthly Workflows</td>
+                      <td className="py-4 text-muted-foreground">Monthly Workflows</td>
                       <td className="text-center py-4">1</td>
                       <td className="text-center py-4">Unlimited</td>
                       <td className="text-center py-4">Unlimited</td>
                     </tr>
                     <tr className="border-b">
-                      <td className="py-4 text-steel-gray">AI Analysis</td>
+                      <td className="py-4 text-muted-foreground">AI Analysis</td>
                       <td className="text-center py-4"><CheckCircle className="w-4 h-4 text-emerald-green mx-auto" /></td>
                       <td className="text-center py-4"><CheckCircle className="w-4 h-4 text-emerald-green mx-auto" /></td>
                       <td className="text-center py-4"><CheckCircle className="w-4 h-4 text-emerald-green mx-auto" /></td>
@@ -284,7 +284,7 @@ export default function Pricing() {
 
         {/* FAQ Section */}
         <div className="mt-16">
-          <h3 className="text-2xl font-montserrat font-bold text-deep-navy text-center mb-8">
+          <h3 className="text-2xl font-montserrat font-bold text-slate-blue text-center mb-8">
             Frequently Asked Questions
           </h3>
           

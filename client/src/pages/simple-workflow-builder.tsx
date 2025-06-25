@@ -514,7 +514,7 @@ export default function WorkflowBuilder() {
               <Button 
                 onClick={() => window.location.href = '/'}
                 variant="outline"
-                className="border-steel-gray text-steel-gray hover:border-emerald-green hover:text-emerald-green"
+                className="border-silver-gray text-silver-gray hover:border-emerald-green hover:text-emerald-green"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Dashboard
@@ -560,7 +560,7 @@ export default function WorkflowBuilder() {
               <Button 
                 onClick={analyzeWorkflow}
                 disabled={isAnalyzing || steps.length === 0}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
+                className="bg-royal-blue hover:bg-royal-blue/90 text-white"
               >
                 {isAnalyzing ? (
                   <>
