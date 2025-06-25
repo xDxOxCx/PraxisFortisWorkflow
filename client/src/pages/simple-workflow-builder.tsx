@@ -229,6 +229,56 @@ export default function WorkflowBuilder() {
     }
   });
 
+  // Analyze workflow with AI
+  const analyzeWorkflow = async () => {
+    if (steps.length === 0) {
+      toast({
+        title: "No Steps to Analyze",
+        description: "Please add some workflow steps before analyzing",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsAnalyzing(true);
+    try {
+      const flowData = { steps };
+      const response = await fetch('/api/analyze-workflow', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: workflowName,
+          description: workflowDescription,
+          flow_data: flowData,
+        }),
+      });
+
+      if (response.ok) {
+        const analysis = await response.json();
+        setAnalysisResult(analysis);
+        toast({
+          title: "Analysis Complete",
+          description: "AI analysis generated optimization recommendations"
+        });
+      } else {
+        toast({
+          title: "Analysis Failed",
+          description: "Failed to analyze workflow with AI",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error('Error analyzing workflow:', error);
+      toast({
+        title: "Analysis Error",
+        description: "An error occurred during analysis",
+        variant: "destructive"
+      });
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
   return (
     <div className="min-h-screen" style={{backgroundColor: 'hsl(210, 20%, 98%)'}}>
       <Navbar />
