@@ -367,28 +367,71 @@ export default function WorkflowBuilder() {
           {/* Workflow Canvas */}
           <Card className="lg:col-span-3">
             <CardHeader>
-              <CardTitle className="text-lg">Workflow Canvas</CardTitle>
-              <p className="text-sm text-gray-500">
-                Drag components from the left panel to create your workflow
+              <CardTitle className="text-lg">Workflow Steps</CardTitle>
+              <p className="text-sm text-gray-600">
+                Your workflow steps in order - use the arrows to reorder them
               </p>
             </CardHeader>
-            <CardContent className="p-0 h-[600px]">
-              <ReactFlow
-                nodes={nodes}
-                edges={edges}
-                onNodesChange={onNodesChange}
-                onEdgesChange={onEdgesChange}
-                onConnect={onConnect}
-                onDrop={onDrop}
-                onDragOver={onDragOver}
-                fitView
-                className="bg-gray-50"
-                defaultViewport={{ x: 0, y: 0, zoom: 1 }}
-              >
-                <Background />
-                <Controls />
-                <MiniMap />
-              </ReactFlow>
+            <CardContent className="p-4">
+              {steps.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  No steps created yet. Add some steps using the form on the left.
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {steps.map((step, index) => (
+                    <div key={step.id} className="flex items-center gap-3 p-3 border rounded-lg">
+                      <div className="flex flex-col gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => moveStep(index, index - 1)}
+                          disabled={index === 0}
+                          className="p-1 h-6 w-6"
+                        >
+                          <ArrowUp className="w-3 h-3" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => moveStep(index, index + 1)}
+                          disabled={index === steps.length - 1}
+                          className="p-1 h-6 w-6"
+                        >
+                          <ArrowDown className="w-3 h-3" />
+                        </Button>
+                      </div>
+                      
+                      <div className="flex-1">
+                        <Input
+                          value={step.text}
+                          onChange={(e) => updateStepText(step.id, e.target.value)}
+                          className="border-none p-0 font-medium"
+                        />
+                      </div>
+                      
+                      <div className="flex items-center gap-2">
+                        <span className={`px-2 py-1 text-xs rounded ${
+                          step.type === 'start' ? 'bg-green-100 text-green-800' :
+                          step.type === 'end' ? 'bg-red-100 text-red-800' :
+                          step.type === 'decision' ? 'bg-yellow-100 text-yellow-800' :
+                          'bg-blue-100 text-blue-800'
+                        }`}>
+                          {step.type}
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeStep(step.id)}
+                          className="p-1 h-6 w-6 text-red-500 hover:text-red-700"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
