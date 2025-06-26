@@ -190,7 +190,7 @@ export default function WorkflowBuilder() {
         steps: steps
       };
 
-      const response = await fetch('/api/workflows/analyze', {
+      const response = await fetch('/api/analyze-workflow', {
         method: 'POST',
         body: JSON.stringify(workflowData),
         headers: { 'Content-Type': 'application/json' },
