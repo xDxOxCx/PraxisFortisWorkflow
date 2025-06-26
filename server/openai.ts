@@ -33,15 +33,97 @@ export interface WorkflowAnalysis {
 
 export async function analyzeWorkflow(workflowData: any, workflowName: string): Promise<WorkflowAnalysis> {
   try {
-    const prompt = `
-You are a Lean Six Sigma Black Belt consultant turned AI expert.
+    const prompt = `You are a Lean Six Sigma AI consultant helping non-expert users improve business workflows.
 
-A user will give you a list of workflow steps from a business or clinic process. Your job is to analyze it like a Lean Six Sigma professional, and return a clean, professional markdown report.
+The user will give you a list of workflow steps. Your job is to analyze them like a process engineer and return a full analysis report.
+
+**You must always output in professional Markdown formatting**, with all of the following sections:
+
+---
+
+## 📋 A3 Action Plan Summary
+- **Efficiency Score (Before)**: X/100  
+- **Efficiency Score (After)**: X/100  
+- **Estimated Time Saved**: X minutes per cycle  
+- **Lean Waste Detected**: List of waste types (e.g. Waiting, Overprocessing, Motion)
+
+---
+
+## 🔍 Problem Summary
+Briefly describe the root cause of inefficiencies in the workflow using plain English. Do not use jargon.
+
+---
+
+## ⛔ Current Workflow Diagram
+**Use Mermaid.js format. Wrap the diagram in triple backticks and the word \`mermaid\`.**
+
+\`\`\`mermaid
+graph TD
+A[Step 1] --> B[Step 2]
+B --> C[Step 3]
+\`\`\`
+
+---
+
+## ✅ Optimized Workflow Diagram
+**Show the improved workflow with Mermaid.js format.**
+
+\`\`\`mermaid
+graph TD
+A[Improved Step 1] --> B[Streamlined Step 2]
+B --> C[Optimized Step 3]
+\`\`\`
+
+---
+
+## 🎯 Top Improvement Opportunities
+
+### 1. [Improvement Title]
+- **Impact**: High/Medium/Low
+- **Time Saved**: X minutes per cycle
+- **Effort Required**: Low/Medium/High
+- **Implementation Steps**:
+  1. Step one description
+  2. Step two description
+  3. Step three description
+
+### 2. [Second Improvement]
+- **Impact**: High/Medium/Low
+- **Time Saved**: X minutes per cycle
+- **Effort Required**: Low/Medium/High
+- **Implementation Steps**:
+  1. Step one description
+  2. Step two description
+
+---
+
+## 📊 Implementation Roadmap
+
+| Priority | Improvement | Timeline | Owner | Resources Needed |
+|----------|-------------|----------|--------|------------------|
+| 1 | First improvement | 2-4 weeks | Role | List resources |
+| 2 | Second improvement | 1-2 weeks | Role | List resources |
+
+---
+
+## 🎯 Success Metrics
+- **Process Cycle Time**: Reduce from X to Y minutes
+- **Error Rate**: Reduce from X% to Y%
+- **Customer Satisfaction**: Increase by X%
+- **Cost Savings**: $X per month
+
+---
+
+## ⚠️ Risk Mitigation
+- **Risk 1**: Description and mitigation strategy
+- **Risk 2**: Description and mitigation strategy
+
+---
 
 Workflow Name: ${workflowName}
 Workflow Steps: ${JSON.stringify(workflowData.steps || workflowData, null, 2)}
 
-Analyze this workflow using TIMWOODS framework (Transport, Inventory, Motion, Waiting, Over-processing, Over-production, Defects, Skills) and provide a comprehensive A3 Action Plan.
+Analyze this workflow using Lean Six Sigma principles (TIMWOODS waste elimination) and provide the complete markdown report following the exact format above.
 
 Return a JSON object with this structure:
 {
