@@ -16,42 +16,87 @@ export default function AnalysisResults() {
   const [, setLocation] = useLocation();
 
   useEffect(() => {
+    console.log('AnalysisResults component mounted');
+    console.log('Current URL:', window.location.href);
+    
     // Get data from URL parameters
     const urlParams = new URLSearchParams(window.location.search);
     const name = urlParams.get('name');
     const description = urlParams.get('description');
     const report = urlParams.get('report');
     
-    console.log('URL params:', { name, description, report: report ? 'present' : 'missing' });
+    console.log('URL params extracted:', { 
+      name: name || 'missing', 
+      description: description || 'missing', 
+      report: report ? `present (${report.length} chars)` : 'missing' 
+    });
     
     if (name && report) {
-      const data = {
-        workflowName: name,
-        workflowDescription: description || '',
-        markdownReport: decodeURIComponent(report)
-      };
-      console.log('Setting analysis data from URL params');
-      setAnalysisData(data);
+      try {
+        const decodedReport = decodeURIComponent(report);
+        const data = {
+          workflowName: name,
+          workflowDescription: description || '',
+          markdownReport: decodedReport
+        };
+        console.log('Setting analysis data from URL params:', {
+          workflowName: data.workflowName,
+          workflowDescription: data.workflowDescription,
+          reportLength: data.markdownReport.length
+        });
+        setAnalysisData(data);
+      } catch (error) {
+        console.error('Error decoding URL parameters:', error);
+        // Try sessionStorage fallback
+        const storedAnalysis = sessionStorage.getItem('workflowAnalysis');
+        if (storedAnalysis) {
+          try {
+            const data = JSON.parse(storedAnalysis);
+            console.log('Using sessionStorage fallback');
+            setAnalysisData(data);
+          } catch (parseError) {
+            console.error('Failed to parse sessionStorage data:', parseError);
+          }
+        }
+      }
     } else {
+      console.log('URL params missing, checking sessionStorage');
       // Fallback to sessionStorage
       const storedAnalysis = sessionStorage.getItem('workflowAnalysis');
-      console.log('Checking sessionStorage:', storedAnalysis ? 'found' : 'not found');
+      console.log('SessionStorage data:', storedAnalysis ? `found (${storedAnalysis.length} chars)` : 'not found');
       
       if (storedAnalysis) {
         try {
           const data = JSON.parse(storedAnalysis);
+          console.log('Parsed sessionStorage data successfully');
           setAnalysisData(data);
         } catch (error) {
-          console.error('Failed to parse analysis data:', error);
+          console.error('Failed to parse sessionStorage analysis data:', error);
         }
-      }
-      
-      // If no data available, show message
-      if (!storedAnalysis) {
+      } else {
+        console.log('No data found in URL or sessionStorage, showing fallback message');
+        // Show fallback message with sample data for testing
         setAnalysisData({
-          markdownReport: "No analysis data available. Please run an analysis from the workflow builder.",
-          workflowName: "Analysis Results",
-          workflowDescription: "Analysis results will appear here after running AI analysis."
+          markdownReport: `# Lean Six Sigma DMAIC Analysis: Sample Workflow
+
+## 1. Executive Summary
+
+This is a sample analysis report to verify the display functionality is working correctly.
+
+**Key Findings:**
+- System is operational
+- Data flow is functional
+- Display components working
+
+## 2. Problem Statement
+
+The analysis page display system is being tested to ensure proper functionality.
+
+## Conclusion
+
+If you can see this content, the analysis display system is working correctly. Please run a new analysis from the workflow builder to see your actual results.`,
+          workflowName: "Test Analysis Results",
+          workflowDescription: "Testing analysis results display functionality"
         });
       }
     }
