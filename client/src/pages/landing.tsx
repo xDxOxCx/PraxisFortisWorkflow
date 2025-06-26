@@ -48,7 +48,6 @@ export default function Landing() {
           </div>
         </div>
       </nav>
-
       {/* Hero Section */}
       <section className="py-20" style={{background: 'linear-gradient(to bottom right, hsl(215, 25%, 27%), hsl(208, 100%, 43%))'}}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -158,7 +157,6 @@ export default function Landing() {
           </div>
         </div>
       </section>
-
       {/* Features Section */}
       <section className="py-16 bg-card">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -236,9 +234,8 @@ export default function Landing() {
           </div>
         </div>
       </section>
-
       {/* Pricing Section */}
-      <section id="pricing" className="py-16" style={{backgroundColor: 'hsl(210, 15%, 8%)'}}>
+      <section id="pricing" className="py-16 bg-[#4372a1]" style={{backgroundColor: 'hsl(210, 15%, 8%)'}}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-montserrat font-bold text-primary-foreground mb-4">
@@ -375,7 +372,6 @@ export default function Landing() {
           </div>
         </div>
       </section>
-
       {/* Footer */}
       <footer className="text-primary-foreground py-12" style={{backgroundColor: 'hsl(215, 25%, 27%)'}}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
