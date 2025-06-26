@@ -1,20 +1,22 @@
-import { supabaseServiceRole } from "./db";
-import type { Database } from "@shared/database.types";
-
-// Interface for storage operations
-type User = Database['public']['Tables']['users']['Row'];
-type UserInsert = Database['public']['Tables']['users']['Insert'];
-type UserUpdate = Database['public']['Tables']['users']['Update'];
-type Workflow = Database['public']['Tables']['workflows']['Row'];
-type WorkflowInsert = Database['public']['Tables']['workflows']['Insert'];
-type WorkflowUpdate = Database['public']['Tables']['workflows']['Update'];
-type Template = Database['public']['Tables']['templates']['Row'];
-type TemplateInsert = Database['public']['Tables']['templates']['Insert'];
+import {
+  users,
+  workflows,
+  templates,
+  type User,
+  type UpsertUser,
+  type Workflow,
+  type InsertWorkflow,
+  type UpdateWorkflow,
+  type Template,
+  type InsertTemplate,
+} from "@shared/schema";
+import { db } from "./db";
+import { eq, sql } from "drizzle-orm";
 
 export interface IStorage {
   // User operations
   getUser(id: string): Promise<User | undefined>;
-  upsertUser(user: UserInsert): Promise<User>;
+  upsertUser(user: UpsertUser): Promise<User>;
   updateUserStripeInfo(userId: string, stripeCustomerId: string, stripeSubscriptionId: string): Promise<User>;
   updateSubscriptionStatus(userId: string, status: string): Promise<User>;
   incrementWorkflowUsage(userId: string): Promise<User>;
@@ -23,232 +25,142 @@ export interface IStorage {
   // Workflow operations
   getWorkflows(userId: string): Promise<Workflow[]>;
   getWorkflow(id: number, userId: string): Promise<Workflow | undefined>;
-  createWorkflow(workflow: WorkflowInsert): Promise<Workflow>;
-  updateWorkflow(workflow: WorkflowUpdate): Promise<Workflow>;
+  createWorkflow(workflow: InsertWorkflow): Promise<Workflow>;
+  updateWorkflow(workflow: UpdateWorkflow): Promise<Workflow>;
   deleteWorkflow(id: number, userId: string): Promise<void>;
 
   // Template operations
   getTemplates(): Promise<Template[]>;
   getTemplate(id: number): Promise<Template | undefined>;
-  createTemplate(template: TemplateInsert): Promise<Template>;
+  createTemplate(template: InsertTemplate): Promise<Template>;
 }
 
-export class SupabaseStorage implements IStorage {
+export class DatabaseStorage implements IStorage {
   async getUser(id: string): Promise<User | undefined> {
-    const { data, error } = await supabaseServiceRole
-      .from('users')
-      .select('*')
-      .eq('id', id)
-      .single();
-
-    if (error) {
-      if (error.code === 'PGRST116') return undefined;
-      throw error;
-    }
-    return data;
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
   }
 
-  async upsertUser(userData: UserInsert): Promise<User> {
-    const { data, error } = await supabaseServiceRole
-      .from('users')
-      .upsert(userData)
-      .select()
-      .single();
-
-    if (error) {
-      throw error;
-    }
-
-    return data;
+  async upsertUser(userData: UpsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(userData)
+      .onConflictDoUpdate({
+        target: users.id,
+        set: {
+          ...userData,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
+    return user;
   }
 
   async updateUserStripeInfo(userId: string, stripeCustomerId: string, stripeSubscriptionId: string): Promise<User> {
-    const { data, error } = await supabaseServiceRole
-      .from('users')
-      .update({
-        stripe_customer_id: stripeCustomerId,
-        stripe_subscription_id: stripeSubscriptionId,
-        subscription_status: "active",
-        updated_at: new Date().toISOString(),
+    const [user] = await db
+      .update(users)
+      .set({
+        stripeCustomerId,
+        stripeSubscriptionId,
+        updatedAt: new Date(),
       })
-      .eq('id', userId)
-      .select()
-      .single();
-    if (error) {
-      throw error;
-    }
-    return data;
+      .where(eq(users.id, userId))
+      .returning();
+    return user;
   }
 
   async updateSubscriptionStatus(userId: string, status: string): Promise<User> {
-    const { data, error } = await supabaseServiceRole
-      .from('users')
-      .update({
-        subscription_status: status,
-        updated_at: new Date().toISOString(),
+    const [user] = await db
+      .update(users)
+      .set({
+        subscriptionStatus: status,
+        updatedAt: new Date(),
       })
-      .eq('id', userId)
-      .select()
-      .single();
-    if (error) {
-      throw error;
-    }
-    return data;
+      .where(eq(users.id, userId))
+      .returning();
+    return user;
   }
 
   async incrementWorkflowUsage(userId: string): Promise<User> {
-    // First get current count
-    const { data: currentUser } = await supabaseServiceRole
-      .from('users')
-      .select('monthly_workflows')
-      .eq('id', userId)
-      .single();
-
-    const { data, error } = await supabaseServiceRole
-      .from('users')
-      .update({
-        monthly_workflows: (currentUser?.monthly_workflows || 0) + 1,
-        updated_at: new Date().toISOString(),
+    const [user] = await db
+      .update(users)
+      .set({
+        workflowsUsedThisMonth: sql`${users.workflowsUsedThisMonth} + 1`,
+        updatedAt: new Date(),
       })
-      .eq('id', userId)
-      .select()
-      .single();
-
-    if (error) {
-      throw error;
-    }
-
-    return data;
+      .where(eq(users.id, userId))
+      .returning();
+    return user;
   }
 
   async resetMonthlyWorkflows(userId: string): Promise<User> {
-    const { data, error } = await supabaseServiceRole
-      .from('users')
-      .update({
-        monthly_workflows: 0,
-        updated_at: new Date().toISOString(),
+    const [user] = await db
+      .update(users)
+      .set({
+        workflowsUsedThisMonth: 0,
+        lastWorkflowReset: new Date(),
+        updatedAt: new Date(),
       })
-      .eq('id', userId)
-      .select()
-      .single();
-    if (error) {
-      throw error;
-    }
-    return data;
+      .where(eq(users.id, userId))
+      .returning();
+    return user;
   }
 
-  // Workflow operations
   async getWorkflows(userId: string): Promise<Workflow[]> {
-    const { data, error } = await supabaseServiceRole
-      .from('workflows')
-      .select('*')
-      .eq('user_id', userId);
-
-    if (error) {
-      throw error;
-    }
-    return data || [];
+    return await db.select().from(workflows).where(eq(workflows.userId, userId));
   }
 
   async getWorkflow(id: number, userId: string): Promise<Workflow | undefined> {
-    const { data, error } = await supabaseServiceRole
-      .from('workflows')
-      .select('*')
-      .eq('id', id)
-      .eq('user_id', userId)
-      .single();
-
-    if (error) {
-      throw error;
-    }
-
-    return data;
-  }
-
-  async createWorkflow(workflow: WorkflowInsert): Promise<Workflow> {
-    const { data, error } = await supabaseServiceRole
-      .from('workflows')
-      .insert(workflow)
+    const [workflow] = await db
       .select()
-      .single();
-
-    if (error) {
-      throw error;
-    }
-
-    return data;
+      .from(workflows)
+      .where(eq(workflows.id, id) && eq(workflows.userId, userId));
+    return workflow || undefined;
   }
 
-  async updateWorkflow(workflow: WorkflowUpdate): Promise<Workflow> {
-    const { id, ...updates } = workflow;
+  async createWorkflow(workflow: InsertWorkflow): Promise<Workflow> {
+    const [newWorkflow] = await db
+      .insert(workflows)
+      .values(workflow)
+      .returning();
+    return newWorkflow;
+  }
 
-    const { data, error } = await supabaseServiceRole
-      .from('workflows')
-      .update({
-        ...updates,
-        updated_at: new Date().toISOString(),
+  async updateWorkflow(workflow: UpdateWorkflow): Promise<Workflow> {
+    const { id, ...updateData } = workflow;
+    const [updatedWorkflow] = await db
+      .update(workflows)
+      .set({
+        ...updateData,
+        updatedAt: new Date(),
       })
-      .eq('id', id)
-      .select()
-      .single();
-
-    if (error) {
-      throw error;
-    }
-
-    return data;
+      .where(eq(workflows.id, id))
+      .returning();
+    return updatedWorkflow;
   }
 
   async deleteWorkflow(id: number, userId: string): Promise<void> {
-    const { error } = await supabaseServiceRole
-      .from('workflows')
-      .delete()
-      .eq('id', id)
-      .eq('user_id', userId)
-
-    if (error) {
-      throw error;
-    }
+    await db
+      .delete(workflows)
+      .where(eq(workflows.id, id) && eq(workflows.userId, userId));
   }
 
-  // Template operations
   async getTemplates(): Promise<Template[]> {
-    const { data, error } = await supabaseServiceRole
-      .from('templates')
-      .select('*')
-      .eq('is_public', true)
-      .order('name');
-    if (error) {
-      throw error;
-    }
-    return data || [];
+    return await db.select().from(templates).where(eq(templates.isPublic, true));
   }
 
   async getTemplate(id: number): Promise<Template | undefined> {
-    const { data, error } = await supabaseServiceRole
-      .from('templates')
-      .select('*')
-      .eq('id', id)
-      .single();
-
-    if (error) {
-      throw error;
-    }
-    return data;
+    const [template] = await db.select().from(templates).where(eq(templates.id, id));
+    return template || undefined;
   }
 
-  async createTemplate(template: TemplateInsert): Promise<Template> {
-    const { data, error } = await supabaseServiceRole
-      .from('templates')
-      .insert(template)
-      .select()
-      .single();
-
-    if (error) {
-      throw error;
-    }
-    return data;
+  async createTemplate(template: InsertTemplate): Promise<Template> {
+    const [newTemplate] = await db
+      .insert(templates)
+      .values(template)
+      .returning();
+    return newTemplate;
   }
 }
 
-export const storage = new SupabaseStorage();
+export const storage = new DatabaseStorage();

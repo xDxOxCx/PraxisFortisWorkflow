@@ -3,35 +3,26 @@ import { createServer, type Server } from "http";
 import Stripe from "stripe";
 import { storage } from "./storage";
 import { analyzeWorkflow } from "./openai";
-import { bypassAuth } from "./supabaseAuth";
+import { setupAuth, isAuthenticated } from "./replitAuth";
 import express from "express";
 
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
 }
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2024-06-20", // Updated to a valid version
+  apiVersion: "2024-06-20",
 });
 
-// Mock user for bypassed auth
-const mockUser = {
-  id: "mock-user",
-  email: "demo@example.com", 
-  first_name: "Demo",
-  last_name: "User"
-};
-
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Mock auth middleware that returns mock user
-  const mockAuth = (req: any, res: any, next: any) => {
-    req.user = mockUser;
-    next();
-  };
+  // Auth middleware
+  await setupAuth(app);
 
   // Auth routes
-  app.get('/api/auth/user', mockAuth, async (req: any, res) => {
+  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
-      res.json(req.user);
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      res.json(user);
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
@@ -39,9 +30,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Workflows routes
-  app.get('/api/workflows', mockAuth, async (req: any, res) => {
+  app.get('/api/workflows', isAuthenticated, async (req: any, res) => {
     try {
-      const workflows = await storage.getWorkflows(req.user.id);
+      const userId = req.user.claims.sub;
+      const workflows = await storage.getWorkflows(userId);
       res.json(workflows);
     } catch (error) {
       console.error("Error fetching workflows:", error);
@@ -49,35 +41,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/workflows', mockAuth, async (req: any, res) => {
+  app.get('/api/workflows/:id', isAuthenticated, async (req: any, res) => {
     try {
-      // Check user's current plan and workflow limits
-      const user = await storage.getUser(req.user.id);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
+      const userId = req.user.claims.sub;
+      const workflowId = parseInt(req.params.id);
+      const workflow = await storage.getWorkflow(workflowId, userId);
+      
+      if (!workflow) {
+        return res.status(404).json({ message: "Workflow not found" });
       }
+      
+      res.json(workflow);
+    } catch (error) {
+      console.error("Error fetching workflow:", error);
+      res.status(500).json({ message: "Failed to fetch workflow" });
+    }
+  });
 
-      // Enforce workflow limits for free users (single trial workflow)
-      if (user.subscription_status === 'free' && user.total_workflows >= 1) {
-        return res.status(403).json({ 
-          message: "Free trial limit reached. Please upgrade to create more workflows.",
-          upgradeRequired: true
-        });
-      }
-
+  app.post('/api/workflows', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
       const workflowData = {
-        user_id: req.user.id,
-        name: req.body.name,
-        description: req.body.description || '',
-        flow_data: req.body.flow_data,
-        status: 'draft'
+        ...req.body,
+        userId,
       };
       
       const workflow = await storage.createWorkflow(workflowData);
-      
-      // Increment user's total workflow count
-      await storage.incrementWorkflowUsage(req.user.id);
-      
       res.json(workflow);
     } catch (error) {
       console.error("Error creating workflow:", error);
@@ -85,15 +74,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch('/api/workflows/:id', mockAuth, async (req: any, res) => {
+  app.put('/api/workflows/:id', isAuthenticated, async (req: any, res) => {
     try {
+      const userId = req.user.claims.sub;
       const workflowId = parseInt(req.params.id);
-      const updateData = {
+      
+      // Verify ownership
+      const existingWorkflow = await storage.getWorkflow(workflowId, userId);
+      if (!existingWorkflow) {
+        return res.status(404).json({ message: "Workflow not found" });
+      }
+      
+      const workflowData = {
         id: workflowId,
-        ...req.body
+        ...req.body,
       };
       
-      const workflow = await storage.updateWorkflow(updateData);
+      const workflow = await storage.updateWorkflow(workflowData);
       res.json(workflow);
     } catch (error) {
       console.error("Error updating workflow:", error);
@@ -101,240 +98,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/workflows/:id/analyze', mockAuth, async (req: any, res) => {
+  app.delete('/api/workflows/:id', isAuthenticated, async (req: any, res) => {
     try {
+      const userId = req.user.claims.sub;
       const workflowId = parseInt(req.params.id);
-      const workflow = await storage.getWorkflow(workflowId, req.user.id);
       
+      await storage.deleteWorkflow(workflowId, userId);
+      res.json({ message: "Workflow deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting workflow:", error);
+      res.status(500).json({ message: "Failed to delete workflow" });
+    }
+  });
+
+  // AI Analysis route
+  app.post('/api/workflows/:id/analyze', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const workflowId = parseInt(req.params.id);
+      
+      // Verify ownership
+      const workflow = await storage.getWorkflow(workflowId, userId);
       if (!workflow) {
         return res.status(404).json({ message: "Workflow not found" });
       }
-
-      const analysis = await analyzeWorkflow(workflow.flow_data, workflow.name);
+      
+      // Analyze the workflow
+      const analysis = await analyzeWorkflow(workflow.flowData, workflow.name);
       
       // Update workflow with analysis
-      await storage.updateWorkflow({
+      const updatedWorkflow = await storage.updateWorkflow({
         id: workflowId,
-        ai_analysis: analysis,
-        mermaid_code: analysis.mermaidCode
+        aiAnalysis: analysis as any,
+        status: "analyzed",
       });
-
-      res.json(analysis);
-    } catch (error: any) {
+      
+      res.json(updatedWorkflow);
+    } catch (error) {
       console.error("Error analyzing workflow:", error);
-      res.status(500).json({ message: "Failed to analyze workflow", error: error.message });
+      res.status(500).json({ message: "Failed to analyze workflow" });
     }
   });
 
   // Templates routes
-  app.get('/api/templates', bypassAuth, async (req, res) => {
-    const templates = [
-      {
-        id: 1,
-        name: "Patient Check-in Process",
-        description: "Streamlined patient registration and check-in workflow for specialty clinics",
-        category: "Patient Care",
-        icon: "UserCheck",
-        flow_data: {
-          steps: [
-            { id: "1", text: "Patient arrives at clinic", type: "start" },
-            { id: "2", text: "Verify insurance and eligibility", type: "process" },
-            { id: "3", text: "Complete registration forms", type: "process" },
-            { id: "4", text: "Update medical history", type: "process" },
-            { id: "5", text: "Take vital signs", type: "process" },
-            { id: "6", text: "Patient ready for provider", type: "end" }
-          ]
-        },
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      },
-      {
-        id: 2,
-        name: "Prescription Management",
-        description: "Efficient prescription processing and patient medication management",
-        category: "Medication",
-        icon: "Pill",
-        flow_data: {
-          steps: [
-            { id: "1", text: "Provider writes prescription", type: "start" },
-            { id: "2", text: "Check drug interactions", type: "decision" },
-            { id: "3", text: "Verify insurance coverage", type: "process" },
-            { id: "4", text: "Send to pharmacy", type: "process" },
-            { id: "5", text: "Patient education provided", type: "process" },
-            { id: "6", text: "Prescription completed", type: "end" }
-          ]
-        },
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      },
-      {
-        id: 3,
-        name: "Lab Result Processing",
-        description: "Systematic approach to reviewing and communicating lab results",
-        category: "Diagnostics",
-        icon: "TestTube",
-        flow_data: {
-          steps: [
-            { id: "1", text: "Lab results received", type: "start" },
-            { id: "2", text: "Provider reviews results", type: "process" },
-            { id: "3", text: "Results abnormal?", type: "decision" },
-            { id: "4", text: "Contact patient immediately", type: "process" },
-            { id: "5", text: "Schedule follow-up", type: "process" },
-            { id: "6", text: "Document in patient record", type: "end" }
-          ]
-        },
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      },
-      {
-        id: 4,
-        name: "Appointment Scheduling",
-        description: "Optimized patient appointment scheduling and reminder system",
-        category: "Scheduling",
-        icon: "Calendar",
-        flow_data: {
-          steps: [
-            { id: "1", text: "Patient requests appointment", type: "start" },
-            { id: "2", text: "Check provider availability", type: "process" },
-            { id: "3", text: "Verify insurance authorization", type: "process" },
-            { id: "4", text: "Schedule appointment", type: "process" },
-            { id: "5", text: "Send confirmation and reminders", type: "process" },
-            { id: "6", text: "Appointment confirmed", type: "end" }
-          ]
-        },
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      },
-      {
-        id: 5,
-        name: "Billing and Claims",
-        description: "Streamlined billing process and insurance claim submission",
-        category: "Financial",
-        icon: "CreditCard",
-        flow_data: {
-          steps: [
-            { id: "1", text: "Service completed", type: "start" },
-            { id: "2", text: "Code procedures and diagnoses", type: "process" },
-            { id: "3", text: "Verify coding accuracy", type: "decision" },
-            { id: "4", text: "Submit insurance claim", type: "process" },
-            { id: "5", text: "Process patient payment", type: "process" },
-            { id: "6", text: "Billing cycle completed", type: "end" }
-          ]
-        },
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      }
-    ];
-    
-    res.json(templates);
+  app.get('/api/templates', async (req, res) => {
+    try {
+      const templates = await storage.getTemplates();
+      res.json(templates);
+    } catch (error) {
+      console.error("Error fetching templates:", error);
+      res.status(500).json({ message: "Failed to fetch templates" });
+    }
   });
 
-  // Get single template route
-  app.get('/api/templates/:id', bypassAuth, async (req, res) => {
+  app.get('/api/templates/:id', async (req, res) => {
     try {
       const templateId = parseInt(req.params.id);
-      console.log('Fetching template with ID:', templateId);
-      
-      // Use the same hardcoded templates array
-      const templates = [
-        {
-          id: 1,
-          name: "Patient Check-in Process",
-          description: "Streamlined patient registration and check-in workflow for specialty clinics",
-          category: "Patient Care",
-          icon: "UserCheck",
-          flow_data: {
-            steps: [
-              { id: "1", text: "Patient arrives at clinic", type: "start" },
-              { id: "2", text: "Verify insurance and eligibility", type: "process" },
-              { id: "3", text: "Complete registration forms", type: "process" },
-              { id: "4", text: "Update medical history", type: "process" },
-              { id: "5", text: "Take vital signs", type: "process" },
-              { id: "6", text: "Patient ready for provider", type: "end" }
-            ]
-          },
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        },
-        {
-          id: 2,
-          name: "Prescription Management",
-          description: "Efficient prescription processing and patient medication management",
-          category: "Medication",
-          icon: "Pill",
-          flow_data: {
-            steps: [
-              { id: "1", text: "Provider writes prescription", type: "start" },
-              { id: "2", text: "Check drug interactions", type: "decision" },
-              { id: "3", text: "Verify insurance coverage", type: "process" },
-              { id: "4", text: "Send to pharmacy", type: "process" },
-              { id: "5", text: "Patient education provided", type: "process" },
-              { id: "6", text: "Prescription completed", type: "end" }
-            ]
-          },
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        },
-        {
-          id: 3,
-          name: "Lab Result Processing",
-          description: "Systematic approach to reviewing and communicating lab results",
-          category: "Diagnostics",
-          icon: "TestTube",
-          flow_data: {
-            steps: [
-              { id: "1", text: "Lab results received", type: "start" },
-              { id: "2", text: "Provider reviews results", type: "process" },
-              { id: "3", text: "Results abnormal?", type: "decision" },
-              { id: "4", text: "Contact patient immediately", type: "process" },
-              { id: "5", text: "Schedule follow-up", type: "process" },
-              { id: "6", text: "Document in patient record", type: "end" }
-            ]
-          },
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        },
-        {
-          id: 4,
-          name: "Appointment Scheduling",
-          description: "Optimized patient appointment scheduling and reminder system",
-          category: "Scheduling",
-          icon: "Calendar",
-          flow_data: {
-            steps: [
-              { id: "1", text: "Patient requests appointment", type: "start" },
-              { id: "2", text: "Check provider availability", type: "process" },
-              { id: "3", text: "Verify insurance authorization", type: "process" },
-              { id: "4", text: "Schedule appointment", type: "process" },
-              { id: "5", text: "Send confirmation and reminders", type: "process" },
-              { id: "6", text: "Appointment confirmed", type: "end" }
-            ]
-          },
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        },
-        {
-          id: 5,
-          name: "Billing and Claims",
-          description: "Streamlined billing process and insurance claim submission",
-          category: "Financial",
-          icon: "CreditCard",
-          flow_data: {
-            steps: [
-              { id: "1", text: "Service completed", type: "start" },
-              { id: "2", text: "Code procedures and diagnoses", type: "process" },
-              { id: "3", text: "Verify coding accuracy", type: "decision" },
-              { id: "4", text: "Submit insurance claim", type: "process" },
-              { id: "5", text: "Process patient payment", type: "process" },
-              { id: "6", text: "Billing cycle completed", type: "end" }
-            ]
-          },
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        }
-      ];
-      
-      const template = templates.find(t => t.id === templateId);
+      const template = await storage.getTemplate(templateId);
       
       if (!template) {
         return res.status(404).json({ message: "Template not found" });
@@ -347,85 +167,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Analyze workflow route (for direct workflow analysis)
-  app.post('/api/analyze-workflow', async (req: any, res) => {
+  // Stripe subscription routes
+  app.post('/api/create-checkout-session', isAuthenticated, async (req: any, res) => {
     try {
-      console.log("=== WORKFLOW ANALYSIS REQUEST ===");
-      console.log("Request body:", JSON.stringify(req.body, null, 2));
+      const { priceId } = req.body;
+      const userId = req.user.claims.sub;
       
-      const body = req.body;
-      let workflowData;
-      let workflowName = "Untitled Workflow";
-      
-      // Extract workflow name
-      if (body.workflowName) workflowName = body.workflowName;
-      else if (body.name) workflowName = body.name;
-      
-      // Extract workflow data - handle multiple formats
-      if (body.workflowData && body.workflowData.steps) {
-        workflowData = body.workflowData;
-      } else if (body.flow_data && body.flow_data.steps) {
-        workflowData = body.flow_data;
-      } else if (body.steps) {
-        workflowData = { steps: body.steps };
-      } else {
-        console.log("No valid workflow data found");
-        return res.status(400).json({ message: "No workflow steps provided" });
-      }
-      
-      console.log("Processing workflow:", workflowName);
-      console.log("Workflow steps:", workflowData.steps);
-      
-      if (!workflowData.steps || workflowData.steps.length === 0) {
-        return res.status(400).json({ message: "Workflow must have at least one step" });
-      }
-
-      const analysis = await analyzeWorkflow(workflowData, workflowName);
-      console.log("Analysis completed successfully");
-      res.json(analysis);
-    } catch (error: any) {
-      console.error("Error analyzing workflow:", error);
-      res.status(500).json({ message: "Failed to analyze workflow", error: error.message });
-    }
-  });
-
-  // Stripe payment route for one-time payments
-  app.post("/api/create-payment-intent", async (req, res) => {
-    try {
-      const { amount } = req.body;
-      const paymentIntent = await stripe.paymentIntents.create({
-        amount: Math.round(amount * 100), // Convert to cents
-        currency: "usd",
+      const session = await stripe.checkout.sessions.create({
+        mode: 'subscription',
+        payment_method_types: ['card'],
+        line_items: [
+          {
+            price: priceId,
+            quantity: 1,
+          },
+        ],
+        success_url: `${req.headers.origin}/subscribe?success=true`,
+        cancel_url: `${req.headers.origin}/subscribe?canceled=true`,
+        client_reference_id: userId,
       });
-      res.json({ clientSecret: paymentIntent.client_secret });
-    } catch (error: any) {
-      res
-        .status(500)
-        .json({ message: "Error creating payment intent: " + error.message });
-    }
-  });
-
-  // User stats route
-  app.get('/api/user/stats', mockAuth, async (req: any, res) => {
-    try {
-      const userId = req.user.id;
-      const workflows = await storage.getWorkflows(userId);
       
-      const totalWorkflows = workflows.length;
-      const timeSaved = workflows.reduce((total, w) => total + 0, 0); // Simplified for now
-      const avgEfficiency = workflows.length > 0 ? 85 : 0; // Simplified for now
-      
-      res.json({
-        totalWorkflows,
-        monthlyWorkflows: 0, // Simplified for now
-        timeSaved: Math.round(timeSaved),
-        efficiency: Math.round(avgEfficiency),
-        subscriptionStatus: 'free'
-      });
+      res.json({ url: session.url });
     } catch (error) {
-      console.error("Error fetching user stats:", error);
-      res.status(500).json({ message: "Failed to fetch user stats" });
+      console.error("Error creating checkout session:", error);
+      res.status(500).json({ message: "Failed to create checkout session" });
     }
+  });
+
+  // Health check
+  app.get('/api/health', (req, res) => {
+    res.json({ status: 'ok', timestamp: new Date().toISOString() });
   });
 
   const httpServer = createServer(app);
