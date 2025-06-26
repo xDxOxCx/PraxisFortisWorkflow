@@ -190,28 +190,7 @@ export default function WorkflowBuilder() {
         steps: steps
       };
 
-      const response = await fetch('/api/analyze-workflow', {
-        method: 'POST',
-        body: JSON.stringify(workflowData),
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include' // Include session cookies for authentication
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        if (response.status === 401) {
-          toast({
-            title: "Authentication Required",
-            description: "Please sign in again to continue.",
-            variant: "destructive",
-          });
-          window.location.href = "/api/login";
-          return;
-        }
-        throw new Error(errorData.message || `Analysis failed with status ${response.status}`);
-      }
-
-      const result = await response.json();
+      const result = await apiRequest('POST', '/api/analyze-workflow', workflowData);
       console.log("AI Analysis result:", result);
 
       setAnalysisResult(result);
@@ -220,10 +199,22 @@ export default function WorkflowBuilder() {
         title: "Analysis Complete",
         description: "Your workflow has been analyzed successfully.",
       });
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Analysis error:', error);
+      
+      if (error.message?.includes('401') || error.message?.includes('Unauthorized')) {
+        toast({
+          title: "Authentication Required",
+          description: "Please sign in again to continue.",
+          variant: "destructive",
+        });
+        window.location.href = "/api/login";
+        return;
+      }
+      
       toast({
         title: "Analysis Failed",
-        description: "Failed to analyze workflow. Please try again.",
+        description: error.message || "Failed to analyze workflow. Please try again.",
         variant: "destructive",
       });
     } finally {
