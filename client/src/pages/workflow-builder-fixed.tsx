@@ -40,6 +40,108 @@ export default function WorkflowBuilder() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<any>(null);
 
+  // Check for template parameter in URL
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const templateId = urlParams.get('template');
+    
+    if (templateId) {
+      // Hardcoded templates to avoid API dependency
+      const templates = {
+        "1": {
+          name: "Patient Check-in Process",
+          description: "Streamlined patient registration and check-in workflow for specialty clinics",
+          flow_data: {
+            steps: [
+              { id: "1", text: "Patient arrives at clinic", type: "start" },
+              { id: "2", text: "Verify insurance and eligibility", type: "process" },
+              { id: "3", text: "Complete registration forms", type: "process" },
+              { id: "4", text: "Update medical history", type: "process" },
+              { id: "5", text: "Take vital signs", type: "process" },
+              { id: "6", text: "Patient ready for provider", type: "end" }
+            ]
+          }
+        },
+        "2": {
+          name: "Prescription Management",
+          description: "Efficient prescription processing and patient medication management",
+          flow_data: {
+            steps: [
+              { id: "1", text: "Provider writes prescription", type: "start" },
+              { id: "2", text: "Check drug interactions", type: "decision" },
+              { id: "3", text: "Verify insurance coverage", type: "process" },
+              { id: "4", text: "Send to pharmacy", type: "process" },
+              { id: "5", text: "Patient education provided", type: "process" },
+              { id: "6", text: "Prescription completed", type: "end" }
+            ]
+          }
+        },
+        "3": {
+          name: "Lab Result Processing",
+          description: "Systematic approach to reviewing and communicating lab results",
+          flow_data: {
+            steps: [
+              { id: "1", text: "Lab results received", type: "start" },
+              { id: "2", text: "Provider reviews results", type: "process" },
+              { id: "3", text: "Results abnormal?", type: "decision" },
+              { id: "4", text: "Contact patient immediately", type: "process" },
+              { id: "5", text: "Schedule follow-up", type: "process" },
+              { id: "6", text: "Document in patient record", type: "end" }
+            ]
+          }
+        },
+        "4": {
+          name: "Appointment Scheduling",
+          description: "Optimized patient appointment scheduling and reminder system",
+          flow_data: {
+            steps: [
+              { id: "1", text: "Patient requests appointment", type: "start" },
+              { id: "2", text: "Check provider availability", type: "process" },
+              { id: "3", text: "Verify insurance authorization", type: "process" },
+              { id: "4", text: "Schedule appointment", type: "process" },
+              { id: "5", text: "Send confirmation and reminders", type: "process" },
+              { id: "6", text: "Appointment confirmed", type: "end" }
+            ]
+          }
+        },
+        "5": {
+          name: "Billing and Claims",
+          description: "Streamlined billing process and insurance claim submission",
+          flow_data: {
+            steps: [
+              { id: "1", text: "Service completed", type: "start" },
+              { id: "2", text: "Code procedures and diagnoses", type: "process" },
+              { id: "3", text: "Verify coding accuracy", type: "decision" },
+              { id: "4", text: "Submit insurance claim", type: "process" },
+              { id: "5", text: "Process patient payment", type: "process" },
+              { id: "6", text: "Billing cycle completed", type: "end" }
+            ]
+          }
+        }
+      };
+
+      const template = templates[templateId as keyof typeof templates];
+      
+      if (template) {
+        setWorkflowName(template.name);
+        setWorkflowDescription(template.description);
+        if (template.flow_data && template.flow_data.steps) {
+          setSteps(template.flow_data.steps);
+        }
+        toast({
+          title: "Template Loaded",
+          description: `Loaded "${template.name}" template with ${template.flow_data?.steps?.length || 0} steps`,
+        });
+      } else {
+        toast({
+          title: "Template Not Found",
+          description: "The requested template could not be found",
+          variant: "destructive",
+        });
+      }
+    }
+  }, [toast]);
+
   // Save workflow mutation
   const saveWorkflowMutation = useMutation({
     mutationFn: async () => {

@@ -215,7 +215,108 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/templates/:id', bypassAuth, async (req, res) => {
     try {
       const templateId = parseInt(req.params.id);
-      const template = await storage.getTemplate(templateId);
+      console.log('Fetching template with ID:', templateId);
+      
+      // Use the same hardcoded templates array
+      const templates = [
+        {
+          id: 1,
+          name: "Patient Check-in Process",
+          description: "Streamlined patient registration and check-in workflow for specialty clinics",
+          category: "Patient Care",
+          icon: "UserCheck",
+          flow_data: {
+            steps: [
+              { id: "1", text: "Patient arrives at clinic", type: "start" },
+              { id: "2", text: "Verify insurance and eligibility", type: "process" },
+              { id: "3", text: "Complete registration forms", type: "process" },
+              { id: "4", text: "Update medical history", type: "process" },
+              { id: "5", text: "Take vital signs", type: "process" },
+              { id: "6", text: "Patient ready for provider", type: "end" }
+            ]
+          },
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        },
+        {
+          id: 2,
+          name: "Prescription Management",
+          description: "Efficient prescription processing and patient medication management",
+          category: "Medication",
+          icon: "Pill",
+          flow_data: {
+            steps: [
+              { id: "1", text: "Provider writes prescription", type: "start" },
+              { id: "2", text: "Check drug interactions", type: "decision" },
+              { id: "3", text: "Verify insurance coverage", type: "process" },
+              { id: "4", text: "Send to pharmacy", type: "process" },
+              { id: "5", text: "Patient education provided", type: "process" },
+              { id: "6", text: "Prescription completed", type: "end" }
+            ]
+          },
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        },
+        {
+          id: 3,
+          name: "Lab Result Processing",
+          description: "Systematic approach to reviewing and communicating lab results",
+          category: "Diagnostics",
+          icon: "TestTube",
+          flow_data: {
+            steps: [
+              { id: "1", text: "Lab results received", type: "start" },
+              { id: "2", text: "Provider reviews results", type: "process" },
+              { id: "3", text: "Results abnormal?", type: "decision" },
+              { id: "4", text: "Contact patient immediately", type: "process" },
+              { id: "5", text: "Schedule follow-up", type: "process" },
+              { id: "6", text: "Document in patient record", type: "end" }
+            ]
+          },
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        },
+        {
+          id: 4,
+          name: "Appointment Scheduling",
+          description: "Optimized patient appointment scheduling and reminder system",
+          category: "Scheduling",
+          icon: "Calendar",
+          flow_data: {
+            steps: [
+              { id: "1", text: "Patient requests appointment", type: "start" },
+              { id: "2", text: "Check provider availability", type: "process" },
+              { id: "3", text: "Verify insurance authorization", type: "process" },
+              { id: "4", text: "Schedule appointment", type: "process" },
+              { id: "5", text: "Send confirmation and reminders", type: "process" },
+              { id: "6", text: "Appointment confirmed", type: "end" }
+            ]
+          },
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        },
+        {
+          id: 5,
+          name: "Billing and Claims",
+          description: "Streamlined billing process and insurance claim submission",
+          category: "Financial",
+          icon: "CreditCard",
+          flow_data: {
+            steps: [
+              { id: "1", text: "Service completed", type: "start" },
+              { id: "2", text: "Code procedures and diagnoses", type: "process" },
+              { id: "3", text: "Verify coding accuracy", type: "decision" },
+              { id: "4", text: "Submit insurance claim", type: "process" },
+              { id: "5", text: "Process patient payment", type: "process" },
+              { id: "6", text: "Billing cycle completed", type: "end" }
+            ]
+          },
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }
+      ];
+      
+      const template = templates.find(t => t.id === templateId);
       
       if (!template) {
         return res.status(404).json({ message: "Template not found" });
