@@ -79,7 +79,7 @@ export default function Navbar() {
               </div>
             </div>
           </div>
-          
+
           <div className="flex items-center space-x-4">
             {user?.subscriptionStatus === 'free' && (
               <>
@@ -98,7 +98,7 @@ export default function Navbar() {
                 </Button>
               </>
             )}
-            
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <div className="flex items-center space-x-2 cursor-pointer">
