@@ -6,7 +6,8 @@ const openai = new OpenAI({
 });
 
 export interface WorkflowAnalysis {
-  improvements: Array<{
+  markdownReport: string;
+  improvements?: Array<{
     id: string;
     title: string;
     description: string;
@@ -22,8 +23,8 @@ export interface WorkflowAnalysis {
     priority: number; // 1-5 scale
     effort: "low" | "medium" | "high";
   }>;
-  mermaidCode: string;
-  summary: {
+  mermaidCode?: string;
+  summary?: {
     totalTimeSaved: number;
     efficiencyGain: number;
     riskAreas: string[];
@@ -208,14 +209,38 @@ Ensure all recommendations are healthcare-specific, actionable, and include real
       ],
       response_format: { type: "json_object" },
       temperature: 0.7,
-      max_tokens: 2000,
+      max_tokens: 4000,
     });
 
-    const result = JSON.parse(response.choices[0].message.content || "{}");
+    const content = response.choices[0].message.content;
+    if (!content) {
+      throw new Error("No content received from OpenAI");
+    }
+
+    let result;
+    try {
+      result = JSON.parse(content);
+    } catch (parseError) {
+      console.error("JSON parse error:", parseError);
+      console.error("Response content:", content);
+      
+      // Fallback: create a simple analysis result with the raw content
+      result = {
+        markdownReport: content,
+        improvements: [],
+        mermaidCode: "",
+        summary: {
+          totalTimeSaved: 0,
+          efficiencyGain: 0,
+          riskAreas: [],
+          recommendations: []
+        }
+      };
+    }
     
     // Validate the response structure
-    if (!result.improvements || !result.mermaidCode || !result.summary) {
-      throw new Error("Invalid response structure from OpenAI");
+    if (!result.markdownReport) {
+      throw new Error("Invalid response structure from OpenAI - missing markdownReport");
     }
 
     return result as WorkflowAnalysis;

@@ -330,15 +330,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Analyze workflow route (for direct workflow analysis)
-  app.post('/api/analyze-workflow', bypassAuth, async (req: any, res) => {
+  app.post('/api/analyze-workflow', async (req: any, res) => {
     try {
-      const { name, description, flow_data } = req.body;
+      console.log("=== WORKFLOW ANALYSIS REQUEST ===");
+      console.log("Request body:", JSON.stringify(req.body, null, 2));
       
-      if (!flow_data || !flow_data.steps || flow_data.steps.length === 0) {
+      const body = req.body;
+      let workflowData;
+      let workflowName = "Untitled Workflow";
+      
+      // Extract workflow name
+      if (body.workflowName) workflowName = body.workflowName;
+      else if (body.name) workflowName = body.name;
+      
+      // Extract workflow data - handle multiple formats
+      if (body.workflowData && body.workflowData.steps) {
+        workflowData = body.workflowData;
+      } else if (body.flow_data && body.flow_data.steps) {
+        workflowData = body.flow_data;
+      } else if (body.steps) {
+        workflowData = { steps: body.steps };
+      } else {
+        console.log("No valid workflow data found");
         return res.status(400).json({ message: "No workflow steps provided" });
       }
+      
+      console.log("Processing workflow:", workflowName);
+      console.log("Workflow steps:", workflowData.steps);
+      
+      if (!workflowData.steps || workflowData.steps.length === 0) {
+        return res.status(400).json({ message: "Workflow must have at least one step" });
+      }
 
-      const analysis = await analyzeWorkflow(flow_data, name || "Untitled Workflow");
+      const analysis = await analyzeWorkflow(workflowData, workflowName);
+      console.log("Analysis completed successfully");
       res.json(analysis);
     } catch (error: any) {
       console.error("Error analyzing workflow:", error);
