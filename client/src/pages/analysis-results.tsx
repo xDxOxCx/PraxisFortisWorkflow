@@ -16,17 +16,44 @@ export default function AnalysisResults() {
   const [, setLocation] = useLocation();
 
   useEffect(() => {
-    const storedAnalysis = sessionStorage.getItem('workflowAnalysis');
-    if (storedAnalysis) {
-      try {
-        const data = JSON.parse(storedAnalysis);
-        setAnalysisData(data);
-      } catch (error) {
-        console.error('Failed to parse analysis data:', error);
-        setLocation('/workflow-builder');
-      }
+    // Get data from URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const name = urlParams.get('name');
+    const description = urlParams.get('description');
+    const report = urlParams.get('report');
+    
+    console.log('URL params:', { name, description, report: report ? 'present' : 'missing' });
+    
+    if (name && report) {
+      const data = {
+        workflowName: name,
+        workflowDescription: description || '',
+        markdownReport: decodeURIComponent(report)
+      };
+      console.log('Setting analysis data from URL params');
+      setAnalysisData(data);
     } else {
-      setLocation('/workflow-builder');
+      // Fallback to sessionStorage
+      const storedAnalysis = sessionStorage.getItem('workflowAnalysis');
+      console.log('Checking sessionStorage:', storedAnalysis ? 'found' : 'not found');
+      
+      if (storedAnalysis) {
+        try {
+          const data = JSON.parse(storedAnalysis);
+          setAnalysisData(data);
+        } catch (error) {
+          console.error('Failed to parse analysis data:', error);
+        }
+      }
+      
+      // If no data available, show message
+      if (!storedAnalysis) {
+        setAnalysisData({
+          markdownReport: "No analysis data available. Please run an analysis from the workflow builder.",
+          workflowName: "Analysis Results",
+          workflowDescription: "Analysis results will appear here after running AI analysis."
+        });
+      }
     }
   }, [setLocation]);
 
