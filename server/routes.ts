@@ -11,15 +11,12 @@ const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SEC
 }) : null;
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Setup authentication
   setupAuth(app);
 
-  // Health check
   app.get("/api/health", (_req, res) => {
     res.json({ status: "ok", timestamp: new Date().toISOString() });
   });
 
-  // User stats endpoint
   app.get('/api/user/stats', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.id;
@@ -48,7 +45,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Workflows endpoints
   app.get('/api/workflows', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.id;
@@ -69,7 +65,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "User not found" });
       }
 
-      // Check workflow limits based on subscription
       if (user.subscriptionStatus === 'free' && user.totalWorkflows >= 1) {
         return res.status(403).json({ 
           message: "Free trial limit reached. Please upgrade to create more workflows.",
@@ -85,9 +80,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         status: 'draft'
       });
 
-      // Increment usage counters
       await storage.incrementWorkflowUsage(userId);
-
       res.json(workflow);
     } catch (error) {
       console.error("Error creating workflow:", error);
@@ -143,52 +136,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // AI Analysis endpoint
-  app.post('/api/workflows/:id/analyze', isAuthenticated, async (req: any, res) => {
+  // NEW SIMPLE ANALYSIS ENDPOINT
+  app.post('/api/analyze-workflow', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.id;
-      const workflowId = parseInt(req.params.id);
+      console.log("Analysis endpoint called");
+      console.log("Request body:", req.body);
 
-      const workflow = await storage.getWorkflow(workflowId, userId);
-      if (!workflow) {
-        return res.status(404).json({ message: "Workflow not found" });
-      }
+      const { workflowName, steps } = req.body;
 
-      const analysis = await analyzeWorkflow(workflow.flowData, workflow.name);
-
-      const updatedWorkflow = await storage.updateWorkflow({
-        id: workflowId,
-        userId,
-        aiAnalysis: analysis,
-        mermaidCode: analysis.mermaidCode || null
-      });
-
-      res.json(updatedWorkflow);
-    } catch (error) {
-      console.error("Error analyzing workflow:", error);
-      res.status(500).json({ message: "Failed to analyze workflow" });
-    }
-  });
-
-  // Direct workflow analysis endpoint (for unsaved workflows)
-  app.post('/api/workflows/analyze', isAuthenticated, async (req: any, res) => {
-    try {
-      const { name, description, steps } = req.body;
-      
-      if (!name || !steps || steps.length === 0) {
+      if (!workflowName || !steps || !Array.isArray(steps)) {
         return res.status(400).json({ message: "Missing workflow name or steps" });
       }
 
-      console.log("Analyzing workflow:", name, "with", steps.length, "steps");
-      
-      const workflowData = { steps };
-      const analysis = await analyzeWorkflow(workflowData, name);
-      
-      console.log("Analysis completed successfully");
+      const analysis = await analyzeWorkflow(steps, workflowName);
+
+      console.log("Sending analysis response");
       res.json(analysis);
     } catch (error) {
-      console.error("Error analyzing workflow:", error);
-      res.status(500).json({ message: "Failed to analyze workflow" });
+      console.error("Analysis error:", error);
+      res.status(500).json({ message: "Analysis failed: " + error.message });
     }
   });
 

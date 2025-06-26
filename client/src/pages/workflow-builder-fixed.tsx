@@ -1,4 +1,3 @@
-
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
@@ -25,19 +24,6 @@ import {
   Type
 } from 'lucide-react';
 import MarkdownRenderer from '@/components/workflow/markdown-renderer';
-import { AnalysisTabs } from "@/components/workflow/analysis-tabs";
-
-interface Workflow {
-  id: number;
-  name: string;
-  description: string;
-  flowData: any;
-  status: 'draft' | 'active' | 'archived';
-  aiAnalysis?: any;
-  mermaidCode?: string;
-  createdAt: string;
-  updatedAt: string;
-}
 
 interface WorkflowStep {
   id: string;
@@ -50,8 +36,7 @@ export default function WorkflowBuilder() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { isAuthenticated, isLoading } = useAuth();
-  
-  // All state hooks declared at the top level - NEVER conditionally
+
   const [workflowName, setWorkflowName] = useState('');
   const [workflowDescription, setWorkflowDescription] = useState('');
   const [steps, setSteps] = useState<WorkflowStep[]>([]);
@@ -59,12 +44,8 @@ export default function WorkflowBuilder() {
   const [textInput, setTextInput] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<any>(null);
-  
-  // All other hooks at top level
-  const workflowId = location.includes('/workflow/') ? 
-    parseInt(location.split('/workflow/')[1]) : null;
 
-  // Save workflow mutation - MUST be declared before any conditional returns
+  // Save workflow mutation
   const saveWorkflowMutation = useMutation({
     mutationFn: async () => {
       const workflowData = { steps };
@@ -90,13 +71,12 @@ export default function WorkflowBuilder() {
     },
   });
 
-  // Check for template parameter in URL
+  // Template loading
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const templateId = urlParams.get('template');
 
     if (templateId) {
-      // Hardcoded templates to avoid API dependency
       const templates = {
         "1": {
           name: "Patient Check-in Process",
@@ -171,7 +151,6 @@ export default function WorkflowBuilder() {
       };
 
       const template = templates[templateId as keyof typeof templates];
-
       if (template) {
         setWorkflowName(template.name);
         setWorkflowDescription(template.description);
@@ -182,12 +161,6 @@ export default function WorkflowBuilder() {
           }));
           setSteps(typedSteps);
         }
-      } else {
-        toast({
-          title: "Template Not Found",
-          description: "The requested template could not be found",
-          variant: "destructive",
-        });
       }
     }
   }, [toast]);
@@ -195,27 +168,23 @@ export default function WorkflowBuilder() {
   // Step management functions
   const addStep = () => {
     if (!newStepText.trim()) return;
-
     const newStep: WorkflowStep = {
       id: Date.now().toString(),
       text: newStepText,
       type: 'process'
     };
-
     setSteps([...steps, newStep]);
     setNewStepText('');
   };
 
   const createFromText = () => {
     if (!textInput.trim()) return;
-
     const lines = textInput.split('\n').filter(line => line.trim());
     const newSteps: WorkflowStep[] = lines.map((line, index) => ({
       id: `${Date.now()}-${index}`,
       text: line.trim(),
       type: index === 0 ? 'start' : index === lines.length - 1 ? 'end' : 'process'
     }));
-
     setSteps([...steps, ...newSteps]);
     setTextInput('');
   };
@@ -244,7 +213,7 @@ export default function WorkflowBuilder() {
     setSteps(newSteps);
   };
 
-  // Analyze workflow with AI - Fixed authentication
+  // SIMPLE ANALYSIS FUNCTION
   const analyzeWorkflow = async () => {
     if (steps.length === 0) {
       toast({
@@ -257,39 +226,37 @@ export default function WorkflowBuilder() {
 
     setIsAnalyzing(true);
     try {
-      const workflowData = {
-        name: workflowName,
-        description: workflowDescription,
-        steps: steps
-      };
+      console.log('Starting analysis...');
 
-      console.log('Sending analysis request:', workflowData);
+      const response = await fetch('/api/analyze-workflow', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          workflowName: workflowName || 'Untitled Workflow',
+          steps: steps
+        })
+      });
 
-      // Use apiRequest helper - it returns the parsed JSON directly
-      const analysis = await apiRequest('POST', '/api/workflows/analyze', workflowData);
-      
-      console.log('AI Analysis Response:', analysis);
+      if (!response.ok) {
+        throw new Error(`Analysis failed: ${response.status}`);
+      }
+
+      const analysis = await response.json();
+      console.log('Analysis received:', analysis);
+
       setAnalysisResult(analysis);
       toast({
         title: "Analysis Complete",
         description: "AI analysis generated optimization recommendations"
       });
     } catch (error: any) {
-      console.error('Error analyzing workflow:', error);
-      
-      if (error.message?.includes('401') || error.message?.includes('Authentication')) {
-        toast({
-          title: "Authentication Required",
-          description: "Please sign in again to continue.",
-          variant: "destructive",
-        });
-        window.location.href = "/api/login";
-        return;
-      }
-      
+      console.error('Analysis error:', error);
       toast({
-        title: "Analysis Error",
-        description: error.message || "An error occurred during analysis",
+        title: "Analysis Failed",
+        description: error.message || "Failed to analyze workflow",
         variant: "destructive"
       });
     } finally {
@@ -297,7 +264,6 @@ export default function WorkflowBuilder() {
     }
   };
 
-  // Early returns after all hooks are declared
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -391,7 +357,6 @@ export default function WorkflowBuilder() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {/* Bulk text input */}
               <div>
                 <label className="block text-sm font-medium mb-2" style={{color: 'hsl(215, 25%, 27%)'}}>
                   Paste or type multiple steps (one per line)
@@ -414,7 +379,6 @@ export default function WorkflowBuilder() {
                 </Button>
               </div>
 
-              {/* Single step input */}
               <div className="border-t pt-4">
                 <label className="block text-sm font-medium mb-2" style={{color: 'hsl(215, 25%, 27%)'}}>
                   Add individual step
@@ -443,7 +407,6 @@ export default function WorkflowBuilder() {
         </Card>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-300px)]">
-          {/* Component Palette */}
           <Card className="lg:col-span-1">
             <CardHeader>
               <CardTitle className="text-lg">How to Use</CardTitle>
@@ -455,7 +418,6 @@ export default function WorkflowBuilder() {
             </CardContent>
           </Card>
 
-          {/* Workflow Canvas */}
           <Card className="lg:col-span-3">
             <CardHeader>
               <CardTitle className="text-lg">Workflow Steps</CardTitle>
@@ -524,7 +486,7 @@ export default function WorkflowBuilder() {
                 </div>
               )}
 
-              {/* Analyze Button - positioned after workflow steps */}
+              {/* Analysis Button */}
               {steps.length > 0 && (
                 <div className="mt-6 text-center">
                   <Button 
@@ -554,37 +516,16 @@ export default function WorkflowBuilder() {
             </CardContent>
           </Card>
 
-          {/* AI Analysis Results */}
+          {/* Analysis Results */}
           {analysisResult && (
             <div className="lg:col-span-4">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-xl">AI Analysis Results</CardTitle>
+                  <CardTitle className="text-xl">Master Black Belt Lean Six Sigma A3 Analysis</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-6">
-                    <div>
-                      <h4 className="font-semibold text-lg mb-4">Analysis Report</h4>
-                      <div className="prose max-w-none">
-                        <MarkdownRenderer content={analysisResult.markdownReport} />
-                      </div>
-                    </div>
-                    
-                    {analysisResult.summary && (
-                      <div className="mt-6 p-4 bg-muted rounded-lg">
-                        <h5 className="font-semibold mb-2">Summary</h5>
-                        <div className="grid grid-cols-2 gap-4 text-sm">
-                          <div>
-                            <span className="text-muted-foreground">Total Time Saved:</span>
-                            <div className="font-medium text-green-600">{analysisResult.summary.totalTimeSaved} minutes</div>
-                          </div>
-                          <div>
-                            <span className="text-muted-foreground">Efficiency Gain:</span>
-                            <div className="font-medium text-green-600">{analysisResult.summary.efficiencyGain}%</div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
+                  <div className="prose max-w-none">
+                    <MarkdownRenderer content={analysisResult.markdownReport} />
                   </div>
                 </CardContent>
               </Card>
