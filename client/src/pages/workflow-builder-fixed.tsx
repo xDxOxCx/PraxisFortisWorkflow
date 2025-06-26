@@ -1,38 +1,12 @@
+
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useLocation } from 'wouter';
-import ReactFlow, {
-  Node,
-  Edge,
-  addEdge,
-  useNodesState,
-  useEdgesState,
-  Connection,
-  Background,
-  Controls,
-  MiniMap,
-  ReactFlowProvider,
-} from "reactflow";
-import "reactflow/dist/style.css";
-
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from "@/hooks/use-toast";
-import Navbar from "@/components/layout/navbar";
-import { WorkflowCanvas } from "@/components/workflow/workflow-canvas";
-import { ComponentPalette } from "@/components/workflow/component-palette";
-import { PropertiesPanel } from "@/components/workflow/properties-panel";
-import { AnalysisTabs } from "@/components/workflow/analysis-tabs";
-import { 
-  WorkflowData, 
-  WorkflowNode,
-  initialNodes,
-  initialEdges,
-  nodeTypes 
-} from "@/lib/workflow-types";
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
@@ -51,12 +25,13 @@ import {
   Type
 } from 'lucide-react';
 import MarkdownRenderer from '@/components/workflow/markdown-renderer';
+import { AnalysisTabs } from "@/components/workflow/analysis-tabs";
 
 interface Workflow {
   id: number;
   name: string;
   description: string;
-  flowData: WorkflowData;
+  flowData: any;
   status: 'draft' | 'active' | 'archived';
   aiAnalysis?: any;
   mermaidCode?: string;
@@ -76,6 +51,8 @@ export default function WorkflowBuilder() {
   const queryClient = useQueryClient();
   const { isAuthenticated, isLoading } = useAuth();
   const [, setLocation] = useLocation();
+  
+  // All state hooks at the top level
   const [workflowName, setWorkflowName] = useState('');
   const [workflowDescription, setWorkflowDescription] = useState('');
   const [steps, setSteps] = useState<WorkflowStep[]>([]);
@@ -83,16 +60,11 @@ export default function WorkflowBuilder() {
   const [textInput, setTextInput] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<any>(null);
+  
   const workflowId = location.includes('/workflow/') ? 
     parseInt(location.split('/workflow/')[1]) : null;
 
-  // Initialize all hooks at the top level
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-  const [selectedNode, setSelectedNode] = useState<WorkflowNode | null>(null);
-  const [workflow, setWorkflow] = useState<Workflow | null>(null);
-  const reactFlowWrapper = useRef<HTMLDivElement>(null);
-
+  // Early returns after all hooks are declared
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -206,7 +178,6 @@ export default function WorkflowBuilder() {
           }));
           setSteps(typedSteps);
         }
-
       } else {
         toast({
           title: "Template Not Found",
@@ -215,7 +186,7 @@ export default function WorkflowBuilder() {
         });
       }
     }
-  }, [toast, setSteps, setWorkflowDescription, setWorkflowName]);
+  }, [toast]);
 
   // Save workflow mutation
   const saveWorkflowMutation = useMutation({
