@@ -68,6 +68,15 @@ The Vite configuration handles client-side routing and API proxying in developme
 
 ## Recent Changes
 
+- **June 26, 2025 - Updated Pricing Structure**:
+  - Implemented new three-tier pricing model per user requirements
+  - Free Plan: Limited to 1 workflow per month (reduced from previous limit)
+  - New Starter Plan: $19/month for 10 workflows with PDF exports and priority email support
+  - Pro Plan: $49/month for unlimited workflows with all premium features
+  - Updated pricing page, feature comparison table, and navbar workflow counters
+  - Modified landing page messaging to reflect "1 free workflow monthly"
+  - All pricing displays and advertisements now consistent with new structure
+
 - **June 26, 2025 - Tabbed Analysis Interface Complete**: 
   - Completed tabbed interface for AI analysis results with all six tabs working properly
   - Fixed content parsing to ensure Summary, Problem, and Diagrams tabs display meaningful data

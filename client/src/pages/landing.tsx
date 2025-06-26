@@ -98,7 +98,7 @@ export default function Landing() {
                 </div>
                 <div className="flex items-center space-x-2">
                   <CheckCircle className="w-5 h-5" style={{color: 'hsl(158, 58%, 48%)'}} />
-                  <span>1 workflow free monthly</span>
+                  <span>1 free workflow monthly</span>
                 </div>
               </div>
             </div>

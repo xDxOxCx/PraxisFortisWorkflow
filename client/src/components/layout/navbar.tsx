@@ -101,7 +101,7 @@ export default function Navbar() {
                 <div className="text-sm text-muted-foreground">
                   <span className="font-medium">Free Plan</span> • 
                   <span className="text-emerald-green ml-1">
-                    {user.workflowsUsedThisMonth || 0}/1 workflows used
+                    {user.workflowsUsedThisMonth || 0}/1 workflow used
                   </span>
                 </div>
                 <Button 
