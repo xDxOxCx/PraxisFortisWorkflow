@@ -19,7 +19,26 @@ export default function AnalysisResults() {
     console.log('AnalysisResults component mounted');
     console.log('Current URL:', window.location.href);
     
-    // Get data from URL parameters
+    // First, try to get data from sessionStorage
+    const storedAnalysis = sessionStorage.getItem('workflowAnalysis');
+    console.log('SessionStorage data:', storedAnalysis ? `found (${storedAnalysis.length} chars)` : 'not found');
+    
+    if (storedAnalysis) {
+      try {
+        const data = JSON.parse(storedAnalysis);
+        console.log('Successfully loaded analysis data from sessionStorage:', {
+          workflowName: data.workflowName,
+          workflowDescription: data.workflowDescription,
+          reportLength: data.markdownReport?.length || 0
+        });
+        setAnalysisData(data);
+        return; // Exit early if sessionStorage worked
+      } catch (error) {
+        console.error('Failed to parse sessionStorage analysis data:', error);
+      }
+    }
+    
+    // Fallback: Try URL parameters
     const urlParams = new URLSearchParams(window.location.search);
     const name = urlParams.get('name');
     const description = urlParams.get('description');
@@ -39,67 +58,29 @@ export default function AnalysisResults() {
           workflowDescription: description || '',
           markdownReport: decodedReport
         };
-        console.log('Setting analysis data from URL params:', {
-          workflowName: data.workflowName,
-          workflowDescription: data.workflowDescription,
-          reportLength: data.markdownReport.length
-        });
+        console.log('Setting analysis data from URL params');
         setAnalysisData(data);
+        return;
       } catch (error) {
         console.error('Error decoding URL parameters:', error);
-        // Try sessionStorage fallback
-        const storedAnalysis = sessionStorage.getItem('workflowAnalysis');
-        if (storedAnalysis) {
-          try {
-            const data = JSON.parse(storedAnalysis);
-            console.log('Using sessionStorage fallback');
-            setAnalysisData(data);
-          } catch (parseError) {
-            console.error('Failed to parse sessionStorage data:', parseError);
-          }
-        }
-      }
-    } else {
-      console.log('URL params missing, checking sessionStorage');
-      // Fallback to sessionStorage
-      const storedAnalysis = sessionStorage.getItem('workflowAnalysis');
-      console.log('SessionStorage data:', storedAnalysis ? `found (${storedAnalysis.length} chars)` : 'not found');
-      
-      if (storedAnalysis) {
-        try {
-          const data = JSON.parse(storedAnalysis);
-          console.log('Parsed sessionStorage data successfully');
-          setAnalysisData(data);
-        } catch (error) {
-          console.error('Failed to parse sessionStorage analysis data:', error);
-        }
-      } else {
-        console.log('No data found in URL or sessionStorage, showing fallback message');
-        // Show fallback message with sample data for testing
-        setAnalysisData({
-          markdownReport: `# Lean Six Sigma DMAIC Analysis: Sample Workflow
-
-## 1. Executive Summary
-
-This is a sample analysis report to verify the display functionality is working correctly.
-
-**Key Findings:**
-- System is operational
-- Data flow is functional
-- Display components working
-
-## 2. Problem Statement
-
-The analysis page display system is being tested to ensure proper functionality.
-
-## Conclusion
-
-If you can see this content, the analysis display system is working correctly. Please run a new analysis from the workflow builder to see your actual results.`,
-          workflowName: "Test Analysis Results",
-          workflowDescription: "Testing analysis results display functionality"
-        });
       }
     }
+    
+    // If we get here, no data was found
+    console.log('No analysis data found, showing error message');
+    setAnalysisData({
+      markdownReport: `# No Analysis Data Found
+
+It appears that the analysis data was not properly passed to this page. This could happen if:
+
+1. You navigated directly to this page without running an analysis
+2. Your browser cleared the session data
+3. There was an error during the analysis process
+
+Please go back to the Workflow Builder and run the analysis again.`,
+      workflowName: "Error: No Data Found",
+      workflowDescription: "Please return to the workflow builder and try again"
+    });
   }, [setLocation]);
 
   const formatAnalysisReport = (markdown: string) => {

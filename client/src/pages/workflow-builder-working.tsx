@@ -206,21 +206,23 @@ export default function WorkflowBuilder() {
       const result = await response.json();
       console.log("AI Analysis result:", result);
 
-      // Store analysis result and redirect with URL params
-      const analysisParams = new URLSearchParams({
-        name: workflowName,
-        description: workflowDescription || '',
-        report: encodeURIComponent(result.markdownReport)
-      });
+      // Store analysis result in sessionStorage
+      const analysisData = {
+        workflowName: workflowName,
+        workflowDescription: workflowDescription || '',
+        markdownReport: result.markdownReport
+      };
+      
+      sessionStorage.setItem('workflowAnalysis', JSON.stringify(analysisData));
       
       toast({
         title: "Analysis Complete",
         description: "Redirecting to analysis results...",
       });
 
-      // Redirect immediately with data in URL
+      // Redirect to results page
       setTimeout(() => {
-        setLocation(`/analysis-results?${analysisParams.toString()}`);
+        setLocation('/analysis-results');
       }, 1000);
     } catch (error: any) {
       console.error('Analysis error:', error);
