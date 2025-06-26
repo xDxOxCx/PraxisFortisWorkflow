@@ -27,13 +27,14 @@ export default function Templates() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
-  const { data: templates = [], isLoading } = useQuery({
+  const { data: templates = [], isLoading } = useQuery<Template[]>({
     queryKey: ['/api/templates'],
   });
 
-  const categories = ['all', ...new Set(templates.map((t: Template) => t.category))];
+  const templateArray = Array.isArray(templates) ? templates : [];
+  const categories = ['all', ...Array.from(new Set(templateArray.map((t: Template) => t.category)))];
 
-  const filteredTemplates = templates.filter((template: Template) => {
+  const filteredTemplates = templateArray.filter((template: Template) => {
     const matchesSearch = template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          template.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === 'all' || template.category === selectedCategory;

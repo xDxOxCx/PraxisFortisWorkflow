@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { useAuth } from '@/hooks/useAuth';
+import AnalysisTabs from '@/components/workflow/analysis-tabs';
 import {
   ArrowUp,
   ArrowDown,
@@ -25,7 +26,6 @@ import {
   Type
 } from 'lucide-react';
 import MarkdownRenderer from '@/components/workflow/markdown-renderer';
-import { AnalysisTabs } from "@/components/workflow/analysis-tabs";
 
 interface Workflow {
   id: number;

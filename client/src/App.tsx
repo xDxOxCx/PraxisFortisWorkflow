@@ -8,7 +8,7 @@ import ResetPassword from "./pages/reset-password";
 import NotFound from "./pages/not-found";
 import Landing from "@/pages/landing";
 import Home from "@/pages/home";
-import WorkflowBuilder from "@/pages/workflow-builder-fixed";
+import WorkflowBuilder from "@/pages/workflow-builder-working";
 import Templates from "@/pages/templates";
 import Settings from "@/pages/settings";
 import Pricing from "@/pages/pricing";
