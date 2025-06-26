@@ -25,6 +25,7 @@ import {
   Type
 } from 'lucide-react';
 import MarkdownRenderer from '@/components/workflow/markdown-renderer';
+import { AnalysisTabs } from "@/components/workflow/analysis-tabs";
 
 interface Workflow {
   id: number;
@@ -244,7 +245,7 @@ export default function WorkflowBuilder() {
     setSteps(newSteps);
   };
 
-  // Analyze workflow with AI
+  // Analyze workflow with AI - Fixed authentication
   const analyzeWorkflow = async () => {
     if (steps.length === 0) {
       toast({
@@ -265,46 +266,32 @@ export default function WorkflowBuilder() {
 
       console.log('Sending analysis request:', workflowData);
 
-      const response = await fetch('/api/workflows/analyze', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(workflowData),
-        credentials: 'include'
-      });
-
-      console.log('Analysis response status:', response.status);
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Analysis error:', errorData);
-        
-        if (response.status === 401) {
-          toast({
-            title: "Authentication Required",
-            description: "Please sign in again to continue.",
-            variant: "destructive",
-          });
-          window.location.href = "/api/login";
-          return;
-        }
-        
-        throw new Error(errorData.message || `Analysis failed with status ${response.status}`);
-      }
-
+      // Use apiRequest helper for proper authentication
+      const response = await apiRequest('POST', '/api/workflows/analyze', workflowData);
       const analysis = await response.json();
+      
       console.log('AI Analysis Response:', analysis);
       setAnalysisResult(analysis);
       toast({
         title: "Analysis Complete",
         description: "AI analysis generated optimization recommendations"
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error analyzing workflow:', error);
+      
+      if (error.message?.includes('401') || error.message?.includes('Authentication')) {
+        toast({
+          title: "Authentication Required",
+          description: "Please sign in again to continue.",
+          variant: "destructive",
+        });
+        window.location.href = "/api/login";
+        return;
+      }
+      
       toast({
         title: "Analysis Error",
-        description: "An error occurred during analysis",
+        description: error.message || "An error occurred during analysis",
         variant: "destructive"
       });
     } finally {
