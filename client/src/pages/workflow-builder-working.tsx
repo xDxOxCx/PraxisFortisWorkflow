@@ -206,18 +206,12 @@ export default function WorkflowBuilder() {
       const result = await response.json();
       console.log("AI Analysis result:", result);
 
-      // Store analysis result in sessionStorage for the results page
-      sessionStorage.setItem('workflowAnalysis', JSON.stringify(result));
+      setAnalysisResult(result);
       
       toast({
         title: "Analysis Complete",
-        description: "Redirecting to detailed analysis results...",
+        description: "Your workflow has been analyzed successfully.",
       });
-
-      // Redirect to analysis results page
-      setTimeout(() => {
-        setLocation('/analysis-results');
-      }, 1000);
     } catch (error: any) {
       console.error('Analysis error:', error);
       

@@ -15,11 +15,25 @@ import MarkdownRenderer from './markdown-renderer';
 interface AnalysisTabsProps {
   analysisResult: {
     markdownReport: string;
+    summary?: {
+      totalTimeSaved: number;
+      efficiencyGain: number;
+      riskAreas: string[];
+      recommendations: string[];
+    };
   };
 }
 
 export default function AnalysisTabs({ analysisResult }: AnalysisTabsProps) {
   const [activeTab, setActiveTab] = useState('summary');
+
+  // Simple display of the full markdown report
+  const displayFullReport = () => {
+    if (!analysisResult?.markdownReport) {
+      return "No analysis results available";
+    }
+    return analysisResult.markdownReport;
+  };
 
   // Parse the markdown report to extract different sections
   const parseAnalysisReport = (markdown: string) => {
@@ -128,24 +142,13 @@ export default function AnalysisTabs({ analysisResult }: AnalysisTabsProps) {
 
           <TabsContent value="summary" className="mt-6">
             <div className="bg-gradient-to-r from-blue-50 to-emerald-50 border rounded-lg p-6">
-              <h3 className="text-lg font-semibold mb-4 text-navy-900">Executive Summary</h3>
-              <div className="bg-white rounded-lg p-4 shadow-sm">
-                <MarkdownRenderer content={getSectionContent('summary', `
-## Executive Summary
-This workflow analysis identifies key optimization opportunities:
-
-**Key Metrics:**
-- Potential time savings: 15-20 minutes per patient
-- Efficiency improvement: 25%
-- Annual cost reduction: $30,000-50,000
-- Patient satisfaction increase: 15-20%
-
-**Primary Focus Areas:**
-- Streamline documentation processes
-- Implement parallel task execution
-- Reduce manual verification steps
-- Enhance digital integration
-                `)} />
+              <h3 className="text-lg font-semibold mb-4 text-navy-900">Complete Analysis Report</h3>
+              <div className="bg-white rounded-lg p-6 shadow-sm">
+                <div className="prose prose-sm max-w-none">
+                  <div style={{whiteSpace: 'pre-wrap'}} className="text-slate-700 leading-relaxed">
+                    {displayFullReport()}
+                  </div>
+                </div>
               </div>
             </div>
           </TabsContent>
