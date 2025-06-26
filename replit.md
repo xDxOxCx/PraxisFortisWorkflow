@@ -68,6 +68,14 @@ The Vite configuration handles client-side routing and API proxying in developme
 
 ## Recent Changes
 
+- **June 26, 2025 - PDF Export Implementation & Truth in Advertising**:
+  - Implemented functional PDF export using jsPDF library in workflow builder
+  - PDF exports include workflow title, steps, AI analysis, and proper formatting
+  - Corrected misleading "PDF & DOC exports" claims across all pricing pages
+  - Updated landing page, pricing page, and subscribe page to advertise accurate "PDF exports"
+  - App now truthfully represents its actual export capabilities
+  - Users upgrading to paid plans receive working PDF export functionality
+
 - **June 26, 2025 - Landing Page Pricing Section Complete**:
   - Fixed pricing section background color from dark to light Pearl White theme
   - Successfully added missing $19/month Starter plan to landing page pricing display

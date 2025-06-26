@@ -346,7 +346,7 @@ export default function Landing() {
                   </li>
                   <li className="flex items-center space-x-3">
                     <CheckCircle className="w-5 h-5 text-emerald-green" />
-                    <span className="text-slate-blue">PDF & DOC exports</span>
+                    <span className="text-slate-blue">PDF exports</span>
                   </li>
                   <li className="flex items-center space-x-3">
                     <CheckCircle className="w-5 h-5 text-emerald-green" />

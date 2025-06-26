@@ -15,6 +15,7 @@ import PropertiesPanel from "@/components/workflow/properties-panel";
 import MermaidDiagram from "@/components/workflow/mermaid-diagram";
 import { WorkflowData, AIAnalysis } from "@/lib/workflow-types";
 import { Save, Brain, Undo, Redo, FileDown } from "lucide-react";
+import jsPDF from "jspdf";
 
 interface Workflow {
   id: number;
@@ -192,11 +193,91 @@ export default function WorkflowBuilder() {
   };
 
   const handleExportPDF = async () => {
-    // This would typically use a PDF generation library
-    toast({
-      title: "Export Started",
-      description: "PDF export is being generated...",
-    });
+    if (!workflow || !aiAnalysis) {
+      toast({
+        title: "Nothing to Export",
+        description: "Please save and analyze your workflow before exporting.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const pdf = new jsPDF();
+      
+      // Add title
+      pdf.setFontSize(20);
+      pdf.text(workflowName, 20, 30);
+      
+      // Add workflow info
+      pdf.setFontSize(12);
+      pdf.text(`Generated on: ${new Date().toLocaleDateString()}`, 20, 50);
+      pdf.text(`Number of steps: ${workflowData.nodes.length}`, 20, 60);
+      
+      // Add workflow steps
+      pdf.setFontSize(14);
+      pdf.text("Workflow Steps:", 20, 80);
+      
+      let yPosition = 95;
+      workflowData.nodes.forEach((node, index) => {
+        if (yPosition > 270) {
+          pdf.addPage();
+          yPosition = 20;
+        }
+        pdf.setFontSize(10);
+        pdf.text(`${index + 1}. ${node.data.label}`, 25, yPosition);
+        if (node.data.description) {
+          yPosition += 8;
+          pdf.text(`   ${node.data.description}`, 25, yPosition);
+        }
+        yPosition += 12;
+      });
+      
+      // Add AI analysis if available
+      if (aiAnalysis.improvements && aiAnalysis.improvements.length > 0) {
+        pdf.addPage();
+        pdf.setFontSize(14);
+        pdf.text("AI Analysis - Key Improvements:", 20, 30);
+        
+        yPosition = 45;
+        aiAnalysis.improvements.slice(0, 5).forEach((improvement, index) => {
+          if (yPosition > 250) {
+            pdf.addPage();
+            yPosition = 20;
+          }
+          pdf.setFontSize(12);
+          pdf.text(`${index + 1}. ${improvement.title}`, 20, yPosition);
+          yPosition += 10;
+          
+          pdf.setFontSize(10);
+          const lines = pdf.splitTextToSize(improvement.description, 170);
+          lines.forEach((line: string) => {
+            if (yPosition > 270) {
+              pdf.addPage();
+              yPosition = 20;
+            }
+            pdf.text(line, 25, yPosition);
+            yPosition += 6;
+          });
+          yPosition += 8;
+        });
+      }
+      
+      // Save the PDF
+      pdf.save(`${workflowName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_workflow.pdf`);
+      
+      toast({
+        title: "Export Complete",
+        description: "PDF has been downloaded successfully.",
+      });
+    } catch (error) {
+      console.error('PDF export error:', error);
+      toast({
+        title: "Export Failed",
+        description: "There was an error generating the PDF. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const onNodesChange = useCallback((changes: any) => {
