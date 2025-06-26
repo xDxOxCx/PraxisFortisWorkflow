@@ -8,8 +8,26 @@ export function useAuth() {
 
   const { data: user, isLoading: userLoading } = useQuery({
     queryKey: ["/api/auth/user"],
+    queryFn: async () => {
+      if (!session?.access_token) {
+        throw new Error('No session');
+      }
+      
+      const response = await fetch('/api/auth/user', {
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch user');
+      }
+      
+      return response.json();
+    },
     retry: false,
-    enabled: !!session?.user,
+    enabled: !!session?.access_token,
   });
 
   useEffect(() => {
@@ -38,6 +56,26 @@ export function useAuth() {
         emailRedirectTo: `${window.location.origin}/auth/callback`
       }
     });
+    
+    // If sign up successful and user is confirmed, create user in database
+    if (data.session && data.user && !error) {
+      try {
+        const response = await fetch('/api/auth/callback', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${data.session.access_token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (!response.ok) {
+          console.error('Auth callback failed:', await response.text());
+        }
+      } catch (callbackError) {
+        console.error('Error calling auth callback:', callbackError);
+      }
+    }
+    
     return { data, error };
   };
 
@@ -48,15 +86,19 @@ export function useAuth() {
     });
     
     // If sign in successful, call auth callback to create user in database
-    if (data.session && !error) {
+    if (data.session && data.user && !error) {
       try {
-        await fetch('/api/auth/callback', {
+        const response = await fetch('/api/auth/callback', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${data.session.access_token}`,
             'Content-Type': 'application/json'
           }
         });
+        
+        if (!response.ok) {
+          console.error('Auth callback failed:', await response.text());
+        }
       } catch (callbackError) {
         console.error('Error calling auth callback:', callbackError);
       }

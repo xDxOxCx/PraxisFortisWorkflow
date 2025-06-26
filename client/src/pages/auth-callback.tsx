@@ -9,9 +9,11 @@ export default function AuthCallback() {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
+        // Handle the auth callback from email confirmation
         const { data, error } = await supabase.auth.getSession();
         
         if (error) {
+          console.error('Session error:', error);
           toast({
             title: "Authentication Error",
             description: error.message,
@@ -21,16 +23,50 @@ export default function AuthCallback() {
           return;
         }
 
-        if (data.session) {
-          toast({
-            title: "Success",
-            description: "Email verified successfully!",
-          });
-          window.location.href = "/";
+        if (data.session && data.session.user) {
+          console.log('Session found, creating user in database');
+          
+          // Call auth callback to create user in database
+          try {
+            const response = await fetch('/api/auth/callback', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${data.session.access_token}`,
+                'Content-Type': 'application/json'
+              }
+            });
+            
+            if (response.ok) {
+              toast({
+                title: "Success",
+                description: "Email verified successfully!",
+              });
+              window.location.href = "/";
+            } else {
+              const errorData = await response.json();
+              console.error('Auth callback failed:', errorData);
+              toast({
+                title: "Error",
+                description: "Failed to complete authentication",
+                variant: "destructive",
+              });
+              window.location.href = "/auth";
+            }
+          } catch (callbackError) {
+            console.error('Callback request failed:', callbackError);
+            toast({
+              title: "Error",
+              description: "Failed to complete authentication",
+              variant: "destructive",
+            });
+            window.location.href = "/auth";
+          }
         } else {
+          console.log('No session found, redirecting to auth');
           window.location.href = "/auth";
         }
       } catch (error: any) {
+        console.error('Auth callback error:', error);
         toast({
           title: "Error",
           description: "Something went wrong during authentication",

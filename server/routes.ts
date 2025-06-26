@@ -24,6 +24,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const authHeader = req.headers.authorization;
       
       if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        console.log('No auth header or invalid format');
         return res.status(401).json({ message: "Unauthorized" });
       }
       
@@ -31,8 +32,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { data: { user }, error } = await supabase.auth.getUser(token);
       
       if (error || !user) {
+        console.log('Token verification failed:', error);
         return res.status(401).json({ message: "Invalid token" });
       }
+      
+      console.log('Creating/updating user:', user.id, user.email);
       
       // Upsert user in your database
       await storage.upsertUser({
@@ -45,10 +49,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         totalWorkflows: 0,
       });
 
-      res.json({ success: true });
+      console.log('User created/updated successfully');
+      res.json({ success: true, user: { id: user.id, email: user.email } });
     } catch (error: any) {
       console.error('Auth callback error:', error);
-      res.status(500).json({ message: "Internal server error" });
+      res.status(500).json({ message: "Internal server error", error: error.message });
     }
   });
 

@@ -48,6 +48,8 @@ export class DatabaseStorage implements IStorage {
   }
 
   async upsertUser(userData: UpsertUser): Promise<User> {
+    console.log('Upserting user with data:', userData);
+
     const [user] = await db
       .insert(users)
       .values(userData)
@@ -59,6 +61,13 @@ export class DatabaseStorage implements IStorage {
         },
       })
       .returning();
+
+    if (!user) {
+      console.error('Upsert error: User was not upserted correctly');
+      throw new Error(`Failed to upsert user`);
+    }
+
+    console.log('User upserted successfully:', user);
     return user;
   }
 
