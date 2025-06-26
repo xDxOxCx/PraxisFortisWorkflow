@@ -7,7 +7,7 @@ import { setupAuth, isAuthenticated } from "./auth";
 import express from "express";
 
 const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2024-06-20",
+  apiVersion: "2023-10-16",
 }) : null;
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -27,14 +27,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const workflows = await storage.getWorkflows(userId);
-      const totalTimeSaved = workflows.reduce((acc, w) => acc + (w.aiAnalysis?.summary?.totalTimeSaved || 0), 0);
+      const totalTimeSaved = workflows.reduce((acc, w) => acc + ((w.aiAnalysis as any)?.summary?.totalTimeSaved || 0), 0);
       const avgEfficiency = workflows.length > 0 
-        ? workflows.reduce((acc, w) => acc + (w.aiAnalysis?.summary?.efficiencyGain || 0), 0) / workflows.length 
+        ? workflows.reduce((acc, w) => acc + ((w.aiAnalysis as any)?.summary?.efficiencyGain || 0), 0) / workflows.length 
         : 0;
 
       res.json({
-        totalWorkflows: user.totalWorkflows,
-        monthlyWorkflows: user.workflowsUsedThisMonth,
+        totalWorkflows: user.totalWorkflows || 0,
+        monthlyWorkflows: user.workflowsUsedThisMonth || 0,
         timeSaved: totalTimeSaved,
         efficiency: Math.round(avgEfficiency),
         subscriptionStatus: user.subscriptionStatus || 'free'
@@ -155,7 +155,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(analysis);
     } catch (error) {
       console.error("Analysis error:", error);
-      res.status(500).json({ message: "Analysis failed: " + error.message });
+      res.status(500).json({ message: "Analysis failed: " + (error as Error).message });
     }
   });
 
@@ -256,7 +256,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
 
         const session = await stripe.checkout.sessions.create({
-          customer_email: user.email,
+          customer_email: user.email || undefined,
           payment_method_types: ['card'],
           line_items: [
             {
