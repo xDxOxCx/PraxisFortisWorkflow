@@ -552,7 +552,7 @@ export default function WorkflowBuilder() {
               <Button 
                 onClick={() => saveWorkflowMutation.mutate()}
                 disabled={saveWorkflowMutation.isPending}
-                className="bg-emerald-green hover:bg-emerald-green/90 text-primary-foreground"
+                className="bg-emerald hover:bg-emerald/90 text-white"
               >
                 <Save className="w-4 h-4 mr-2" />
                 {saveWorkflowMutation.isPending ? 'Saving...' : 'Save Workflow'}
@@ -560,7 +560,7 @@ export default function WorkflowBuilder() {
               <Button 
                 onClick={analyzeWorkflow}
                 disabled={isAnalyzing || steps.length === 0}
-                className="bg-royal-blue hover:bg-royal-blue/90 text-primary-foreground"
+                className="bg-navy hover:bg-navy/90 text-white"
               >
                 {isAnalyzing ? (
                   <>
@@ -599,7 +599,7 @@ export default function WorkflowBuilder() {
                 />
                 <Button 
                   onClick={createFromText}
-                  className="bg-emerald-green hover:bg-emerald-green/90 text-primary-foreground mt-2"
+                  className="bg-emerald hover:bg-emerald/90 text-white mt-2"
                   disabled={!textInput.trim()}
                 >
                   <Type className="w-4 h-4 mr-2" />
@@ -623,7 +623,7 @@ export default function WorkflowBuilder() {
                   <Button 
                     onClick={addStep}
                     disabled={!newStepText.trim()}
-                    className="bg-emerald-green hover:bg-emerald-green/90 text-primary-foreground"
+                    className="bg-emerald hover:bg-emerald/90 text-white"
                   >
                     <Plus className="w-4 h-4 mr-2" />
                     Add Step
