@@ -116,36 +116,103 @@ export default function AnalysisResults() {
     );
   }
 
-  // Format the markdown content for display
+  // Enhanced markdown formatter with better diagram support
   const formatContent = (markdown: string) => {
-    return markdown
-      .split('\n')
-      .map((line, index) => {
-        if (line.startsWith('# ')) {
-          return <h1 key={index} className="text-3xl font-bold text-gray-900 mb-4 mt-6">{line.replace('# ', '')}</h1>;
-        } else if (line.startsWith('## ')) {
-          return <h2 key={index} className="text-2xl font-semibold text-gray-800 mb-3 mt-5">{line.replace('## ', '')}</h2>;
-        } else if (line.startsWith('### ')) {
-          return <h3 key={index} className="text-xl font-semibold text-gray-700 mb-2 mt-4">{line.replace('### ', '')}</h3>;
-        } else if (line.startsWith('**') && line.endsWith('**')) {
-          return <p key={index} className="font-bold text-gray-800 mb-2">{line.replace(/\*\*/g, '')}</p>;
-        } else if (line.startsWith('- ')) {
-          return <li key={index} className="text-gray-700 mb-1 ml-4">{line.replace('- ', '')}</li>;
-        } else if (line.trim()) {
-          return <p key={index} className="text-gray-700 mb-2 leading-relaxed">{line}</p>;
+    const lines = markdown.split('\n');
+    const elements: JSX.Element[] = [];
+    let inCodeBlock = false;
+    let codeBlockContent: string[] = [];
+
+    lines.forEach((line, index) => {
+      // Handle code blocks and diagrams
+      if (line.startsWith('```') || line.includes('```')) {
+        if (inCodeBlock) {
+          // End of code block - render as diagram/code
+          elements.push(
+            <div key={index} className="bg-slate-50 border border-slate-200 rounded-lg p-4 my-4 font-mono text-sm overflow-x-auto">
+              <pre className="whitespace-pre-wrap text-slate-700">
+                {codeBlockContent.join('\n')}
+              </pre>
+            </div>
+          );
+          codeBlockContent = [];
+          inCodeBlock = false;
         } else {
-          return <div key={index} className="mb-2"></div>;
+          inCodeBlock = true;
         }
-      });
+        return;
+      }
+
+      if (inCodeBlock) {
+        codeBlockContent.push(line);
+        return;
+      }
+
+      // Enhanced text-based diagram detection and formatting
+      if (line.includes('→') || line.includes('--') || line.includes('[') && line.includes(']')) {
+        elements.push(
+          <div key={index} className="bg-blue-50 border border-blue-200 rounded-lg p-4 my-4">
+            <pre className="text-blue-800 font-mono text-sm whitespace-pre-wrap overflow-x-auto">
+              {line}
+            </pre>
+          </div>
+        );
+        return;
+      }
+
+      // Regular markdown formatting with enhanced styling
+      if (line.startsWith('# ')) {
+        elements.push(
+          <h1 key={index} className="text-4xl font-bold text-[hsl(220,50%,30%)] mb-6 mt-8 pb-3 border-b border-slate-200">
+            {line.replace('# ', '')}
+          </h1>
+        );
+      } else if (line.startsWith('## ')) {
+        elements.push(
+          <h2 key={index} className="text-2xl font-bold text-[hsl(220,50%,30%)] mb-4 mt-6 flex items-center">
+            <div className="w-1 h-6 bg-[hsl(158,60%,50%)] rounded-full mr-3"></div>
+            {line.replace('## ', '')}
+          </h2>
+        );
+      } else if (line.startsWith('### ')) {
+        elements.push(
+          <h3 key={index} className="text-xl font-semibold text-[hsl(220,50%,35%)] mb-3 mt-5">
+            {line.replace('### ', '')}
+          </h3>
+        );
+      } else if (line.startsWith('**') && line.endsWith('**')) {
+        elements.push(
+          <div key={index} className="bg-[hsl(158,60%,50%,0.1)] border-l-4 border-[hsl(158,60%,50%)] p-3 my-3 rounded-r-lg">
+            <p className="font-bold text-[hsl(220,50%,30%)]">{line.replace(/\*\*/g, '')}</p>
+          </div>
+        );
+      } else if (line.startsWith('- ')) {
+        elements.push(
+          <li key={index} className="text-slate-700 mb-2 ml-6 list-disc leading-relaxed">
+            {line.replace('- ', '')}
+          </li>
+        );
+      } else if (line.trim()) {
+        elements.push(
+          <p key={index} className="text-slate-700 mb-3 leading-relaxed text-[16px]">
+            {line}
+          </p>
+        );
+      } else {
+        elements.push(<div key={index} className="mb-3"></div>);
+      }
+    });
+
+    return elements;
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b shadow-sm">
-        <div className="max-w-5xl mx-auto px-6 py-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+      {/* Enhanced Header */}
+      <div className="bg-white border-b shadow-lg">
+        <div className="max-w-6xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-6">
               <Button
                 variant="ghost"
                 size="sm"
@@ -156,35 +223,37 @@ export default function AnalysisResults() {
                 Back to Builder
               </Button>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">{analysisData.workflowName}</h1>
-                <p className="text-sm text-gray-600 mt-1">{analysisData.workflowDescription}</p>
+                <h1 className="text-3xl font-bold text-[hsl(220,50%,30%)]">{analysisData.workflowName}</h1>
+                <p className="text-lg text-[hsl(210,10%,55%)] mt-2">{analysisData.workflowDescription}</p>
               </div>
             </div>
-            <Button onClick={exportToPDF} className="bg-blue-600 hover:bg-blue-700">
-              <Download className="w-4 h-4 mr-2" />
+            <Button 
+              onClick={exportToPDF} 
+              className="bg-[hsl(158,60%,50%)] hover:bg-[hsl(158,60%,45%)] text-white px-6 py-3 rounded-lg shadow-lg transition-all duration-200 hover:shadow-xl"
+            >
+              <Download className="w-5 h-5 mr-2" />
               Export PDF
             </Button>
           </div>
         </div>
       </div>
 
-      {/* Content */}
-      <div className="max-w-5xl mx-auto px-6 py-8">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <FileText className="w-5 h-5 text-blue-600" />
-              Lean Six Sigma DMAIC Analysis Report
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="prose prose-lg max-w-none">
-              <div className="analysis-content">
-                {formatContent(analysisData.markdownReport)}
-              </div>
+      {/* Enhanced Content Layout */}
+      <div className="max-w-6xl mx-auto px-6 py-8">
+        <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
+          <div className="bg-gradient-to-r from-[hsl(220,50%,30%)] to-[hsl(158,60%,50%)] px-8 py-6">
+            <div className="flex items-center gap-3">
+              <FileText className="w-7 h-7 text-white" />
+              <h2 className="text-2xl font-bold text-white">Workflow Analysis Report</h2>
             </div>
-          </CardContent>
-        </Card>
+            <p className="text-white/90 mt-2">Professional insights and recommendations for process improvement</p>
+          </div>
+          <div className="p-8">
+            <div className="analysis-content space-y-6 max-w-none">
+              {formatContent(analysisData.markdownReport)}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

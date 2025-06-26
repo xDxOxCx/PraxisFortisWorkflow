@@ -15,33 +15,50 @@ export async function analyzeWorkflow(workflowSteps: any[], workflowName: string
       return generateFallbackAnalysis(workflowSteps, workflowName);
     }
 
-    const prompt = `You are a Master Black Belt Lean Six Sigma consultant. Analyze this healthcare workflow and create a detailed DMAIC analysis report.
+    const prompt = `You are a healthcare operations consultant analyzing a workflow to help medical practices improve efficiency. Write a clear, professional analysis report that anyone can understand - avoid technical jargon and Lean Six Sigma terminology.
 
 Workflow: ${workflowName}
 Steps: ${JSON.stringify(workflowSteps, null, 2)}
 
-Create a comprehensive Lean Six Sigma analysis report in markdown format following the DMAIC methodology. Include these sections:
+Create a comprehensive workflow analysis report in markdown format with these sections:
 
-1. **Executive Summary**: Concise overview highlighting key findings, recommendations, and overall impact
-2. **Problem Statement**: Clear, specific, measurable description of the problem (SMART format)
-3. **Project Scope**: Define boundaries, what's included/excluded
-4. **Define Phase**: Project charter, SIPOC diagram, problem impact and goals
-5. **Measure Phase**: Data collection methods, baseline establishment, process maps, control charts
-6. **Analyze Phase**: Root cause analysis using fishbone diagrams, Pareto charts, statistical analysis
-7. **Improve Phase**: Proposed solutions, brainstorming results, pilot testing, implementation plans
-8. **Control Phase**: Sustainability plans, control charts, SOPs, training materials
-9. **Financial Impact**: Quantified benefits - cost savings, revenue increase, efficiency gains
-10. **Lessons Learned**: Project successes, challenges, areas for improvement
-11. **Visual Aids**: Use charts, graphs, and data visualizations throughout
+1. **Executive Summary**: Brief overview of main findings and recommendations in simple language
+2. **Current Process Overview**: What happens now in this workflow, step by step
+3. **Key Issues Identified**: Problems causing delays, frustration, or inefficiency
+4. **Time and Cost Analysis**: How long each step takes and estimated costs
+5. **Root Cause Analysis**: Why these problems exist (include a simple cause-and-effect diagram in text format)
+6. **Recommended Improvements**: Specific solutions to fix the problems
+7. **Implementation Plan**: Step-by-step guide to make changes
+8. **Expected Benefits**: Time saved, costs reduced, patient satisfaction improved
+9. **Success Metrics**: How to measure if improvements are working
+10. **Sustainability Plan**: How to maintain improvements long-term
+11. **Visual Process Flow**: Create a simple before/after process diagram using text/ASCII art
 
-Make it professional, actionable, and healthcare-specific with concrete metrics and timelines.`;
+IMPORTANT FORMATTING REQUIREMENTS:
+- Use clear headings with ## for sections
+- Include simple text-based diagrams that display properly in markdown
+- For process flows, use arrows and boxes like: [Step 1] → [Step 2] → [Decision?] → [Step 3]
+- For cause-and-effect, use indented lists with clear categories
+- Include specific numbers: times, costs, percentages
+- Write for healthcare staff who want practical solutions, not academic theory
+- Make diagrams that render correctly in HTML/markdown viewers
+
+Focus on practical, actionable recommendations with real healthcare examples.
+
+CRITICAL: Include visual diagrams using simple text formatting:
+- For process flows: [Step 1] → [Step 2] → [Decision Point] → [Step 3] → [End]
+- For cause-and-effect analysis, use tree structure with simple characters
+- For timelines: Week 1 → Week 2 → Week 3 → Implementation Complete
+- Use code blocks with triple backticks for complex diagrams
+
+Make all diagrams clear and visually appealing when rendered in HTML.`;
 
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
       messages: [
         {
           role: "system",
-          content: "You are a Master Black Belt Lean Six Sigma consultant specializing in healthcare workflow optimization. Provide detailed, actionable analysis."
+          content: "You are a healthcare operations consultant who helps medical practices improve their workflows. Write clear, practical reports that any healthcare professional can understand and implement. Focus on real solutions, not theory."
         },
         {
           role: "user",
@@ -76,30 +93,30 @@ function generateFallbackAnalysis(workflowSteps: any[], workflowName: string) {
   const timeSaved = Math.floor(stepCount * 5) + 10;
   const efficiency = Math.min(Math.floor(stepCount * 8) + 15, 45);
 
-  const analysis = `# Lean Six Sigma DMAIC Analysis: ${workflowName}
+  const analysis = `# Workflow Analysis Report: ${workflowName}
 
 ## 1. Executive Summary
 
-This comprehensive Lean Six Sigma analysis of the ${workflowName} identifies significant optimization opportunities using the DMAIC methodology. The current ${stepCount}-step process shows potential for substantial improvements in efficiency, quality, and patient satisfaction.
+This analysis of your ${workflowName} identifies key opportunities to improve efficiency and patient experience. The current ${stepCount}-step process can be streamlined to save time and reduce frustration for both staff and patients.
 
 **Key Findings:**
-- **Projected Time Savings:** ${timeSaved} minutes per cycle
+- **Time Savings Potential:** ${timeSaved} minutes per patient
 - **Efficiency Improvement:** ${efficiency}%
-- **Implementation Timeline:** 8-12 weeks
-- **Expected ROI:** 250-300% within first year
-- **Quality Impact:** 40-50% reduction in process variation
+- **Implementation Time:** 2-3 months
+- **Expected Return:** Significant cost savings and better patient satisfaction
+- **Quality Impact:** More consistent, predictable service
 
-## 2. Problem Statement
+## 2. Current Process Overview
 
-**Current State:** The ${workflowName} experiences inefficiencies resulting in extended cycle times, resource waste, and suboptimal patient experience.
+**What Happens Now:** Your ${workflowName} currently follows ${stepCount} main steps, but several bottlenecks are slowing things down.
 
-**Specific Issues:**
-- Average cycle time exceeds industry benchmarks by 35%
-- Process variation causes unpredictable service delivery
-- Resource utilization below optimal levels
-- Patient satisfaction scores indicate improvement opportunities
+**Main Problems:**
+- Patients wait longer than necessary between steps
+- Staff spend time on tasks that could be automated
+- Information gets lost or needs to be re-entered
+- Some steps happen out of order, causing delays
 
-**SMART Goal:** Reduce ${workflowName} cycle time by ${efficiency}% while maintaining quality standards and improving patient satisfaction scores by 20% within 12 weeks.
+**Goal:** Speed up the process by ${efficiency}% while making it easier for staff and more pleasant for patients.
 
 ## 3. Project Scope
 
@@ -137,8 +154,13 @@ This comprehensive Lean Six Sigma analysis of the ${workflowName} identifies sig
 ## 5. Measure Phase
 
 ### Current State Metrics
-**Process Steps:**
-${workflowSteps.map((step, i) => `${i + 1}. ${step.text} (${step.type})`).join('\n')}
+**Current Process Flow:**
+\`\`\`
+${workflowSteps.map(step => `[${step.text}]`).join(' → ')}
+\`\`\`
+
+**Process Steps with Details:**
+${workflowSteps.map((step, i) => `${i + 1}. ${step.text} - ${step.type === 'start' ? 'Starting point' : step.type === 'end' ? 'Final step' : step.type === 'decision' ? 'Decision point' : 'Process step'}`).join('\n')}
 
 **Baseline Measurements:**
 - Average cycle time: Baseline + 35% over target
