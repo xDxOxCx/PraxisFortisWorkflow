@@ -9,6 +9,7 @@ import NotFound from "./pages/not-found";
 import Landing from "@/pages/landing";
 import Home from "@/pages/home";
 import WorkflowBuilder from "@/pages/workflow-builder-working";
+import AnalysisResults from "@/pages/analysis-results";
 import Templates from "@/pages/templates";
 import Settings from "@/pages/settings";
 import Pricing from "@/pages/pricing";
@@ -36,6 +37,7 @@ function Router() {
           <Route path="/" component={Home} />
           <Route path="/workflow-builder" component={WorkflowBuilder} />
           <Route path="/workflow-builder/:id" component={WorkflowBuilder} />
+          <Route path="/analysis-results" component={AnalysisResults} />
           <Route path="/templates" component={Templates} />
           <Route path="/settings" component={Settings} />
           <Route path="/pricing" component={Pricing} />
