@@ -127,7 +127,11 @@ export default function WorkflowBuilder() {
         setWorkflowName(template.name);
         setWorkflowDescription(template.description);
         if (template.flow_data && template.flow_data.steps) {
-          setSteps(template.flow_data.steps);
+          const typedSteps: WorkflowStep[] = template.flow_data.steps.map(step => ({
+            ...step,
+            type: step.type as 'start' | 'process' | 'decision' | 'end'
+          }));
+          setSteps(typedSteps);
         }
         toast({
           title: "Template Loaded",
