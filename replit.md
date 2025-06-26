@@ -68,6 +68,14 @@ The Vite configuration handles client-side routing and API proxying in developme
 
 ## Recent Changes
 
+- **June 26, 2025 - Enhanced Analysis Reports with Plain English & Professional Design**:
+  - Updated OpenAI prompts to generate reports in plain English for non-Lean Six Sigma users
+  - Fixed diagram display with enhanced text-based formatting and proper code block rendering
+  - Removed asterisk formatting issues that weren't translating properly from markdown
+  - Enhanced visual design with gradient backgrounds, professional colors, and sleek card layouts
+  - Improved content formatting with highlighted sections, better typography, and proper spacing
+  - Analysis page now displays comprehensive, user-friendly reports with correctly rendered diagrams
+
 - **June 26, 2025 - Analysis Page Display Issue Resolved**:
   - Fixed critical blank analysis page by correcting AppLayout routing structure
   - Analysis results route was missing from authenticated layout wrapper, causing blank display

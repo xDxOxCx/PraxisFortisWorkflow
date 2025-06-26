@@ -180,10 +180,11 @@ export default function AnalysisResults() {
             {line.replace('### ', '')}
           </h3>
         );
-      } else if (line.startsWith('**') && line.endsWith('**')) {
+      } else if (line.includes(':') && !line.startsWith('-') && line.trim().length < 50) {
+        // Format section labels and key-value pairs
         elements.push(
           <div key={index} className="bg-[hsl(158,60%,50%,0.1)] border-l-4 border-[hsl(158,60%,50%)] p-3 my-3 rounded-r-lg">
-            <p className="font-bold text-[hsl(220,50%,30%)]">{line.replace(/\*\*/g, '')}</p>
+            <p className="font-bold text-[hsl(220,50%,30%)]">{line}</p>
           </div>
         );
       } else if (line.startsWith('- ')) {

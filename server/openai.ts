@@ -42,6 +42,8 @@ IMPORTANT FORMATTING REQUIREMENTS:
 - Include specific numbers: times, costs, percentages
 - Write for healthcare staff who want practical solutions, not academic theory
 - Make diagrams that render correctly in HTML/markdown viewers
+- DO NOT use asterisks for bold formatting - use plain text for emphasis instead
+- Avoid markdown bold syntax like **text** - just use regular text
 
 Focus on practical, actionable recommendations with real healthcare examples.
 
@@ -99,24 +101,24 @@ function generateFallbackAnalysis(workflowSteps: any[], workflowName: string) {
 
 This analysis of your ${workflowName} identifies key opportunities to improve efficiency and patient experience. The current ${stepCount}-step process can be streamlined to save time and reduce frustration for both staff and patients.
 
-**Key Findings:**
-- **Time Savings Potential:** ${timeSaved} minutes per patient
-- **Efficiency Improvement:** ${efficiency}%
-- **Implementation Time:** 2-3 months
-- **Expected Return:** Significant cost savings and better patient satisfaction
-- **Quality Impact:** More consistent, predictable service
+Key Findings:
+- Time Savings Potential: ${timeSaved} minutes per patient
+- Efficiency Improvement: ${efficiency}%
+- Implementation Time: 2-3 months
+- Expected Return: Significant cost savings and better patient satisfaction
+- Quality Impact: More consistent, predictable service
 
 ## 2. Current Process Overview
 
-**What Happens Now:** Your ${workflowName} currently follows ${stepCount} main steps, but several bottlenecks are slowing things down.
+What Happens Now: Your ${workflowName} currently follows ${stepCount} main steps, but several bottlenecks are slowing things down.
 
-**Main Problems:**
+Main Problems:
 - Patients wait longer than necessary between steps
 - Staff spend time on tasks that could be automated
 - Information gets lost or needs to be re-entered
 - Some steps happen out of order, causing delays
 
-**Goal:** Speed up the process by ${efficiency}% while making it easier for staff and more pleasant for patients.
+Goal: Speed up the process by ${efficiency}% while making it easier for staff and more pleasant for patients.
 
 ## 3. Project Scope
 
