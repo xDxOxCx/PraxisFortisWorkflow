@@ -265,9 +265,8 @@ export default function WorkflowBuilder() {
 
       console.log('Sending analysis request:', workflowData);
 
-      // Use apiRequest helper for proper authentication
-      const response = await apiRequest('POST', '/api/workflows/analyze', workflowData);
-      const analysis = await response.json();
+      // Use apiRequest helper - it returns the parsed JSON directly
+      const analysis = await apiRequest('POST', '/api/workflows/analyze', workflowData);
       
       console.log('AI Analysis Response:', analysis);
       setAnalysisResult(analysis);
