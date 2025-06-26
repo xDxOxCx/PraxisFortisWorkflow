@@ -48,7 +48,7 @@ export class SupabaseStorage implements IStorage {
     return data;
   }
 
-  async upsertUser(userData: UpsertUser): Promise<User> {
+  async upsertUser(userData: UserInsert): Promise<User> {
     const { data, error } = await supabaseServiceRole
       .from('users')
       .upsert(userData)
@@ -66,10 +66,10 @@ export class SupabaseStorage implements IStorage {
     const { data, error } = await supabaseServiceRole
       .from('users')
       .update({
-        stripeCustomerId,
-        stripeSubscriptionId,
-        subscriptionStatus: "active",
-        updatedAt: new Date(),
+        stripe_customer_id: stripeCustomerId,
+        stripe_subscription_id: stripeSubscriptionId,
+        subscription_status: "active",
+        updated_at: new Date().toISOString(),
       })
       .eq('id', userId)
       .select()
@@ -84,8 +84,8 @@ export class SupabaseStorage implements IStorage {
     const { data, error } = await supabaseServiceRole
       .from('users')
       .update({
-        subscriptionStatus: status,
-        updatedAt: new Date(),
+        subscription_status: status,
+        updated_at: new Date().toISOString(),
       })
       .eq('id', userId)
       .select()
@@ -97,11 +97,18 @@ export class SupabaseStorage implements IStorage {
   }
 
   async incrementWorkflowUsage(userId: string): Promise<User> {
-     const { data, error } = await supabaseServiceRole
+    // First get current count
+    const { data: currentUser } = await supabaseServiceRole
+      .from('users')
+      .select('monthly_workflows')
+      .eq('id', userId)
+      .single();
+
+    const { data, error } = await supabaseServiceRole
       .from('users')
       .update({
-        workflowsUsedThisMonth: () => 'workflows_used_this_month + 1',
-        updatedAt: new Date(),
+        monthly_workflows: (currentUser?.monthly_workflows || 0) + 1,
+        updated_at: new Date().toISOString(),
       })
       .eq('id', userId)
       .select()
@@ -118,9 +125,8 @@ export class SupabaseStorage implements IStorage {
     const { data, error } = await supabaseServiceRole
       .from('users')
       .update({
-        workflowsUsedThisMonth: 0,
-        lastWorkflowReset: new Date(),
-        updatedAt: new Date(),
+        monthly_workflows: 0,
+        updated_at: new Date().toISOString(),
       })
       .eq('id', userId)
       .select()
@@ -180,7 +186,7 @@ export class SupabaseStorage implements IStorage {
       .from('workflows')
       .update({
         ...updates,
-        updatedAt: new Date(),
+        updated_at: new Date().toISOString(),
       })
       .eq('id', id)
       .select()
