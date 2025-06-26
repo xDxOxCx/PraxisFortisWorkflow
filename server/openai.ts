@@ -34,27 +34,18 @@ export interface WorkflowAnalysis {
 export async function analyzeWorkflow(workflowData: any, workflowName: string): Promise<WorkflowAnalysis> {
   try {
     const prompt = `
-You are an expert healthcare workflow analyst specializing in Lean methodology and clinical operations optimization. 
+You are a Lean Six Sigma Black Belt consultant turned AI expert.
 
-Analyze this clinical workflow for a specialty practice and provide detailed improvement recommendations.
+A user will give you a list of workflow steps from a business or clinic process. Your job is to analyze it like a Lean Six Sigma professional, and return a clean, professional markdown report.
 
 Workflow Name: ${workflowName}
-Workflow Data: ${JSON.stringify(workflowData)}
+Workflow Steps: ${JSON.stringify(workflowData.steps || workflowData, null, 2)}
 
-Please analyze this workflow and provide:
-1. Specific improvement opportunities with time savings estimates
-2. Bottleneck identification and solutions  
-3. Lean methodology applications
-4. Automation opportunities
-5. Risk mitigation strategies
-6. Mermaid.js flowchart code for visualization
+Analyze this workflow using TIMWOODS framework (Transport, Inventory, Motion, Waiting, Over-processing, Over-production, Defects, Skills) and provide a comprehensive A3 Action Plan.
 
-Focus on specialty clinic contexts like gastroenterology, orthopedics, endocrinology, and pain management.
-
-For each improvement, provide 3-5 specific implementation steps with clear ownership, timeframes, and resource requirements. These will be used to generate A3 action plans.
-
-Respond with valid JSON in this exact format:
+Return a JSON object with this structure:
 {
+  "markdownReport": "Complete markdown A3 report following the format",
   "improvements": [
     {
       "id": "unique_id",
@@ -74,22 +65,94 @@ Respond with valid JSON in this exact format:
       "priority": 3,
       "effort": "medium"
     }
-      "title": "Improvement Title",
-      "description": "Detailed description of the improvement",
-      "impact": "high|medium|low",
-      "timeSaved": number_in_minutes,
-      "category": "efficiency|bottleneck|automation|lean"
-    }
   ],
-  "mermaidCode": "Complete Mermaid.js flowchart code",
+  "mermaidCode": "current workflow mermaid code",
+  "optimizedMermaidCode": "optimized workflow mermaid code", 
   "summary": {
-    "totalTimeSaved": number_in_minutes,
-    "efficiencyGain": percentage_number,
+    "totalTimeSaved": number,
+    "efficiencyGain": number,
+    "efficiencyBefore": number,
+    "efficiencyAfter": number,
     "riskAreas": ["risk1", "risk2"],
-    "recommendations": ["rec1", "rec2"]
+    "recommendations": ["rec1", "rec2"],
+    "wasteTypes": ["Motion", "Waiting", "Over-processing"]
   }
 }
-`;
+
+Create a comprehensive A3 Action Plan report with sections for Problem Statement, Current/Optimized Workflow Diagrams, Improvement Analysis table, phased Action Plan with checkboxes, Success Metrics, and Coach's Note.
+
+Focus on specialty clinic contexts like gastroenterology, orthopedics, endocrinology. Provide specific, actionable recommendations with clear timelines and ownership.
+
+The markdownReport should be a complete professional A3 Action Plan following this structure:
+
+## 📋 A3 Action Plan Summary
+**Workflow Analyzed**: ${workflowName}
+**Efficiency Score (Before)**: [score]/100
+**Efficiency Score (After)**: [score]/100  
+**Time Saved per Cycle**: [X] minutes
+**Primary Waste Identified**: [List wastes from TIMWOODS]
+
+---
+
+## 🔍 Problem Statement
+[1 paragraph explaining inefficiencies and impact]
+
+---
+
+## 📈 Workflow Diagrams
+
+### ⛔ Current Workflow
+\`\`\`mermaid
+graph TD
+    A[Current Step 1] --> B[Current Step 2]
+    B --> C[Current Step 3]
+\`\`\`
+
+### ✅ Optimized Workflow  
+\`\`\`mermaid
+graph TD
+    A[Optimized Step 1] --> B[Optimized Step 2]
+    B --> C[Optimized Step 3]
+\`\`\`
+
+---
+
+## 📊 Improvement Analysis
+
+| **Waste Type** | **Current Impact** | **Proposed Solution** | **Time Saved** | **Effort** |
+|---|---|---|---|---|
+| Motion | High | Consolidate tasks | 15 min | Medium |
+| Waiting | Medium | Parallel processing | 10 min | Low |
+
+---
+
+## 🎯 Action Plan
+
+### Phase 1: Quick Wins (0-2 weeks)
+- [ ] Action item 1
+- [ ] Action item 2
+
+### Phase 2: Process Improvements (2-8 weeks)  
+- [ ] Action item 3
+- [ ] Action item 4
+
+### Phase 3: System Changes (8-16 weeks)
+- [ ] Action item 5  
+- [ ] Action item 6
+
+---
+
+## 📈 Success Metrics
+
+- **Cycle Time**: Reduce from X to Y minutes
+- **Wait Time**: Reduce from X to Y minutes  
+- **Defect Rate**: Reduce from X% to Y%
+- **Staff Satisfaction**: Increase from X to Y (1-10 scale)
+
+---
+
+## 💡 Coach's Note
+[Professional insight about implementation success factors]`;
 
     const response = await openai.chat.completions.create({
       model: "gpt-4o",

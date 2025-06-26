@@ -7,7 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
 import Home from "@/pages/home";
-import WorkflowBuilder from "@/pages/simple-workflow-builder";
+import WorkflowBuilder from "@/pages/workflow-builder-fixed";
 import Templates from "@/pages/templates";
 import Settings from "@/pages/settings";
 import Pricing from "@/pages/pricing";

@@ -1,0 +1,511 @@
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
+import Navbar from '@/components/layout/navbar';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { apiRequest } from '@/lib/queryClient';
+import { 
+  ArrowLeft, 
+  ArrowUp, 
+  ArrowDown, 
+  Plus, 
+  Save, 
+  Zap, 
+  Type, 
+  Trash2,
+  Clock,
+  TrendingUp,
+  AlertTriangle
+} from 'lucide-react';
+
+interface WorkflowStep {
+  id: string;
+  text: string;
+  type: 'start' | 'process' | 'decision' | 'end';
+}
+
+export default function WorkflowBuilder() {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  
+  // State management
+  const [workflowName, setWorkflowName] = useState('');
+  const [workflowDescription, setWorkflowDescription] = useState('');
+  const [steps, setSteps] = useState<WorkflowStep[]>([]);
+  const [newStepText, setNewStepText] = useState('');
+  const [textInput, setTextInput] = useState('');
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisResult, setAnalysisResult] = useState<any>(null);
+
+  // Save workflow mutation
+  const saveWorkflowMutation = useMutation({
+    mutationFn: async () => {
+      const workflowData = { steps };
+      return await apiRequest("POST", "/api/workflows", {
+        name: workflowName,
+        description: workflowDescription,
+        flow_data: workflowData,
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Workflow Saved",
+        description: "Your workflow has been saved successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/workflows'] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Save Failed",
+        description: "Failed to save workflow.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Step management functions
+  const addStep = () => {
+    if (!newStepText.trim()) return;
+    
+    const newStep: WorkflowStep = {
+      id: Date.now().toString(),
+      text: newStepText,
+      type: 'process'
+    };
+    
+    setSteps([...steps, newStep]);
+    setNewStepText('');
+  };
+
+  const createFromText = () => {
+    if (!textInput.trim()) return;
+    
+    const lines = textInput.split('\n').filter(line => line.trim());
+    const newSteps: WorkflowStep[] = lines.map((line, index) => ({
+      id: `${Date.now()}-${index}`,
+      text: line.trim(),
+      type: index === 0 ? 'start' : index === lines.length - 1 ? 'end' : 'process'
+    }));
+    
+    setSteps([...steps, ...newSteps]);
+    setTextInput('');
+  };
+
+  const updateStepText = (id: string, newText: string) => {
+    setSteps(steps.map(step => 
+      step.id === id ? { ...step, text: newText } : step
+    ));
+  };
+
+  const removeStep = (id: string) => {
+    setSteps(steps.filter(step => step.id !== id));
+  };
+
+  const moveStepUp = (index: number) => {
+    if (index === 0) return;
+    const newSteps = [...steps];
+    [newSteps[index], newSteps[index - 1]] = [newSteps[index - 1], newSteps[index]];
+    setSteps(newSteps);
+  };
+
+  const moveStepDown = (index: number) => {
+    if (index === steps.length - 1) return;
+    const newSteps = [...steps];
+    [newSteps[index], newSteps[index + 1]] = [newSteps[index + 1], newSteps[index]];
+    setSteps(newSteps);
+  };
+
+  // Analyze workflow with AI
+  const analyzeWorkflow = async () => {
+    if (steps.length === 0) {
+      toast({
+        title: "No Steps to Analyze",
+        description: "Please add some workflow steps before analyzing",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsAnalyzing(true);
+    try {
+      const flowData = { steps };
+      const response = await fetch('/api/analyze-workflow', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: workflowName,
+          description: workflowDescription,
+          flow_data: flowData,
+        }),
+      });
+
+      if (response.ok) {
+        const analysis = await response.json();
+        setAnalysisResult(analysis);
+        toast({
+          title: "Analysis Complete",
+          description: "AI analysis generated optimization recommendations"
+        });
+      } else {
+        toast({
+          title: "Analysis Failed",
+          description: "Failed to analyze workflow with AI",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error('Error analyzing workflow:', error);
+      toast({
+        title: "Analysis Error",
+        description: "An error occurred during analysis",
+        variant: "destructive"
+      });
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Navbar />
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="mb-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-3xl font-montserrat font-bold mb-2" style={{color: 'hsl(215, 25%, 27%)'}}>
+                Workflow Builder
+              </h2>
+              <p style={{color: 'hsl(210, 14%, 53%)'}}>
+                Create workflows by typing workflow steps and rearranging them
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <Button 
+                onClick={() => window.location.href = '/'}
+                variant="outline"
+                className="border-silver-gray text-silver-gray hover:border-emerald-green hover:text-emerald-green"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Dashboard
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Workflow Details */}
+        <Card className="mb-6">
+          <CardContent className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-2" style={{color: 'hsl(215, 25%, 27%)'}}>
+                  Workflow Name
+                </label>
+                <Input
+                  value={workflowName}
+                  onChange={(e) => setWorkflowName(e.target.value)}
+                  placeholder="Enter workflow name"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2" style={{color: 'hsl(215, 25%, 27%)'}}>
+                  Description
+                </label>
+                <Input
+                  value={workflowDescription}
+                  onChange={(e) => setWorkflowDescription(e.target.value)}
+                  placeholder="Brief description"
+                />
+              </div>
+            </div>
+            <div className="mt-4">
+              <Button 
+                onClick={() => saveWorkflowMutation.mutate()}
+                disabled={saveWorkflowMutation.isPending}
+                style={{backgroundColor: 'hsl(158, 60%, 50%)'}}
+                className="text-white hover:opacity-90"
+              >
+                <Save className="w-4 h-4 mr-2" />
+                {saveWorkflowMutation.isPending ? 'Saving...' : 'Save Workflow'}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Text Input Section */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="text-lg">Create Workflow Steps</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {/* Bulk text input */}
+              <div>
+                <label className="block text-sm font-medium mb-2" style={{color: 'hsl(215, 25%, 27%)'}}>
+                  Paste or type multiple steps (one per line)
+                </label>
+                <Textarea
+                  placeholder="Enter each step on a new line, for example:&#10;Patient arrives at clinic&#10;Check insurance verification&#10;Complete registration forms&#10;Wait for provider&#10;Consultation begins"
+                  value={textInput}
+                  onChange={(e) => setTextInput(e.target.value)}
+                  rows={4}
+                  className="w-full"
+                />
+                <Button 
+                  onClick={createFromText}
+                  style={{backgroundColor: 'hsl(158, 60%, 50%)'}}
+                  className="text-white hover:opacity-90 mt-2"
+                  disabled={!textInput.trim()}
+                >
+                  <Type className="w-4 h-4 mr-2" />
+                  Create Steps from Text
+                </Button>
+              </div>
+              
+              {/* Single step input */}
+              <div className="border-t pt-4">
+                <label className="block text-sm font-medium mb-2" style={{color: 'hsl(215, 25%, 27%)'}}>
+                  Add individual step
+                </label>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Enter a single workflow step"
+                    value={newStepText}
+                    onChange={(e) => setNewStepText(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && addStep()}
+                    className="flex-1"
+                  />
+                  <Button 
+                    onClick={addStep}
+                    disabled={!newStepText.trim()}
+                    style={{backgroundColor: 'hsl(158, 60%, 50%)'}}
+                    className="text-white hover:opacity-90"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Step
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-300px)]">
+          {/* Component Palette */}
+          <Card className="lg:col-span-1">
+            <CardHeader>
+              <CardTitle className="text-lg">How to Use</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="text-sm text-muted-foreground">
+                This is the simplified workflow builder. Add steps using the text input above, then reorder them with the arrow buttons.
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Workflow Canvas */}
+          <Card className="lg:col-span-3">
+            <CardHeader>
+              <CardTitle className="text-lg">Workflow Steps</CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Your workflow steps in order - use the arrows to reorder them
+              </p>
+            </CardHeader>
+            <CardContent className="p-4">
+              {steps.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  No steps created yet. Add some steps using the form above.
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {steps.map((step, index) => (
+                    <div key={step.id} className="flex items-center gap-3 p-3 border rounded-lg">
+                      <div className="flex flex-col gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => moveStepUp(index)}
+                          disabled={index === 0}
+                          className="p-1 h-6 w-6"
+                        >
+                          <ArrowUp className="w-3 h-3" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => moveStepDown(index)}
+                          disabled={index === steps.length - 1}
+                          className="p-1 h-6 w-6"
+                        >
+                          <ArrowDown className="w-3 h-3" />
+                        </Button>
+                      </div>
+                      
+                      <div className="flex-1">
+                        <Input
+                          value={step.text}
+                          onChange={(e) => updateStepText(step.id, e.target.value)}
+                          className="border-none p-0 font-medium"
+                        />
+                      </div>
+                      
+                      <div className="flex items-center gap-2">
+                        <span className={`px-2 py-1 text-xs rounded ${
+                          step.type === 'start' ? 'bg-green-100 text-green-800' :
+                          step.type === 'end' ? 'bg-red-100 text-red-800' :
+                          step.type === 'decision' ? 'bg-yellow-100 text-yellow-800' :
+                          'bg-blue-100 text-blue-800'
+                        }`}>
+                          {step.type}
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeStep(step.id)}
+                          className="p-1 h-6 w-6 text-red-500 hover:text-red-700"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              
+              {/* Analyze Button - positioned after workflow steps */}
+              {steps.length > 0 && (
+                <div className="mt-6 text-center">
+                  <Button 
+                    onClick={analyzeWorkflow}
+                    disabled={isAnalyzing}
+                    style={{backgroundColor: 'hsl(220, 50%, 30%)'}}
+                    className="text-white hover:opacity-90 px-8 py-3 text-lg"
+                    size="lg"
+                  >
+                    {isAnalyzing ? (
+                      <>
+                        <div className="w-5 h-5 mr-3 animate-spin border-2 border-white border-t-transparent rounded-full" />
+                        Analyzing Workflow...
+                      </>
+                    ) : (
+                      <>
+                        <Zap className="w-5 h-5 mr-3" />
+                        Analyze with Lean Six Sigma AI
+                      </>
+                    )}
+                  </Button>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Get professional optimization recommendations using Lean methodology
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* AI Analysis Results */}
+          {analysisResult && (
+            <Card className="lg:col-span-4">
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Zap className="w-5 h-5 text-emerald-600" />
+                  Lean Six Sigma A3 Action Plan
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Professional workflow optimization analysis using TIMWOODS framework
+                </p>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Professional A3 Action Plan Display */}
+                {analysisResult.markdownReport ? (
+                  <div className="bg-white border rounded-lg p-6">
+                    <div className="prose prose-sm max-w-none">
+                      <div 
+                        className="markdown-content"
+                        style={{lineHeight: '1.6'}}
+                        dangerouslySetInnerHTML={{ 
+                          __html: analysisResult.markdownReport
+                            .replace(/\n/g, '<br>')
+                            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                            .replace(/## (.*?)(<br>|$)/g, '<h2 class="text-xl font-bold mb-4 mt-6" style="color: hsl(220, 50%, 30%)">$1</h2>')
+                            .replace(/### (.*?)(<br>|$)/g, '<h3 class="text-lg font-semibold mb-3 mt-4" style="color: hsl(215, 25%, 27%)">$1</h3>')
+                            .replace(/```mermaid([\s\S]*?)```/g, '<pre class="bg-gray-100 p-4 rounded-lg overflow-x-auto my-4"><code class="text-sm">$1</code></pre>')
+                            .replace(/- \[ \] (.*?)(<br>|$)/g, '<div class="flex items-center gap-2 mb-2"><input type="checkbox" class="rounded"> <span>$1</span></div>')
+                            .replace(/---/g, '<hr class="my-6 border-gray-300">')
+                        }}
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    {/* Summary Metrics */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                      <div className="p-4 bg-emerald-50 rounded-lg">
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-5 h-5 text-emerald-600" />
+                          <span className="font-medium">Time Savings</span>
+                        </div>
+                        <p className="text-2xl font-bold text-emerald-600">
+                          {analysisResult.summary?.totalTimeSaved || 0} min
+                        </p>
+                      </div>
+                      <div className="p-4 bg-blue-50 rounded-lg">
+                        <div className="flex items-center gap-2">
+                          <TrendingUp className="w-5 h-5 text-blue-600" />
+                          <span className="font-medium">Efficiency Gain</span>
+                        </div>
+                        <p className="text-2xl font-bold text-blue-600">
+                          {analysisResult.summary?.efficiencyGain || 0}%
+                        </p>
+                      </div>
+                      <div className="p-4 bg-yellow-50 rounded-lg">
+                        <div className="flex items-center gap-2">
+                          <AlertTriangle className="w-5 h-5 text-yellow-600" />
+                          <span className="font-medium">Risk Areas</span>
+                        </div>
+                        <p className="text-2xl font-bold text-yellow-600">
+                          {analysisResult.summary?.riskAreas?.length || 0}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    {/* Simple improvement list */}
+                    {analysisResult.improvements && analysisResult.improvements.length > 0 && (
+                      <div>
+                        <h3 className="font-semibold text-lg mb-4">Optimization Recommendations</h3>
+                        <div className="space-y-3">
+                          {analysisResult.improvements.map((improvement: any, index: number) => (
+                            <div key={index} className="p-4 border rounded-lg">
+                              <h4 className="font-medium">{improvement.title}</h4>
+                              <p className="text-sm text-muted-foreground mt-1">{improvement.description}</p>
+                              <div className="flex items-center gap-4 mt-2">
+                                <span className={`px-2 py-1 text-xs rounded ${
+                                  improvement.impact === 'high' ? 'bg-red-100 text-red-800' :
+                                  improvement.impact === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                                  'bg-green-100 text-green-800'
+                                }`}>
+                                  {improvement.impact} impact
+                                </span>
+                                {improvement.timeSaved && (
+                                  <span className="text-sm text-emerald-600">
+                                    +{improvement.timeSaved}min saved
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
