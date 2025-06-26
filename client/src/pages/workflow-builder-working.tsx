@@ -193,9 +193,26 @@ export default function WorkflowBuilder() {
       const response = await fetch('/api/workflows/analyze', {
         method: 'POST',
         body: JSON.stringify(workflowData),
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include' // Include session cookies for authentication
       });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        if (response.status === 401) {
+          toast({
+            title: "Authentication Required",
+            description: "Please sign in again to continue.",
+            variant: "destructive",
+          });
+          window.location.href = "/api/login";
+          return;
+        }
+        throw new Error(errorData.message || `Analysis failed with status ${response.status}`);
+      }
+
       const result = await response.json();
+      console.log("AI Analysis result:", result);
 
       setAnalysisResult(result);
       

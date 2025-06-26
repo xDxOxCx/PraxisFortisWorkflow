@@ -32,6 +32,11 @@ export default function AnalysisTabs({ analysisResult }: AnalysisTabsProps) {
       metrics: ''
     };
 
+    // Handle cases where markdown is undefined or null
+    if (!markdown || typeof markdown !== 'string') {
+      return sections;
+    }
+
     // Split by main headers and extract content
     const lines = markdown.split('\n');
     let currentSection = 'summary';

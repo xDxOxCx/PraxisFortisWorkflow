@@ -67,21 +67,25 @@ export function setupAuth(app: Express) {
 
 export const isAuthenticated = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    // Check for session-based authentication first (for our demo auth system)
+    if (req.session && req.session.user) {
+      req.user = req.session.user;
+      return next();
+    }
+
+    // Fallback to Bearer token authentication for API clients
     const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.substring(7);
+      const { data: { user }, error } = await supabase.auth.getUser(token);
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ message: "No authorization header" });
+      if (!error && user) {
+        req.user = user;
+        return next();
+      }
     }
 
-    const token = authHeader.substring(7);
-    const { data: { user }, error } = await supabase.auth.getUser(token);
-
-    if (error || !user) {
-      return res.status(401).json({ message: "Invalid token" });
-    }
-
-    req.user = user;
-    next();
+    return res.status(401).json({ message: "Authentication required" });
   } catch (error) {
     console.error("Auth middleware error:", error);
     res.status(401).json({ message: "Authentication failed" });
