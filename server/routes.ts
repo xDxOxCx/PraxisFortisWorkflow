@@ -39,7 +39,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('Creating/updating user:', user.id, user.email);
       
       // Upsert user in your database
-      await storage.upsertUser({
+      const dbUser = await storage.upsertUser({
         id: user.id,
         email: user.email!,
         firstName: user.user_metadata?.first_name || null,
@@ -49,8 +49,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         totalWorkflows: 0,
       });
 
-      console.log('User created/updated successfully');
-      res.json({ success: true, user: { id: user.id, email: user.email } });
+      console.log('User created/updated successfully:', dbUser);
+      res.json({ success: true, user: dbUser });
     } catch (error: any) {
       console.error('Auth callback error:', error);
       res.status(500).json({ message: "Internal server error", error: error.message });

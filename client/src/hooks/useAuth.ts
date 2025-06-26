@@ -7,10 +7,10 @@ export function useAuth() {
   const [isLoading, setIsLoading] = useState(true);
 
   const { data: user, isLoading: userLoading } = useQuery({
-    queryKey: ["/api/auth/user"],
+    queryKey: ["/api/auth/user", session?.access_token],
     queryFn: async () => {
       if (!session?.access_token) {
-        throw new Error('No session');
+        return null;
       }
       
       const response = await fetch('/api/auth/user', {
@@ -21,13 +21,14 @@ export function useAuth() {
       });
       
       if (!response.ok) {
-        throw new Error('Failed to fetch user');
+        return null;
       }
       
       return response.json();
     },
     retry: false,
     enabled: !!session?.access_token,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
   useEffect(() => {
@@ -49,62 +50,73 @@ export function useAuth() {
   }, []);
 
   const signUp = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`
-      }
-    });
-    
-    // If sign up successful and user is confirmed, create user in database
-    if (data.session && data.user && !error) {
-      try {
-        const response = await fetch('/api/auth/callback', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${data.session.access_token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-        
-        if (!response.ok) {
-          console.error('Auth callback failed:', await response.text());
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`
         }
-      } catch (callbackError) {
-        console.error('Error calling auth callback:', callbackError);
+      });
+      
+      if (error) {
+        console.error('Sign up error:', error);
+        return { data: null, error };
       }
+      
+      // Note: For email confirmation flow, user won't have session until they confirm
+      if (data.user && !data.user.email_confirmed_at) {
+        return { 
+          data, 
+          error: null,
+          message: 'Please check your email and click the confirmation link to complete registration.'
+        };
+      }
+      
+      return { data, error: null };
+    } catch (err) {
+      console.error('Sign up failed:', err);
+      return { data: null, error: err };
     }
-    
-    return { data, error };
   };
 
   const signIn = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    
-    // If sign in successful, call auth callback to create user in database
-    if (data.session && data.user && !error) {
-      try {
-        const response = await fetch('/api/auth/callback', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${data.session.access_token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-        
-        if (!response.ok) {
-          console.error('Auth callback failed:', await response.text());
-        }
-      } catch (callbackError) {
-        console.error('Error calling auth callback:', callbackError);
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      
+      if (error) {
+        console.error('Sign in error:', error);
+        return { data: null, error };
       }
+      
+      // Call auth callback after successful sign in
+      if (data.session && data.user) {
+        try {
+          const response = await fetch('/api/auth/callback', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${data.session.access_token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+          
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Auth callback failed:', errorText);
+          }
+        } catch (callbackError) {
+          console.error('Error calling auth callback:', callbackError);
+        }
+      }
+      
+      return { data, error: null };
+    } catch (err) {
+      console.error('Sign in failed:', err);
+      return { data: null, error: err };
     }
-    
-    return { data, error };
   };
 
   const signOut = async () => {
@@ -119,10 +131,10 @@ export function useAuth() {
   };
 
   return {
-    user,
+    user: user || null,
     session,
-    isLoading: isLoading || userLoading,
-    isAuthenticated: !!session?.user,
+    isLoading: isLoading || (userLoading && !!session),
+    isAuthenticated: !!session?.user && !!user,
     signUp,
     signIn,
     signOut,
