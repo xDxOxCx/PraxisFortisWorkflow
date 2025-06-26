@@ -246,6 +246,7 @@ export default function WorkflowBuilder() {
 
       if (response.ok) {
         const analysis = await response.json();
+        console.log('AI Analysis Response:', analysis);
         setAnalysisResult(analysis);
         toast({
           title: "Analysis Complete",
@@ -526,16 +527,25 @@ export default function WorkflowBuilder() {
                     <div className="prose prose-sm max-w-none">
                       <div 
                         className="markdown-content"
-                        style={{lineHeight: '1.6'}}
+                        style={{lineHeight: '1.8', fontSize: '14px'}}
                         dangerouslySetInnerHTML={{ 
                           __html: analysisResult.markdownReport
+                            .replace(/\n\n/g, '<br><br>')
                             .replace(/\n/g, '<br>')
-                            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                            .replace(/## (.*?)(<br>|$)/g, '<h2 class="text-xl font-bold mb-4 mt-6" style="color: hsl(220, 50%, 30%)">$1</h2>')
-                            .replace(/### (.*?)(<br>|$)/g, '<h3 class="text-lg font-semibold mb-3 mt-4" style="color: hsl(215, 25%, 27%)">$1</h3>')
-                            .replace(/```mermaid([\s\S]*?)```/g, '<pre class="bg-gray-100 p-4 rounded-lg overflow-x-auto my-4"><code class="text-sm">$1</code></pre>')
-                            .replace(/- \[ \] (.*?)(<br>|$)/g, '<div class="flex items-center gap-2 mb-2"><input type="checkbox" class="rounded"> <span>$1</span></div>')
-                            .replace(/---/g, '<hr class="my-6 border-gray-300">')
+                            .replace(/\*\*(.*?)\*\*/g, '<strong style="color: hsl(220, 50%, 30%); font-weight: 600;">$1</strong>')
+                            .replace(/## 📋 (.*?)(<br>|$)/g, '<h2 class="text-2xl font-bold mb-6 mt-8 flex items-center gap-2" style="color: hsl(220, 50%, 30%);"><span class="text-2xl">📋</span> $1</h2>')
+                            .replace(/## 🔍 (.*?)(<br>|$)/g, '<h2 class="text-2xl font-bold mb-6 mt-8 flex items-center gap-2" style="color: hsl(220, 50%, 30%);"><span class="text-2xl">🔍</span> $1</h2>')
+                            .replace(/## ⛔ (.*?)(<br>|$)/g, '<h2 class="text-2xl font-bold mb-6 mt-8 flex items-center gap-2" style="color: hsl(220, 50%, 30%);"><span class="text-2xl">⛔</span> $1</h2>')
+                            .replace(/## ✅ (.*?)(<br>|$)/g, '<h2 class="text-2xl font-bold mb-6 mt-8 flex items-center gap-2" style="color: hsl(220, 50%, 30%);"><span class="text-2xl">✅</span> $1</h2>')
+                            .replace(/## 🎯 (.*?)(<br>|$)/g, '<h2 class="text-2xl font-bold mb-6 mt-8 flex items-center gap-2" style="color: hsl(220, 50%, 30%);"><span class="text-2xl">🎯</span> $1</h2>')
+                            .replace(/## 📊 (.*?)(<br>|$)/g, '<h2 class="text-2xl font-bold mb-6 mt-8 flex items-center gap-2" style="color: hsl(220, 50%, 30%);"><span class="text-2xl">📊</span> $1</h2>')
+                            .replace(/## ⚠️ (.*?)(<br>|$)/g, '<h2 class="text-2xl font-bold mb-6 mt-8 flex items-center gap-2" style="color: hsl(220, 50%, 30%);"><span class="text-2xl">⚠️</span> $1</h2>')
+                            .replace(/### (.*?)(<br>|$)/g, '<h3 class="text-lg font-semibold mb-4 mt-6" style="color: hsl(215, 25%, 27%);">$1</h3>')
+                            .replace(/```mermaid([\s\S]*?)```/g, '<div class="bg-gray-50 border rounded-lg p-4 my-6"><h4 class="font-semibold mb-3 text-gray-700">Workflow Diagram:</h4><pre class="bg-white border rounded p-3 overflow-x-auto"><code class="text-sm text-gray-800">$1</code></pre></div>')
+                            .replace(/\| (.*?) \|/g, '<div class="grid grid-cols-5 gap-2 p-2 border-b text-sm"><div>$1</div></div>')
+                            .replace(/- (.*?)(<br>|$)/g, '<div class="flex items-start gap-2 mb-3"><span class="text-emerald-600 font-bold">•</span><span>$1</span></div>')
+                            .replace(/(\d+)\. (.*?)(<br>|$)/g, '<div class="flex items-start gap-2 mb-3"><span class="bg-blue-100 text-blue-800 rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">$1</span><span>$2</span></div>')
+                            .replace(/---/g, '<hr class="my-8 border-2 border-gray-200">')
                         }}
                       />
                     </div>
