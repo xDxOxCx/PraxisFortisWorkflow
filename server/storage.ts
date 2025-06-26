@@ -52,44 +52,64 @@ export class DatabaseStorage implements IStorage {
     console.log('Upserting user:', userData.id, userData.email);
 
     try {
-      // First try to find existing user
-      const existingUser = await this.getUser(userData.id);
+      // First check if user exists by Supabase ID
+      const existingUserById = await this.getUser(userData.id);
       
-      if (existingUser) {
-        // Update existing user
+      if (existingUserById) {
+        // Update existing user by ID
         const [user] = await db
           .update(users)
           .set({
             email: userData.email,
-            firstName: userData.firstName || existingUser.firstName,
-            lastName: userData.lastName || existingUser.lastName,
+            firstName: userData.firstName || existingUserById.firstName,
+            lastName: userData.lastName || existingUserById.lastName,
             updatedAt: new Date(),
           })
           .where(eq(users.id, userData.id))
           .returning();
         
-        console.log('Updated existing user:', user.id);
-        return user;
-      } else {
-        // Create new user
-        const [user] = await db
-          .insert(users)
-          .values({
-            id: userData.id,
-            email: userData.email,
-            firstName: userData.firstName || null,
-            lastName: userData.lastName || null,
-            subscriptionStatus: userData.subscriptionStatus || 'free',
-            workflowsUsedThisMonth: userData.workflowsUsedThisMonth || 0,
-            totalWorkflows: userData.totalWorkflows || 0,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          })
-          .returning();
-        
-        console.log('Created new user:', user.id);
+        console.log('Updated existing user by ID:', user.id);
         return user;
       }
+
+      // Check if user exists by email (legacy user)
+      const existingUserByEmail = await this.getUserByEmail(userData.email);
+      
+      if (existingUserByEmail) {
+        // Update existing user's ID to match Supabase ID
+        const [user] = await db
+          .update(users)
+          .set({
+            id: userData.id, // Update to use Supabase ID
+            firstName: userData.firstName || existingUserByEmail.firstName,
+            lastName: userData.lastName || existingUserByEmail.lastName,
+            updatedAt: new Date(),
+          })
+          .where(eq(users.email, userData.email))
+          .returning();
+        
+        console.log('Updated existing user by email to use Supabase ID:', user.id);
+        return user;
+      }
+
+      // Create new user
+      const [user] = await db
+        .insert(users)
+        .values({
+          id: userData.id,
+          email: userData.email,
+          firstName: userData.firstName || null,
+          lastName: userData.lastName || null,
+          subscriptionStatus: userData.subscriptionStatus || 'free',
+          workflowsUsedThisMonth: userData.workflowsUsedThisMonth || 0,
+          totalWorkflows: userData.totalWorkflows || 0,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        })
+        .returning();
+      
+      console.log('Created new user:', user.id);
+      return user;
     } catch (error: any) {
       console.error('Upsert user error:', error);
       throw new Error(`Failed to upsert user: ${error.message}`);
