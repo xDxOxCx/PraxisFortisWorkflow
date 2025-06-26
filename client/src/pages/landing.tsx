@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { CheckCircle, Brain, BarChart3, Users, ArrowRight, Star } from "lucide-react";
+import { CheckCircle, Brain, BarChart3, Users, ArrowRight, Star, Play } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import Navbar from "@/components/layout/navbar";
 import { Link } from "wouter";

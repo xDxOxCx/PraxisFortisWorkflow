@@ -7,16 +7,15 @@ import { isUnauthorizedError } from "@/lib/authUtils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
-import { Plus, Activity, CheckCircle, Clock, AlertTriangle } from "lucide-react";
-import Navbar from "@/components/layout/navbar";
-import { useAuth } from "@/hooks/useAuth";
 import { 
   Plus, 
+  Activity,
+  CheckCircle,
+  Clock,
+  AlertTriangle,
   ChartGantt,
   Calendar,
-  Clock,
   TrendingUp,
   UserCheck,
   FileText,
@@ -25,6 +24,7 @@ import {
   Info,
   Edit
 } from "lucide-react";
+import Navbar from "@/components/layout/navbar";
 
 interface UserStats {
   totalWorkflows: number;
