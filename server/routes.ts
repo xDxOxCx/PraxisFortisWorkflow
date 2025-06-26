@@ -3,25 +3,64 @@ import { createServer, type Server } from "http";
 import Stripe from "stripe";
 import { storage } from "./storage";
 import { analyzeWorkflow } from "./openai";
-import { setupAuth, isAuthenticated } from "./replitAuth";
 import express from "express";
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
-}
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: "2024-06-20",
-});
+}) : null;
+
+// Mock user for development - this creates a working demo environment
+const mockUser = {
+  id: "demo-user-123",
+  email: "demo@workflow-optimizer.com",
+  firstName: "Demo",
+  lastName: "User",
+  subscriptionStatus: "free",
+  workflowsUsedThisMonth: 0
+};
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Auth middleware
-  await setupAuth(app);
-
-  // Auth routes
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+  // Simple mock auth middleware for demo purposes
+  const mockAuth = async (req: any, res: any, next: any) => {
+    // Ensure user exists in database
     try {
+      let user = await storage.getUser(mockUser.id);
+      if (!user) {
+        user = await storage.upsertUser({
+          id: mockUser.id,
+          email: mockUser.email,
+          firstName: mockUser.firstName,
+          lastName: mockUser.lastName,
+          subscriptionStatus: "free",
+          totalWorkflows: 0,
+          monthlyWorkflows: 0
+        });
+      }
+      req.user = { claims: { sub: mockUser.id } };
+      next();
+    } catch (error) {
+      console.error("Auth error:", error);
+      res.status(500).json({ message: "Authentication error" });
+    }
+  };
+
+  // Auth routes - simple demo authentication
+  app.get('/api/login', (req, res) => {
+    // In demo mode, just redirect to home
+    res.redirect('/');
+  });
+
+  app.get('/api/logout', (req, res) => {
+    // In demo mode, just redirect to home
+    res.redirect('/');
+  });
+
+  app.get('/api/auth/user', mockAuth, async (req: any, res) => {
+    try {
+      console.log("Auth user endpoint hit, req.user:", req.user);
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
+      console.log("Retrieved user:", user);
       res.json(user);
     } catch (error) {
       console.error("Error fetching user:", error);
@@ -30,7 +69,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Workflows routes
-  app.get('/api/workflows', isAuthenticated, async (req: any, res) => {
+  app.get('/api/workflows', mockAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const workflows = await storage.getWorkflows(userId);
@@ -41,7 +80,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/workflows/:id', isAuthenticated, async (req: any, res) => {
+  app.get('/api/workflows/:id', mockAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const workflowId = parseInt(req.params.id);
@@ -58,7 +97,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/workflows', isAuthenticated, async (req: any, res) => {
+  app.post('/api/workflows', mockAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const workflowData = {
@@ -74,7 +113,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/workflows/:id', isAuthenticated, async (req: any, res) => {
+  app.put('/api/workflows/:id', mockAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const workflowId = parseInt(req.params.id);
@@ -98,7 +137,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete('/api/workflows/:id', isAuthenticated, async (req: any, res) => {
+  app.delete('/api/workflows/:id', mockAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const workflowId = parseInt(req.params.id);
@@ -112,7 +151,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // AI Analysis route
-  app.post('/api/workflows/:id/analyze', isAuthenticated, async (req: any, res) => {
+  app.post('/api/workflows/:id/analyze', mockAuth, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const workflowId = parseInt(req.params.id);
@@ -168,7 +207,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Stripe subscription routes
-  app.post('/api/create-checkout-session', isAuthenticated, async (req: any, res) => {
+  app.post('/api/create-checkout-session', mockAuth, async (req: any, res) => {
     try {
       const { priceId } = req.body;
       const userId = req.user.claims.sub;
