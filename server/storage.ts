@@ -16,13 +16,13 @@ import { eq, sql } from "drizzle-orm";
 
 export interface IStorage {
   // User operations
-  getUser(id: string): Promise<User | undefined>;
+  getUser(id: number): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
-  upsertUser(user: UpsertUser): Promise<User>;
-  updateUserStripeInfo(userId: string, stripeCustomerId: string, stripeSubscriptionId: string): Promise<User>;
-  updateSubscriptionStatus(userId: string, status: string): Promise<User>;
-  incrementWorkflowUsage(userId: string): Promise<User>;
-  resetMonthlyWorkflows(userId: string): Promise<User>;
+  createUser(email: string, passwordHash: string): Promise<User>;
+  updateUserStripeInfo(userId: number, stripeCustomerId: string, stripeSubscriptionId: string): Promise<User>;
+  updateSubscriptionStatus(userId: number, status: string): Promise<User>;
+  incrementWorkflowUsage(userId: number): Promise<User>;
+  resetMonthlyWorkflows(userId: number): Promise<User>;
 
   // Workflow operations
   getWorkflows(userId: string): Promise<Workflow[]>;
@@ -38,7 +38,7 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
-  async getUser(id: string): Promise<User | undefined> {
+  async getUser(id: number): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
     return user || undefined;
   }

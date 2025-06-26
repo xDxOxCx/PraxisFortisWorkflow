@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import AuthCallback from "./pages/auth-callback";
-import AuthForm from "./components/auth/auth-form";
+import Auth from "./pages/auth";
 import ResetPassword from "./pages/reset-password";
 import NotFound from "./pages/not-found";
 import Landing from "@/pages/landing";
@@ -23,7 +23,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/auth/callback" component={AuthCallback} />
-      <Route path="/auth" component={AuthForm} />
+      <Route path="/auth" component={Auth} />
       <Route path="/reset-password" component={ResetPassword} />
 
       {isLoading || !isAuthenticated ? (
@@ -64,7 +64,7 @@ function App() {
     <Switch>
       {/* Public routes - always accessible */}
       <Route path="/auth/callback" component={AuthCallback} />
-      <Route path="/auth" component={AuthForm} />
+      <Route path="/auth" component={Auth} />
       <Route path="/reset-password" component={ResetPassword} />
       <Route path="/pricing" component={Pricing} />
 
