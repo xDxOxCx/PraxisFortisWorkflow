@@ -12,20 +12,14 @@ import { Link } from "wouter";
 
 export default function Navbar() {
   const { user, isAuthenticated, signOut } = useAuth();
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
 
-  const handleAuth = async () => {
+  const handleAuth = () => {
     if (isAuthenticated) {
-      await signOut();
+      signOut();
     } else {
-      // Login logic
-      const { supabase } = await import('@/lib/supabaseClient');
-      await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`
-        }
-      });
+      // Redirect to auth page
+      setLocation('/auth');
     }
   };
 

@@ -8,18 +8,13 @@ import { Link } from "wouter";
 export default function Landing() {
   const { isAuthenticated } = useAuth();
 
-  const handleGetStarted = async () => {
+  const handleGetStarted = () => {
     if (isAuthenticated) {
       // Redirect to dashboard if already authenticated
       window.location.href = "/";
     } else {
-      const { supabase } = await import('@/lib/supabaseClient');
-      await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`
-        }
-      });
+      // Redirect to auth page
+      window.location.href = "/auth";
     }
   };
 
