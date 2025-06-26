@@ -235,7 +235,7 @@ export default function Landing() {
         </div>
       </section>
       {/* Pricing Section */}
-      <section id="pricing" className="py-16 bg-[#4372a1]" style={{backgroundColor: 'hsl(210, 15%, 8%)'}}>
+      <section id="pricing" className="py-16 bg-[#3131b5]" style={{backgroundColor: 'hsl(210, 15%, 8%)'}}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-montserrat font-bold text-primary-foreground mb-4">
