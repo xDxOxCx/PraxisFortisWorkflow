@@ -13,6 +13,15 @@ interface Template {
   description: string;
   category: string;
   icon: string;
+  flow_data: {
+    steps: Array<{
+      id: string;
+      text: string;
+      type: 'start' | 'process' | 'decision' | 'end';
+    }>;
+  };
+  created_at: string;
+  updated_at: string;
 }
 
 export default function Templates() {
