@@ -72,3 +72,13 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
   }
   next();
 };
+
+// Bypass auth middleware for development/demo purposes
+export const bypassAuth: RequestHandler = (req, res, next) => {
+  // Mock user for development
+  req.user = {
+    id: "mock-user",
+    email: "demo@example.com"
+  };
+  next();
+};
