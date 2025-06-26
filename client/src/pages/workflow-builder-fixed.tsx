@@ -21,6 +21,7 @@ import {
   AlertTriangle
 } from 'lucide-react';
 import MarkdownRenderer from '@/components/workflow/markdown-renderer';
+import AnalysisTabs from '@/components/workflow/analysis-tabs';
 
 interface WorkflowStep {
   id: string;
@@ -513,36 +514,11 @@ export default function WorkflowBuilder() {
             </CardContent>
           </Card>
 
-          {/* AI Analysis Results */}
+          {/* AI Analysis Results with Tabs */}
           {analysisResult && (
-            <Card className="lg:col-span-4">
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Zap className="w-5 h-5 text-emerald-600" />
-                  Lean Six Sigma A3 Action Plan
-                </CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  Professional workflow optimization analysis using TIMWOODS framework
-                </p>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Professional A3 Action Plan Display */}
-                <div className="bg-gradient-to-r from-blue-50 to-emerald-50 border rounded-lg p-6">
-                  <div className="space-y-4">
-                    {/* Header Summary */}
-                    <div className="bg-white rounded-lg p-4 shadow-sm">
-                      <h3 className="text-lg font-semibold text-navy-900 mb-2">Analysis Summary</h3>
-                      <p className="text-sm text-gray-600">Complete A3 Action Plan with efficiency scores, problem analysis, and implementation roadmap</p>
-                    </div>
-
-                    {/* Formatted markdown display */}
-                    <div className="bg-white rounded-lg p-6 shadow-sm">
-                      <MarkdownRenderer content={analysisResult.markdownReport || 'No analysis report available'} />
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="lg:col-span-4">
+              <AnalysisTabs analysisResult={analysisResult} />
+            </div>
           )}
         </div>
       </div>
