@@ -5,8 +5,13 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { useQuery } from "@tanstack/react-query";
+import { Link } from "wouter";
+import { Plus, Activity, CheckCircle, Clock, AlertTriangle } from "lucide-react";
 import Navbar from "@/components/layout/navbar";
+import { useAuth } from "@/hooks/useAuth";
 import { 
   Plus, 
   ChartGantt,
@@ -48,8 +53,29 @@ interface Template {
 }
 
 export default function Home() {
-  const { toast } = useToast();
   const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Please sign in to continue</h1>
+          <Button onClick={() => window.location.href = '/landing'}>
+            Go to Sign In
+          </Button>
+        </div>
+      </div>
+    );
+  }
+  const { toast } = useToast();
   const [, navigate] = useLocation();
 
   // Redirect to home if not authenticated
@@ -123,7 +149,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="mb-8">
           <h2 className="text-3xl font-montserrat font-bold text-slate-blue mb-2">Dashboard</h2>
@@ -324,7 +350,7 @@ export default function Home() {
                     }}
                   ></div>
                 </div>
-                
+
                 {stats?.subscriptionStatus === 'free' && (
                   <div className="mt-4 p-3 bg-blue-50 rounded-lg">
                     <p className="text-sm text-blue-800">

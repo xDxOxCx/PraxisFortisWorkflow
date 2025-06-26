@@ -1,23 +1,20 @@
-import { useState, useEffect } from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import React, { useState, useCallback, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { useToast } from '@/hooks/use-toast';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Navbar from '@/components/layout/navbar';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
-import { 
-  ArrowLeft, 
-  ArrowUp, 
-  ArrowDown, 
-  Plus, 
-  Save, 
-  Zap, 
-  Type, 
-  Trash2,
-  Clock,
-  TrendingUp,
+import { useLocation } from 'wouter';
+import { useAuth } from '@/hooks/useAuth';
+import {
+  ArrowUp,
+  ArrowDown,
+  X,
+  Save,
+  Wand2,
   AlertTriangle
 } from 'lucide-react';
 import MarkdownRenderer from '@/components/workflow/markdown-renderer';
@@ -30,10 +27,32 @@ interface WorkflowStep {
 }
 
 export default function WorkflowBuilder() {
-  const { toast } = useToast();
+  const { isAuthenticated, isLoading } = useAuth();
+  const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
 
-  // State management
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Please sign in to continue</h1>
+          <Button onClick={() => setLocation('/landing')}>
+            Go to Sign In
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  const { toast } = useToast();
   const [workflowName, setWorkflowName] = useState('');
   const [workflowDescription, setWorkflowDescription] = useState('');
   const [steps, setSteps] = useState<WorkflowStep[]>([]);

@@ -30,10 +30,15 @@ export function useAuth() {
     return () => subscription.unsubscribe();
   }, []);
 
+  const signOut = async () => {
+    await supabase.auth.signOut();
+  };
+
   return {
-    user: user || { id: 'test-user-123', email: 'test@example.com', first_name: 'Test', last_name: 'User' },
+    user,
     session,
-    isLoading: false, // Skip loading for testing
-    isAuthenticated: true, // Always authenticated for testing
+    isLoading: isLoading || userLoading,
+    isAuthenticated: !!session?.user,
+    signOut,
   };
 }

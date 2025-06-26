@@ -1,16 +1,26 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { CheckCircle, Play, ArrowRight, Star } from "lucide-react";
+import { CheckCircle, Brain, BarChart3, Users, ArrowRight, Star } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import Navbar from "@/components/layout/navbar";
+import { Link } from "wouter";
 
 export default function Landing() {
+  const { isAuthenticated } = useAuth();
+
   const handleGetStarted = async () => {
-    const { supabase } = await import('@/lib/supabaseClient');
-    await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`
-      }
-    });
+    if (isAuthenticated) {
+      // Redirect to dashboard if already authenticated
+      window.location.href = "/";
+    } else {
+      const { supabase } = await import('@/lib/supabaseClient');
+      await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`
+        }
+      });
+    }
   };
 
   return (
