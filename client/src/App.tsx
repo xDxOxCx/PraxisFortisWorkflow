@@ -23,13 +23,14 @@ function Router() {
   return (
     <Switch>
       <Route path="/auth/callback" component={AuthCallback} />
-            <Route path="/auth" component={AuthForm} />
-            <Route path="/reset-password" component={ResetPassword} />
-            <Route component={NotFound} />
+      <Route path="/auth" component={AuthForm} />
+      <Route path="/reset-password" component={ResetPassword} />
+      
       {isLoading || !isAuthenticated ? (
         <>
           <Route path="/" component={Landing} />
           <Route path="/pricing" component={Pricing} />
+          <Route component={NotFound} />
         </>
       ) : (
         <>
@@ -40,9 +41,9 @@ function Router() {
           <Route path="/settings" component={Settings} />
           <Route path="/pricing" component={Pricing} />
           <Route path="/subscribe" component={Subscribe} />
+          <Route component={NotFound} />
         </>
       )}
-
     </Switch>
   );
 }
