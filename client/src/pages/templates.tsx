@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Search, FileText, Clock, Users } from 'lucide-react';
-import Navbar from '@/components/layout/navbar';
 
 interface Template {
   id: number;
@@ -47,10 +46,8 @@ export default function Templates() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div>
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold font-montserrat" style={{color: 'hsl(215, 25%, 27%)'}}>

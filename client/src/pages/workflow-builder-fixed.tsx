@@ -1,21 +1,27 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import Navbar from '@/components/layout/navbar';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { useLocation } from 'wouter';
 import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
 import {
   ArrowUp,
   ArrowDown,
+  ArrowLeft,
   X,
   Save,
   Wand2,
-  AlertTriangle
+  AlertTriangle,
+  Plus,
+  Trash2,
+  Zap,
+  Type
 } from 'lucide-react';
 import MarkdownRenderer from '@/components/workflow/markdown-renderer';
 import AnalysisTabs from '@/components/workflow/analysis-tabs';
@@ -30,6 +36,14 @@ export default function WorkflowBuilder() {
   const { isAuthenticated, isLoading } = useAuth();
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
+  const { toast } = useToast();
+  const [workflowName, setWorkflowName] = useState('');
+  const [workflowDescription, setWorkflowDescription] = useState('');
+  const [steps, setSteps] = useState<WorkflowStep[]>([]);
+  const [newStepText, setNewStepText] = useState('');
+  const [textInput, setTextInput] = useState('');
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisResult, setAnalysisResult] = useState<any>(null);
 
   if (isLoading) {
     return (
@@ -51,15 +65,6 @@ export default function WorkflowBuilder() {
       </div>
     );
   }
-
-  const { toast } = useToast();
-  const [workflowName, setWorkflowName] = useState('');
-  const [workflowDescription, setWorkflowDescription] = useState('');
-  const [steps, setSteps] = useState<WorkflowStep[]>([]);
-  const [newStepText, setNewStepText] = useState('');
-  const [textInput, setTextInput] = useState('');
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [analysisResult, setAnalysisResult] = useState<any>(null);
 
   // Check for template parameter in URL
   useEffect(() => {
@@ -294,10 +299,8 @@ export default function WorkflowBuilder() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div>
+      <div className="max-w-7xl mx-auto">
         <div className="mb-6">
           <div className="flex items-center justify-between">
             <div>
