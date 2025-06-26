@@ -137,9 +137,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // NEW SIMPLE ANALYSIS ENDPOINT
-  app.post('/api/analyze-workflow', isAuthenticated, async (req: any, res) => {
+  app.post('/api/analyze-workflow', async (req: any, res) => {
     try {
-      console.log("Analysis endpoint called");
+      console.log("Analysis endpoint called by user:", req.user?.id);
+      console.log("Request headers:", req.headers);
       console.log("Request body:", req.body);
 
       const { workflowName, steps } = req.body;
