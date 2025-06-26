@@ -54,6 +54,31 @@ interface Template {
 
 export default function Home() {
   const { isAuthenticated, isLoading } = useAuth();
+  const { toast } = useToast();
+  const [, navigate] = useLocation();
+
+  const { data: stats, isLoading: statsLoading } = useQuery<UserStats>({
+    queryKey: ["/api/user/stats"],
+    retry: false,
+  });
+
+  const { data: workflows = [], isLoading: workflowsLoading } = useQuery<Workflow[]>({
+    queryKey: ["/api/workflows"],
+    retry: false,
+  });
+
+  const { data: templates = [], isLoading: templatesLoading } = useQuery<Template[]>({
+    queryKey: ["/api/templates"],
+    retry: false,
+  });
+
+  // Redirect to landing page if not authenticated
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      window.location.href = "/";
+      return;
+    }
+  }, [isAuthenticated, isLoading]);
 
   if (isLoading) {
     return (
@@ -75,38 +100,6 @@ export default function Home() {
       </div>
     );
   }
-  const { toast } = useToast();
-  const [, navigate] = useLocation();
-
-  // Redirect to home if not authenticated
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      toast({
-        title: "Unauthorized",
-        description: "You are logged out. Logging in again...",
-        variant: "destructive",
-      });
-      setTimeout(() => {
-        window.location.href = "/api/login";
-      }, 500);
-      return;
-    }
-  }, [isAuthenticated, isLoading, toast]);
-
-  const { data: stats, isLoading: statsLoading } = useQuery<UserStats>({
-    queryKey: ["/api/user/stats"],
-    retry: false,
-  });
-
-  const { data: workflows = [], isLoading: workflowsLoading } = useQuery<Workflow[]>({
-    queryKey: ["/api/workflows"],
-    retry: false,
-  });
-
-  const { data: templates = [], isLoading: templatesLoading } = useQuery<Template[]>({
-    queryKey: ["/api/templates"],
-    retry: false,
-  });
 
   const handleCreateWorkflow = () => {
     navigate("/workflow-builder");

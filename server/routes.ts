@@ -3,73 +3,54 @@ import { createServer, type Server } from "http";
 import Stripe from "stripe";
 import { storage } from "./storage";
 import { analyzeWorkflow } from "./openai";
+import { setupSession, setupAuthRoutes, isAuthenticated } from "./auth";
 import express from "express";
 
 const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: "2024-06-20",
 }) : null;
 
-// Mock user for development - this creates a working demo environment
-const mockUser = {
-  id: "demo-user-123",
-  email: "demo@workflow-optimizer.com",
-  firstName: "Demo",
-  lastName: "User",
-  subscriptionStatus: "free",
-  workflowsUsedThisMonth: 0
-};
-
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Simple mock auth middleware for demo purposes
-  const mockAuth = async (req: any, res: any, next: any) => {
-    // Ensure user exists in database
-    try {
-      let user = await storage.getUser(mockUser.id);
-      if (!user) {
-        user = await storage.upsertUser({
-          id: mockUser.id,
-          email: mockUser.email,
-          firstName: mockUser.firstName,
-          lastName: mockUser.lastName,
-          subscriptionStatus: "free",
-          totalWorkflows: 0,
-          monthlyWorkflows: 0
-        });
-      }
-      req.user = { claims: { sub: mockUser.id } };
-      next();
-    } catch (error) {
-      console.error("Auth error:", error);
-      res.status(500).json({ message: "Authentication error" });
-    }
-  };
+  // Setup session and authentication
+  setupSession(app);
+  setupAuthRoutes(app);
 
-  // Auth routes - simple demo authentication
-  app.get('/api/login', (req, res) => {
-    // In demo mode, just redirect to home
-    res.redirect('/');
+  // Health check
+  app.get("/api/health", (_req, res) => {
+    res.json({ status: "ok", timestamp: new Date().toISOString() });
   });
 
-  app.get('/api/logout', (req, res) => {
-    // In demo mode, just redirect to home
-    res.redirect('/');
-  });
-
-  app.get('/api/auth/user', mockAuth, async (req: any, res) => {
+  // User stats endpoint
+  app.get('/api/user/stats', isAuthenticated, async (req: any, res) => {
     try {
-      console.log("Auth user endpoint hit, req.user:", req.user);
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
-      console.log("Retrieved user:", user);
-      res.json(user);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const workflows = await storage.getWorkflows(userId);
+      const totalTimeSaved = workflows.reduce((acc, w) => acc + (w.aiAnalysis?.summary?.totalTimeSaved || 0), 0);
+      const avgEfficiency = workflows.length > 0 
+        ? workflows.reduce((acc, w) => acc + (w.aiAnalysis?.summary?.efficiencyGain || 0), 0) / workflows.length 
+        : 0;
+
+      res.json({
+        totalWorkflows: user.totalWorkflows,
+        monthlyWorkflows: user.workflowsUsedThisMonth,
+        timeSaved: totalTimeSaved,
+        efficiency: Math.round(avgEfficiency),
+        subscriptionStatus: user.subscriptionStatus || 'free'
+      });
     } catch (error) {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ message: "Failed to fetch user" });
+      console.error("Error fetching user stats:", error);
+      res.status(500).json({ message: "Failed to fetch user stats" });
     }
   });
 
-  // Workflows routes
-  app.get('/api/workflows', mockAuth, async (req: any, res) => {
+  // Workflows endpoints
+  app.get('/api/workflows', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const workflows = await storage.getWorkflows(userId);
@@ -80,7 +61,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/workflows/:id', mockAuth, async (req: any, res) => {
+  app.post('/api/workflows', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Check workflow limits based on subscription
+      if (user.subscriptionStatus === 'free' && user.totalWorkflows >= 1) {
+        return res.status(403).json({ 
+          message: "Free trial limit reached. Please upgrade to create more workflows.",
+          code: "TRIAL_LIMIT_REACHED"
+        });
+      }
+
+      const workflow = await storage.createWorkflow({
+        userId,
+        name: req.body.name,
+        description: req.body.description || '',
+        flowData: req.body.flowData,
+        status: 'draft'
+      });
+
+      // Increment usage counters
+      await storage.incrementWorkflowUsage(userId);
+
+      res.json(workflow);
+    } catch (error) {
+      console.error("Error creating workflow:", error);
+      res.status(500).json({ message: "Failed to create workflow" });
+    }
+  });
+
+  app.get('/api/workflows/:id', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const workflowId = parseInt(req.params.id);
@@ -97,39 +113,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/workflows', mockAuth, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const workflowData = {
-        ...req.body,
-        userId,
-      };
-      
-      const workflow = await storage.createWorkflow(workflowData);
-      res.json(workflow);
-    } catch (error) {
-      console.error("Error creating workflow:", error);
-      res.status(500).json({ message: "Failed to create workflow" });
-    }
-  });
-
-  app.put('/api/workflows/:id', mockAuth, async (req: any, res) => {
+  app.patch('/api/workflows/:id', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const workflowId = parseInt(req.params.id);
       
-      // Verify ownership
-      const existingWorkflow = await storage.getWorkflow(workflowId, userId);
-      if (!existingWorkflow) {
-        return res.status(404).json({ message: "Workflow not found" });
-      }
-      
-      const workflowData = {
+      const workflow = await storage.updateWorkflow({
         id: workflowId,
-        ...req.body,
-      };
+        userId,
+        ...req.body
+      });
       
-      const workflow = await storage.updateWorkflow(workflowData);
       res.json(workflow);
     } catch (error) {
       console.error("Error updating workflow:", error);
@@ -137,7 +131,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete('/api/workflows/:id', mockAuth, async (req: any, res) => {
+  app.delete('/api/workflows/:id', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const workflowId = parseInt(req.params.id);
@@ -150,28 +144,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // AI Analysis route
-  app.post('/api/workflows/:id/analyze', mockAuth, async (req: any, res) => {
+  // AI Analysis endpoint
+  app.post('/api/workflows/:id/analyze', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const workflowId = parseInt(req.params.id);
       
-      // Verify ownership
       const workflow = await storage.getWorkflow(workflowId, userId);
       if (!workflow) {
         return res.status(404).json({ message: "Workflow not found" });
       }
-      
-      // Analyze the workflow
+
       const analysis = await analyzeWorkflow(workflow.flowData, workflow.name);
       
-      // Update workflow with analysis
       const updatedWorkflow = await storage.updateWorkflow({
         id: workflowId,
-        aiAnalysis: analysis as any,
-        status: "analyzed",
+        userId,
+        aiAnalysis: analysis,
+        mermaidCode: analysis.mermaidCode || null
       });
-      
+
       res.json(updatedWorkflow);
     } catch (error) {
       console.error("Error analyzing workflow:", error);
@@ -179,8 +171,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Templates routes
-  app.get('/api/templates', async (req, res) => {
+  // Templates endpoints
+  app.get('/api/templates', async (_req, res) => {
     try {
       const templates = await storage.getTemplates();
       res.json(templates);
@@ -206,37 +198,99 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Stripe subscription routes
-  app.post('/api/create-checkout-session', mockAuth, async (req: any, res) => {
-    try {
-      const { priceId } = req.body;
-      const userId = req.user.claims.sub;
-      
-      const session = await stripe.checkout.sessions.create({
-        mode: 'subscription',
-        payment_method_types: ['card'],
-        line_items: [
-          {
-            price: priceId,
-            quantity: 1,
-          },
-        ],
-        success_url: `${req.headers.origin}/subscribe?success=true`,
-        cancel_url: `${req.headers.origin}/subscribe?canceled=true`,
-        client_reference_id: userId,
-      });
-      
-      res.json({ url: session.url });
-    } catch (error) {
-      console.error("Error creating checkout session:", error);
-      res.status(500).json({ message: "Failed to create checkout session" });
-    }
-  });
+  // Stripe webhook for subscription updates
+  if (stripe) {
+    app.post('/api/webhooks/stripe', express.raw({ type: 'application/json' }), async (req, res) => {
+      const sig = req.headers['stripe-signature'] as string;
+      let event;
 
-  // Health check
-  app.get('/api/health', (req, res) => {
-    res.json({ status: 'ok', timestamp: new Date().toISOString() });
-  });
+      try {
+        event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET!);
+      } catch (err: any) {
+        console.error('Webhook signature verification failed:', err.message);
+        return res.status(400).send(`Webhook Error: ${err.message}`);
+      }
+
+      try {
+        switch (event.type) {
+          case 'customer.subscription.created':
+          case 'customer.subscription.updated':
+            const subscription = event.data.object as Stripe.Subscription;
+            const customer = await stripe.customers.retrieve(subscription.customer as string) as Stripe.Customer;
+            
+            if (customer.email) {
+              const user = await storage.getUserByEmail(customer.email);
+              if (user) {
+                await storage.updateUserStripeInfo(user.id, customer.id, subscription.id);
+                await storage.updateSubscriptionStatus(user.id, subscription.status);
+              }
+            }
+            break;
+
+          case 'customer.subscription.deleted':
+            const deletedSub = event.data.object as Stripe.Subscription;
+            const deletedCustomer = await stripe.customers.retrieve(deletedSub.customer as string) as Stripe.Customer;
+            
+            if (deletedCustomer.email) {
+              const user = await storage.getUserByEmail(deletedCustomer.email);
+              if (user) {
+                await storage.updateSubscriptionStatus(user.id, 'canceled');
+              }
+            }
+            break;
+
+          default:
+            console.log(`Unhandled event type: ${event.type}`);
+        }
+
+        res.json({ received: true });
+      } catch (error) {
+        console.error('Error processing webhook:', error);
+        res.status(500).json({ error: 'Webhook processing failed' });
+      }
+    });
+
+    // Create Stripe checkout session
+    app.post('/api/create-checkout-session', isAuthenticated, async (req: any, res) => {
+      try {
+        const userId = req.user.claims.sub;
+        const user = await storage.getUser(userId);
+        
+        if (!user) {
+          return res.status(404).json({ message: "User not found" });
+        }
+
+        const { planType } = req.body;
+        const priceId = planType === 'starter' ? process.env.STRIPE_STARTER_PRICE_ID : process.env.STRIPE_PRO_PRICE_ID;
+
+        if (!priceId) {
+          return res.status(400).json({ message: "Invalid plan type" });
+        }
+
+        const session = await stripe.checkout.sessions.create({
+          customer_email: user.email,
+          payment_method_types: ['card'],
+          line_items: [
+            {
+              price: priceId,
+              quantity: 1,
+            },
+          ],
+          mode: 'subscription',
+          success_url: `${req.headers.origin}/settings?success=true`,
+          cancel_url: `${req.headers.origin}/subscribe?canceled=true`,
+          metadata: {
+            userId: user.id,
+          },
+        });
+
+        res.json({ url: session.url });
+      } catch (error) {
+        console.error('Error creating checkout session:', error);
+        res.status(500).json({ message: "Failed to create checkout session" });
+      }
+    });
+  }
 
   const httpServer = createServer(app);
   return httpServer;
