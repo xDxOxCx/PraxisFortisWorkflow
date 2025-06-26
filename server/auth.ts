@@ -12,6 +12,12 @@ declare global {
   }
 }
 
+declare module 'express-session' {
+  interface SessionData {
+    user?: any;
+  }
+}
+
 export function setupAuth(app: Express) {
   // Auth callback endpoint - creates user in database after Supabase auth
   app.post('/api/auth/callback', async (req, res) => {
