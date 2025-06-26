@@ -68,6 +68,14 @@ The Vite configuration handles client-side routing and API proxying in developme
 
 ## Recent Changes
 
+- **June 26, 2025 - Landing Page Pricing Section Complete**:
+  - Fixed pricing section background color from dark to light Pearl White theme
+  - Successfully added missing $19/month Starter plan to landing page pricing display
+  - Updated Free plan description to show "1 free trial workflow" messaging
+  - Fixed heading text color visibility on light background
+  - All three pricing tiers now properly displayed: Free ($0), Starter ($19), Pro ($49)
+  - Pricing section now matches dedicated pricing page design and app color scheme
+
 - **June 26, 2025 - Updated Pricing Structure**:
   - Implemented new three-tier pricing model per user requirements
   - Free Plan: Single trial workflow limit (one-time use, not monthly)

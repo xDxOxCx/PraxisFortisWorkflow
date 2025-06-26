@@ -235,10 +235,10 @@ export default function Landing() {
         </div>
       </section>
       {/* Pricing Section */}
-      <section id="pricing" className="py-16 bg-[#3131b5]" style={{backgroundColor: 'hsl(210, 15%, 8%)'}}>
+      <section id="pricing" className="py-16" style={{backgroundColor: 'hsl(210, 20%, 98%)'}}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-montserrat font-bold text-primary-foreground mb-4">
+            <h2 className="text-3xl font-montserrat font-bold text-slate-blue mb-4">
               Simple, Transparent Pricing
             </h2>
             <p className="text-xl text-muted-foreground">
@@ -258,7 +258,7 @@ export default function Landing() {
                 <ul className="space-y-4 mb-8">
                   <li className="flex items-center space-x-3">
                     <CheckCircle className="w-5 h-5 text-emerald-green" />
-                    <span className="text-slate-blue">1 workflow per month</span>
+                    <span className="text-slate-blue">1 free trial workflow</span>
                   </li>
                   <li className="flex items-center space-x-3">
                     <CheckCircle className="w-5 h-5 text-emerald-green" />
@@ -283,13 +283,52 @@ export default function Landing() {
               </CardContent>
             </Card>
 
-            {/* Pro Plan */}
+            {/* Starter Plan */}
             <Card className="border-2 border-emerald-green relative">
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                 <span className="bg-emerald-green text-primary-foreground px-4 py-1 rounded-full text-sm font-medium">
                   Most Popular
                 </span>
               </div>
+              <CardContent className="p-8">
+                <div className="text-center mb-8">
+                  <h3 className="text-xl font-montserrat font-bold text-slate-blue mb-2">Starter</h3>
+                  <div className="text-4xl font-montserrat font-bold text-slate-blue">$19</div>
+                  <p className="text-muted-foreground">per month</p>
+                </div>
+                <ul className="space-y-4 mb-8">
+                  <li className="flex items-center space-x-3">
+                    <CheckCircle className="w-5 h-5 text-emerald-green" />
+                    <span className="text-slate-blue">10 workflows per month</span>
+                  </li>
+                  <li className="flex items-center space-x-3">
+                    <CheckCircle className="w-5 h-5 text-emerald-green" />
+                    <span className="text-slate-blue">Advanced AI analysis</span>
+                  </li>
+                  <li className="flex items-center space-x-3">
+                    <CheckCircle className="w-5 h-5 text-emerald-green" />
+                    <span className="text-slate-blue">PDF exports</span>
+                  </li>
+                  <li className="flex items-center space-x-3">
+                    <CheckCircle className="w-5 h-5 text-emerald-green" />
+                    <span className="text-slate-blue">Priority email support</span>
+                  </li>
+                  <li className="flex items-center space-x-3">
+                    <CheckCircle className="w-5 h-5 text-emerald-green" />
+                    <span className="text-slate-blue">Template library access</span>
+                  </li>
+                </ul>
+                <Button 
+                  onClick={handleGetStarted}
+                  className="w-full bg-emerald-green text-white hover:bg-emerald-green/90"
+                >
+                  Start Free Trial
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Pro Plan */}
+            <Card className="border border">
               <CardContent className="p-8">
                 <div className="text-center mb-8">
                   <h3 className="text-xl font-montserrat font-bold text-slate-blue mb-2">Pro</h3>
