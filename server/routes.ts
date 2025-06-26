@@ -143,13 +143,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log("Request headers:", req.headers);
       console.log("Request body:", req.body);
 
-      const { workflowName, steps } = req.body;
+      const { name, workflowName, steps } = req.body;
+      const actualWorkflowName = workflowName || name;
 
-      if (!workflowName || !steps || !Array.isArray(steps)) {
+      if (!actualWorkflowName || !steps || !Array.isArray(steps)) {
         return res.status(400).json({ message: "Missing workflow name or steps" });
       }
 
-      const analysis = await analyzeWorkflow(steps, workflowName);
+      const analysis = await analyzeWorkflow(steps, actualWorkflowName);
 
       console.log("Sending analysis response");
       res.json(analysis);
