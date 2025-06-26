@@ -11,7 +11,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { useAuth } from '@/hooks/useAuth';
-import AnalysisTabs from '@/components/workflow/analysis-tabs';
 import {
   ArrowUp,
   ArrowDown,
@@ -52,7 +51,7 @@ export default function WorkflowBuilder() {
   const { isAuthenticated, isLoading } = useAuth();
   const [, setLocation] = useLocation();
   
-  // All state hooks at the top level
+  // All state hooks declared at the top level - NEVER conditionally
   const [workflowName, setWorkflowName] = useState('');
   const [workflowDescription, setWorkflowDescription] = useState('');
   const [steps, setSteps] = useState<WorkflowStep[]>([]);
@@ -61,30 +60,9 @@ export default function WorkflowBuilder() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<any>(null);
   
+  // All other hooks at top level
   const workflowId = location.includes('/workflow/') ? 
     parseInt(location.split('/workflow/')[1]) : null;
-
-  // Early returns after all hooks are declared
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Please sign in to continue</h1>
-          <Button onClick={() => setLocation('/landing')}>
-            Go to Sign In
-          </Button>
-        </div>
-      </div>
-    );
-  }
 
   // Check for template parameter in URL
   useEffect(() => {
@@ -279,32 +257,49 @@ export default function WorkflowBuilder() {
 
     setIsAnalyzing(true);
     try {
-      const flowData = { steps };
-      const response = await fetch('/api/analyze-workflow', {
+      const workflowData = {
+        name: workflowName,
+        description: workflowDescription,
+        steps: steps
+      };
+
+      console.log('Sending analysis request:', workflowData);
+
+      const response = await fetch('/api/workflows/analyze', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: workflowName,
-          description: workflowDescription,
-          flow_data: flowData,
-        }),
+        headers: { 
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(workflowData),
+        credentials: 'include'
       });
 
-      if (response.ok) {
-        const analysis = await response.json();
-        console.log('AI Analysis Response:', analysis);
-        setAnalysisResult(analysis);
-        toast({
-          title: "Analysis Complete",
-          description: "AI analysis generated optimization recommendations"
-        });
-      } else {
-        toast({
-          title: "Analysis Failed",
-          description: "Failed to analyze workflow with AI",
-          variant: "destructive"
-        });
+      console.log('Analysis response status:', response.status);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Analysis error:', errorData);
+        
+        if (response.status === 401) {
+          toast({
+            title: "Authentication Required",
+            description: "Please sign in again to continue.",
+            variant: "destructive",
+          });
+          window.location.href = "/api/login";
+          return;
+        }
+        
+        throw new Error(errorData.message || `Analysis failed with status ${response.status}`);
       }
+
+      const analysis = await response.json();
+      console.log('AI Analysis Response:', analysis);
+      setAnalysisResult(analysis);
+      toast({
+        title: "Analysis Complete",
+        description: "AI analysis generated optimization recommendations"
+      });
     } catch (error) {
       console.error('Error analyzing workflow:', error);
       toast({
@@ -316,6 +311,28 @@ export default function WorkflowBuilder() {
       setIsAnalyzing(false);
     }
   };
+
+  // Early returns after all hooks are declared
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Please sign in to continue</h1>
+          <Button onClick={() => setLocation('/landing')}>
+            Go to Sign In
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -552,10 +569,40 @@ export default function WorkflowBuilder() {
             </CardContent>
           </Card>
 
-          {/* AI Analysis Results with Tabs */}
+          {/* AI Analysis Results */}
           {analysisResult && (
             <div className="lg:col-span-4">
-              <AnalysisTabs analysisResult={analysisResult} />
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-xl">AI Analysis Results</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    <div>
+                      <h4 className="font-semibold text-lg mb-4">Analysis Report</h4>
+                      <div className="prose max-w-none">
+                        <MarkdownRenderer content={analysisResult.markdownReport} />
+                      </div>
+                    </div>
+                    
+                    {analysisResult.summary && (
+                      <div className="mt-6 p-4 bg-muted rounded-lg">
+                        <h5 className="font-semibold mb-2">Summary</h5>
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                          <div>
+                            <span className="text-muted-foreground">Total Time Saved:</span>
+                            <div className="font-medium text-green-600">{analysisResult.summary.totalTimeSaved} minutes</div>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">Efficiency Gain:</span>
+                            <div className="font-medium text-green-600">{analysisResult.summary.efficiencyGain}%</div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           )}
         </div>
