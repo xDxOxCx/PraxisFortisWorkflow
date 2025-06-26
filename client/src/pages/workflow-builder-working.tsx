@@ -214,16 +214,19 @@ export default function WorkflowBuilder() {
       };
       
       sessionStorage.setItem('workflowAnalysis', JSON.stringify(analysisData));
+      console.log('Analysis data stored successfully:', analysisData.workflowName);
       
       toast({
         title: "Analysis Complete",
-        description: "Redirecting to analysis results...",
+        description: "Analysis ready! Click to view results.",
+        action: {
+          label: "View Results",
+          onClick: () => setLocation('/analysis-results')
+        }
       });
 
-      // Redirect to results page
-      setTimeout(() => {
-        setLocation('/analysis-results');
-      }, 1000);
+      // Navigate immediately to results
+      setLocation('/analysis-results');
     } catch (error: any) {
       console.error('Analysis error:', error);
       

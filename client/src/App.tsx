@@ -9,7 +9,7 @@ import NotFound from "./pages/not-found";
 import Landing from "@/pages/landing";
 import Home from "@/pages/home";
 import WorkflowBuilder from "@/pages/workflow-builder-working";
-import AnalysisResults from "@/pages/analysis-results";
+import AnalysisResults from "@/pages/analysis-results-new";
 import Templates from "@/pages/templates";
 import Settings from "@/pages/settings";
 import Pricing from "@/pages/pricing";
