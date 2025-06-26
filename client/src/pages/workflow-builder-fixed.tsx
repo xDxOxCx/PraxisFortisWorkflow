@@ -522,97 +522,22 @@ export default function WorkflowBuilder() {
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Professional A3 Action Plan Display */}
-                {analysisResult.markdownReport ? (
-                  <div className="bg-white border rounded-lg p-6">
-                    <div className="prose prose-sm max-w-none">
-                      <div 
-                        className="markdown-content"
-                        style={{lineHeight: '1.8', fontSize: '14px'}}
-                        dangerouslySetInnerHTML={{ 
-                          __html: analysisResult.markdownReport
-                            .replace(/\n\n/g, '<br><br>')
-                            .replace(/\n/g, '<br>')
-                            .replace(/\*\*(.*?)\*\*/g, '<strong style="color: hsl(220, 50%, 30%); font-weight: 600;">$1</strong>')
-                            .replace(/## 📋 (.*?)(<br>|$)/g, '<h2 class="text-2xl font-bold mb-6 mt-8 flex items-center gap-2" style="color: hsl(220, 50%, 30%);"><span class="text-2xl">📋</span> $1</h2>')
-                            .replace(/## 🔍 (.*?)(<br>|$)/g, '<h2 class="text-2xl font-bold mb-6 mt-8 flex items-center gap-2" style="color: hsl(220, 50%, 30%);"><span class="text-2xl">🔍</span> $1</h2>')
-                            .replace(/## ⛔ (.*?)(<br>|$)/g, '<h2 class="text-2xl font-bold mb-6 mt-8 flex items-center gap-2" style="color: hsl(220, 50%, 30%);"><span class="text-2xl">⛔</span> $1</h2>')
-                            .replace(/## ✅ (.*?)(<br>|$)/g, '<h2 class="text-2xl font-bold mb-6 mt-8 flex items-center gap-2" style="color: hsl(220, 50%, 30%);"><span class="text-2xl">✅</span> $1</h2>')
-                            .replace(/## 🎯 (.*?)(<br>|$)/g, '<h2 class="text-2xl font-bold mb-6 mt-8 flex items-center gap-2" style="color: hsl(220, 50%, 30%);"><span class="text-2xl">🎯</span> $1</h2>')
-                            .replace(/## 📊 (.*?)(<br>|$)/g, '<h2 class="text-2xl font-bold mb-6 mt-8 flex items-center gap-2" style="color: hsl(220, 50%, 30%);"><span class="text-2xl">📊</span> $1</h2>')
-                            .replace(/## ⚠️ (.*?)(<br>|$)/g, '<h2 class="text-2xl font-bold mb-6 mt-8 flex items-center gap-2" style="color: hsl(220, 50%, 30%);"><span class="text-2xl">⚠️</span> $1</h2>')
-                            .replace(/### (.*?)(<br>|$)/g, '<h3 class="text-lg font-semibold mb-4 mt-6" style="color: hsl(215, 25%, 27%);">$1</h3>')
-                            .replace(/```mermaid([\s\S]*?)```/g, '<div class="bg-gray-50 border rounded-lg p-4 my-6"><h4 class="font-semibold mb-3 text-gray-700">Workflow Diagram:</h4><pre class="bg-white border rounded p-3 overflow-x-auto"><code class="text-sm text-gray-800">$1</code></pre></div>')
-                            .replace(/\| (.*?) \|/g, '<div class="grid grid-cols-5 gap-2 p-2 border-b text-sm"><div>$1</div></div>')
-                            .replace(/- (.*?)(<br>|$)/g, '<div class="flex items-start gap-2 mb-3"><span class="text-emerald-600 font-bold">•</span><span>$1</span></div>')
-                            .replace(/(\d+)\. (.*?)(<br>|$)/g, '<div class="flex items-start gap-2 mb-3"><span class="bg-blue-100 text-blue-800 rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">$1</span><span>$2</span></div>')
-                            .replace(/---/g, '<hr class="my-8 border-2 border-gray-200">')
-                        }}
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  <div>
-                    {/* Summary Metrics */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                      <div className="p-4 bg-emerald-50 rounded-lg">
-                        <div className="flex items-center gap-2">
-                          <Clock className="w-5 h-5 text-emerald-600" />
-                          <span className="font-medium">Time Savings</span>
-                        </div>
-                        <p className="text-2xl font-bold text-emerald-600">
-                          {analysisResult.summary?.totalTimeSaved || 0} min
-                        </p>
-                      </div>
-                      <div className="p-4 bg-blue-50 rounded-lg">
-                        <div className="flex items-center gap-2">
-                          <TrendingUp className="w-5 h-5 text-blue-600" />
-                          <span className="font-medium">Efficiency Gain</span>
-                        </div>
-                        <p className="text-2xl font-bold text-blue-600">
-                          {analysisResult.summary?.efficiencyGain || 0}%
-                        </p>
-                      </div>
-                      <div className="p-4 bg-yellow-50 rounded-lg">
-                        <div className="flex items-center gap-2">
-                          <AlertTriangle className="w-5 h-5 text-yellow-600" />
-                          <span className="font-medium">Risk Areas</span>
-                        </div>
-                        <p className="text-2xl font-bold text-yellow-600">
-                          {analysisResult.summary?.riskAreas?.length || 0}
-                        </p>
-                      </div>
+                <div className="bg-gradient-to-r from-blue-50 to-emerald-50 border rounded-lg p-6">
+                  <div className="space-y-4">
+                    {/* Header Summary */}
+                    <div className="bg-white rounded-lg p-4 shadow-sm">
+                      <h3 className="text-lg font-semibold text-navy-900 mb-2">Analysis Summary</h3>
+                      <p className="text-sm text-gray-600">Complete A3 Action Plan with efficiency scores, problem analysis, and implementation roadmap</p>
                     </div>
                     
-                    {/* Simple improvement list */}
-                    {analysisResult.improvements && analysisResult.improvements.length > 0 && (
-                      <div>
-                        <h3 className="font-semibold text-lg mb-4">Optimization Recommendations</h3>
-                        <div className="space-y-3">
-                          {analysisResult.improvements.map((improvement: any, index: number) => (
-                            <div key={index} className="p-4 border rounded-lg">
-                              <h4 className="font-medium">{improvement.title}</h4>
-                              <p className="text-sm text-muted-foreground mt-1">{improvement.description}</p>
-                              <div className="flex items-center gap-4 mt-2">
-                                <span className={`px-2 py-1 text-xs rounded ${
-                                  improvement.impact === 'high' ? 'bg-red-100 text-red-800' :
-                                  improvement.impact === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                                  'bg-green-100 text-green-800'
-                                }`}>
-                                  {improvement.impact} impact
-                                </span>
-                                {improvement.timeSaved && (
-                                  <span className="text-sm text-emerald-600">
-                                    +{improvement.timeSaved}min saved
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
+                    {/* Formatted markdown display */}
+                    <div className="bg-white rounded-lg p-6 shadow-sm">
+                      <pre className="whitespace-pre-wrap text-sm leading-relaxed text-gray-800 font-sans">
+                        {analysisResult.markdownReport || 'No analysis report available'}
+                      </pre>
+                    </div>
                   </div>
-                )}
+                </div>
               </CardContent>
             </Card>
           )}
