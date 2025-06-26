@@ -99,9 +99,9 @@ export default function Navbar() {
             {user?.subscriptionStatus === 'free' && (
               <>
                 <div className="text-sm text-muted-foreground">
-                  <span className="font-medium">Free Plan</span> • 
+                  <span className="font-medium">Free Trial</span> • 
                   <span className="text-emerald-green ml-1">
-                    {user.workflowsUsedThisMonth || 0}/1 workflow used
+                    {user.totalWorkflows || 0}/1 trial workflow used
                   </span>
                 </div>
                 <Button 

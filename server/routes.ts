@@ -51,6 +51,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/workflows', mockAuth, async (req: any, res) => {
     try {
+      // Check user's current plan and workflow limits
+      const user = await storage.getUser(req.user.id);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Enforce workflow limits for free users (single trial workflow)
+      if (user.subscription_status === 'free' && user.total_workflows >= 1) {
+        return res.status(403).json({ 
+          message: "Free trial limit reached. Please upgrade to create more workflows.",
+          upgradeRequired: true
+        });
+      }
+
       const workflowData = {
         user_id: req.user.id,
         name: req.body.name,
@@ -60,6 +74,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
       
       const workflow = await storage.createWorkflow(workflowData);
+      
+      // Increment user's total workflow count
+      await storage.incrementWorkflowUsage(req.user.id);
+      
       res.json(workflow);
     } catch (error) {
       console.error("Error creating workflow:", error);

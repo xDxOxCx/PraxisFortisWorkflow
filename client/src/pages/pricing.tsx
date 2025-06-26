@@ -29,7 +29,7 @@ export default function Pricing() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen" style={{backgroundColor: 'hsl(210, 20%, 98%)'}}>
       {isAuthenticated && <Navbar />}
       
       {/* Header */}
@@ -80,7 +80,7 @@ export default function Pricing() {
               <ul className="space-y-4 mb-8">
                 <li className="flex items-center space-x-3">
                   <CheckCircle className="w-5 h-5 text-emerald-green" />
-                  <span className="text-slate-blue">1 workflow per month</span>
+                  <span className="text-slate-blue">1 free workflow trial</span>
                 </li>
                 <li className="flex items-center space-x-3">
                   <CheckCircle className="w-5 h-5 text-emerald-green" />
@@ -279,9 +279,9 @@ export default function Pricing() {
                   </thead>
                   <tbody className="text-sm">
                     <tr className="border-b">
-                      <td className="py-4 text-muted-foreground">Monthly Workflows</td>
-                      <td className="text-center py-4">1</td>
-                      <td className="text-center py-4">10</td>
+                      <td className="py-4 text-muted-foreground">Workflows</td>
+                      <td className="text-center py-4">1 trial</td>
+                      <td className="text-center py-4">10/month</td>
                       <td className="text-center py-4">Unlimited</td>
                       <td className="text-center py-4">Unlimited</td>
                     </tr>
