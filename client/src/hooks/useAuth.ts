@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
@@ -6,8 +7,8 @@ export function useAuth() {
   const [session, setSession] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const { data: user, isLoading: userLoading } = useQuery({
-    queryKey: ["/api/auth/user", session?.access_token],
+  const { data: user, isLoading: userLoading, refetch: refetchUser } = useQuery({
+    queryKey: ["/api/auth/user"],
     queryFn: async () => {
       if (!session?.access_token) {
         return null;
@@ -21,14 +22,18 @@ export function useAuth() {
       });
       
       if (!response.ok) {
-        return null;
+        if (response.status === 404) {
+          // User not found in database, but session exists - this is expected for new users
+          return null;
+        }
+        throw new Error(`Failed to fetch user: ${response.status}`);
       }
       
       return response.json();
     },
-    retry: false,
     enabled: !!session?.access_token,
     staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: false,
   });
 
   useEffect(() => {
@@ -41,13 +46,36 @@ export function useAuth() {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event, session?.user?.email);
       setSession(session);
       setIsLoading(false);
+
+      // If user just signed in, call auth callback
+      if (event === 'SIGNED_IN' && session && !user) {
+        try {
+          const response = await fetch('/api/auth/callback', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${session.access_token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+          
+          if (response.ok) {
+            // Refetch user data after successful callback
+            refetchUser();
+          } else {
+            console.error('Auth callback failed:', await response.text());
+          }
+        } catch (error) {
+          console.error('Error calling auth callback:', error);
+        }
+      }
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [user, refetchUser]);
 
   const signUp = async (email: string, password: string) => {
     try {
@@ -64,7 +92,6 @@ export function useAuth() {
         return { data: null, error };
       }
       
-      // Note: For email confirmation flow, user won't have session until they confirm
       if (data.user && !data.user.email_confirmed_at) {
         return { 
           data, 
@@ -90,26 +117,6 @@ export function useAuth() {
       if (error) {
         console.error('Sign in error:', error);
         return { data: null, error };
-      }
-      
-      // Call auth callback after successful sign in
-      if (data.session && data.user) {
-        try {
-          const response = await fetch('/api/auth/callback', {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${data.session.access_token}`,
-              'Content-Type': 'application/json'
-            }
-          });
-          
-          if (!response.ok) {
-            const errorText = await response.text();
-            console.error('Auth callback failed:', errorText);
-          }
-        } catch (callbackError) {
-          console.error('Error calling auth callback:', callbackError);
-        }
       }
       
       return { data, error: null };

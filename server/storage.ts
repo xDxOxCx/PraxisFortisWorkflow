@@ -1,3 +1,4 @@
+
 import {
   users,
   workflows,
@@ -48,30 +49,51 @@ export class DatabaseStorage implements IStorage {
   }
 
   async upsertUser(userData: UpsertUser): Promise<User> {
-    console.log('Upserting user with data:', userData);
+    console.log('Upserting user:', userData.id, userData.email);
 
-    const [user] = await db
-      .insert(users)
-      .values(userData)
-      .onConflictDoUpdate({
-        target: users.id,
-        set: {
-          email: userData.email,
-          firstName: userData.firstName || null,
-          lastName: userData.lastName || null,
-          subscriptionStatus: userData.subscriptionStatus || 'free',
-          updatedAt: new Date(),
-        },
-      })
-      .returning();
-
-    if (!user) {
-      console.error('Upsert error: User was not upserted correctly');
-      throw new Error(`Failed to upsert user`);
+    try {
+      // First try to find existing user
+      const existingUser = await this.getUser(userData.id);
+      
+      if (existingUser) {
+        // Update existing user
+        const [user] = await db
+          .update(users)
+          .set({
+            email: userData.email,
+            firstName: userData.firstName || existingUser.firstName,
+            lastName: userData.lastName || existingUser.lastName,
+            updatedAt: new Date(),
+          })
+          .where(eq(users.id, userData.id))
+          .returning();
+        
+        console.log('Updated existing user:', user.id);
+        return user;
+      } else {
+        // Create new user
+        const [user] = await db
+          .insert(users)
+          .values({
+            id: userData.id,
+            email: userData.email,
+            firstName: userData.firstName || null,
+            lastName: userData.lastName || null,
+            subscriptionStatus: userData.subscriptionStatus || 'free',
+            workflowsUsedThisMonth: userData.workflowsUsedThisMonth || 0,
+            totalWorkflows: userData.totalWorkflows || 0,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          })
+          .returning();
+        
+        console.log('Created new user:', user.id);
+        return user;
+      }
+    } catch (error: any) {
+      console.error('Upsert user error:', error);
+      throw new Error(`Failed to upsert user: ${error.message}`);
     }
-
-    console.log('User upserted successfully:', user);
-    return user;
   }
 
   async updateUserStripeInfo(userId: string, stripeCustomerId: string, stripeSubscriptionId: string): Promise<User> {
@@ -104,6 +126,7 @@ export class DatabaseStorage implements IStorage {
       .update(users)
       .set({
         workflowsUsedThisMonth: sql`${users.workflowsUsedThisMonth} + 1`,
+        totalWorkflows: sql`${users.totalWorkflows} + 1`,
         updatedAt: new Date(),
       })
       .where(eq(users.id, userId))

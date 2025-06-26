@@ -1,6 +1,7 @@
+
 import type { Request, Response, NextFunction, Express } from "express";
-import session from "express-session";
 import { supabase } from "./supabaseClient";
+import { storage } from "./storage";
 
 // Extend Express Request type to include user
 declare global {
@@ -11,32 +12,51 @@ declare global {
   }
 }
 
-export function setupSession(app: Express) {
-  app.use(session({
-    secret: process.env.SESSION_SECRET || 'your-secret-key',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      secure: false, // Set to true in production with HTTPS
-      maxAge: 24 * 60 * 60 * 1000 // 24 hours
-    }
-  }));
-}
+export function setupAuth(app: Express) {
+  // Auth callback endpoint - creates user in database after Supabase auth
+  app.post('/api/auth/callback', async (req, res) => {
+    try {
+      const authHeader = req.headers.authorization;
+      
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ message: "No token provided" });
+      }
+      
+      const token = authHeader.substring(7);
+      const { data: { user }, error } = await supabase.auth.getUser(token);
+      
+      if (error || !user) {
+        console.error('Token verification failed:', error);
+        return res.status(401).json({ message: "Invalid token" });
+      }
+      
+      // Create or update user in database
+      const dbUser = await storage.upsertUser({
+        id: user.id,
+        email: user.email!,
+        firstName: user.user_metadata?.first_name || null,
+        lastName: user.user_metadata?.last_name || null,
+        subscriptionStatus: "free",
+        workflowsUsedThisMonth: 0,
+        totalWorkflows: 0,
+      });
 
-export function setupAuthRoutes(app: Express) {
+      res.json({ success: true, user: dbUser });
+    } catch (error: any) {
+      console.error('Auth callback error:', error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   // Get current user endpoint
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.id;
-
-      // Get user from your database
-      const { storage } = await import('./storage');
-      const user = await storage.getUser(userId);
-
+      const user = await storage.getUser(req.user.id);
+      
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
-
+      
       res.json(user);
     } catch (error) {
       console.error("Error fetching user:", error);
@@ -50,38 +70,20 @@ export const isAuthenticated = async (req: Request, res: Response, next: NextFun
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ message: "Unauthorized" });
+      return res.status(401).json({ message: "No authorization header" });
     }
 
-    const token = authHeader.substring(7); // Remove 'Bearer ' prefix
-
-    // Verify the JWT token with Supabase
+    const token = authHeader.substring(7);
     const { data: { user }, error } = await supabase.auth.getUser(token);
 
     if (error || !user) {
-      return res.status(401).json({ message: "Unauthorized" });
+      return res.status(401).json({ message: "Invalid token" });
     }
 
-    // Store user in request object
     req.user = user;
     next();
   } catch (error) {
     console.error("Auth middleware error:", error);
-    res.status(401).json({ message: "Unauthorized" });
+    res.status(401).json({ message: "Authentication failed" });
   }
-};
-
-// Generate a simple user ID
-function generateUserId(): string {
-  return 'user_' + Math.random().toString(36).substr(2, 9);
-}
-
-// Bypass auth middleware for development/demo purposes
-export const bypassAuth = (req: any, res: Response, next: NextFunction) => {
-  // Mock user for development
-  req.user = {
-    id: "mock-user",
-    email: "demo@example.com"
-  };
-  next();
 };

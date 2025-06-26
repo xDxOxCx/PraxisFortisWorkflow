@@ -3,59 +3,16 @@ import { createServer, type Server } from "http";
 import Stripe from "stripe";
 import { storage } from "./storage";
 import { analyzeWorkflow } from "./openai";
-import { setupSession, setupAuthRoutes, isAuthenticated } from "./auth";
+import { setupAuth, isAuthenticated } from "./auth";
 import express from "express";
-import { z } from "zod";
-import { bypassAuth } from "./auth";
-import { supabase } from "./supabaseClient";
 
 const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: "2024-06-20",
 }) : null;
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Setup session and authentication
-  setupSession(app);
-  setupAuthRoutes(app);
-
-  // Auth callback to create user in database after Supabase auth
-  app.post('/api/auth/callback', async (req, res) => {
-    try {
-      const authHeader = req.headers.authorization;
-      
-      if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        console.log('No auth header or invalid format');
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-      
-      const token = authHeader.substring(7);
-      const { data: { user }, error } = await supabase.auth.getUser(token);
-      
-      if (error || !user) {
-        console.log('Token verification failed:', error);
-        return res.status(401).json({ message: "Invalid token" });
-      }
-      
-      console.log('Creating/updating user:', user.id, user.email);
-      
-      // Upsert user in your database
-      const dbUser = await storage.upsertUser({
-        id: user.id,
-        email: user.email!,
-        firstName: user.user_metadata?.first_name || null,
-        lastName: user.user_metadata?.last_name || null,
-        subscriptionStatus: "free",
-        workflowsUsedThisMonth: 0,
-        totalWorkflows: 0,
-      });
-
-      console.log('User created/updated successfully:', dbUser);
-      res.json({ success: true, user: dbUser });
-    } catch (error: any) {
-      console.error('Auth callback error:', error);
-      res.status(500).json({ message: "Internal server error", error: error.message });
-    }
-  });
+  // Setup authentication
+  setupAuth(app);
 
   // Health check
   app.get("/api/health", (_req, res) => {
