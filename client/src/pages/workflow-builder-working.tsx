@@ -190,7 +190,20 @@ export default function WorkflowBuilder() {
         steps: steps
       };
 
-      const result = await apiRequest('POST', '/api/analyze-workflow', workflowData);
+      const response = await fetch('/api/analyze-workflow', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(workflowData)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Analysis failed: ${response.status}`);
+      }
+
+      const result = await response.json();
       console.log("AI Analysis result:", result);
 
       setAnalysisResult(result);
