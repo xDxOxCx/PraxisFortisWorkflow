@@ -84,29 +84,36 @@ export default function WorkflowBuilder() {
             
             // Convert template flow_data to workflow steps
             let workflowSteps = [];
-            if (template.flow_data && template.flow_data.nodes) {
+            const flowData = template.flowData || template.flow_data;
+            
+            if (flowData && flowData.nodes) {
               // Template uses nodes/edges format - convert to steps
-              const nodes = template.flow_data.nodes;
+              const nodes = flowData.nodes;
               workflowSteps = nodes
                 .filter((node: any) => node.type !== 'decision') // Skip decision nodes for simplicity
+                .sort((a: any, b: any) => (a.position?.y || 0) - (b.position?.y || 0)) // Sort by Y position
                 .map((node: any, index: number) => ({
                   id: node.id || `template-${index}`,
                   text: node.data?.label || node.data?.description || `Step ${index + 1}`,
                   type: node.type === 'start' ? 'start' : 
                         node.type === 'end' ? 'end' : 'process'
                 }));
-            } else if (template.flow_data && Array.isArray(template.flow_data.steps)) {
+            } else if (flowData && Array.isArray(flowData.steps)) {
               // Template already has steps format
-              workflowSteps = template.flow_data.steps.map((step: any, index: number) => ({
+              workflowSteps = flowData.steps.map((step: any, index: number) => ({
                 id: step.id || `template-${index}`,
                 text: step.text || step.name || step.description || `Step ${index + 1}`,
                 type: step.type || 'process'
               }));
             }
             
+            console.log('Extracted workflow steps:', workflowSteps);
+            
             if (workflowSteps.length > 0) {
               setSteps(workflowSteps);
               console.log('Loaded', workflowSteps.length, 'steps from template');
+            } else {
+              console.log('No steps found in template, flowData structure:', flowData);
             }
           }
         } catch (error) {

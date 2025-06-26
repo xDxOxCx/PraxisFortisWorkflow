@@ -68,6 +68,15 @@ The Vite configuration handles client-side routing and API proxying in developme
 
 ## Recent Changes
 
+- **June 26, 2025 - AI Analysis & Template Loading Fixed**:
+  - Fixed AI analysis endpoint to properly receive and process workflow data
+  - Resolved template loading to correctly extract workflow steps from node/edge format
+  - Enhanced template parsing to handle both flowData and flow_data properties
+  - Added proper sorting of template nodes by Y position for logical step order
+  - OpenAI integration now properly configured with authentication and debugging
+  - Templates now successfully load 6 workflow steps into the builder
+  - AI analysis endpoint responds correctly to authenticated requests with workflow data
+
 - **June 26, 2025 - Professional Sidebar Navigation Implemented**:
   - Completely redesigned navigation with clean top header and left sidebar
   - Centered main logo in top header for professional appearance
