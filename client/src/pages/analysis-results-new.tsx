@@ -181,22 +181,26 @@ export default function AnalysisResults() {
           </h3>
         );
       } else if (line.includes(':') && !line.startsWith('-') && line.trim().length < 50) {
-        // Format section labels and key-value pairs
+        // Format section labels and key-value pairs - remove asterisks
+        const cleanLabel = line.replace(/\*\*/g, '').replace(/\*/g, '');
         elements.push(
           <div key={index} className="bg-[hsl(158,60%,50%,0.1)] border-l-4 border-[hsl(158,60%,50%)] p-3 my-3 rounded-r-lg">
-            <p className="font-bold text-[hsl(220,50%,30%)]">{line}</p>
+            <p className="font-bold text-[hsl(220,50%,30%)]">{cleanLabel}</p>
           </div>
         );
       } else if (line.startsWith('- ')) {
+        const cleanListItem = line.replace('- ', '').replace(/\*\*/g, '').replace(/\*/g, '');
         elements.push(
           <li key={index} className="text-slate-700 mb-2 ml-6 list-disc leading-relaxed">
-            {line.replace('- ', '')}
+            {cleanListItem}
           </li>
         );
       } else if (line.trim()) {
+        // Remove all asterisks from the text
+        const cleanLine = line.replace(/\*\*/g, '').replace(/\*/g, '');
         elements.push(
           <p key={index} className="text-slate-700 mb-3 leading-relaxed text-[16px]">
-            {line}
+            {cleanLine}
           </p>
         );
       } else {
