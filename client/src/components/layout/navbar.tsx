@@ -63,10 +63,7 @@ export default function Navbar() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
               <DropdownMenuItem 
-                onClick={async () => {
-                  const { supabase } = await import('@/lib/supabaseClient');
-                  await supabase.auth.signOut();
-                }}
+                onClick={() => signOut()}
                 className="text-red-600 cursor-pointer"
               >
                 Sign Out

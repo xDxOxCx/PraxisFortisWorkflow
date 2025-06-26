@@ -33,6 +33,7 @@ export function useAuth() {
       
       if (response.ok) {
         refetch(); // Refetch to update auth state
+        window.location.href = '/auth'; // Redirect to auth page
       }
     } catch (error) {
       console.error('Logout failed:', error);
