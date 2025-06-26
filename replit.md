@@ -68,6 +68,13 @@ The Vite configuration handles client-side routing and API proxying in developme
 
 ## Recent Changes
 
+- **June 26, 2025 - Workflow Builder Button Fix**: 
+  - Resolved critical issue where analyze button and other action buttons disappeared after theme migration
+  - Fixed CSS utility class conflicts by implementing inline HSL color styling
+  - All buttons now properly visible with navy blue (hsl(220, 50%, 30%)) and emerald green (hsl(158, 60%, 50%)) styling
+  - AI analysis functionality fully restored and confirmed working by user
+  - Workflow builder now fully operational with save, analyze, create steps, and add step functions
+
 - **June 25, 2025 - Fresh Sleek Design Implementation**: 
   - Completely redesigned website with modern navy blue, emerald green, and silver color theme
   - Navy blue (hsl(220, 50%, 30%)) for primary text and headings - professional and trustworthy
