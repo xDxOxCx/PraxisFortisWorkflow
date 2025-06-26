@@ -1,15 +1,42 @@
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
+import { useLocation } from 'wouter';
+import ReactFlow, {
+  Node,
+  Edge,
+  addEdge,
+  useNodesState,
+  useEdgesState,
+  Connection,
+  Background,
+  Controls,
+  MiniMap,
+  ReactFlowProvider,
+} from "reactflow";
+import "reactflow/dist/style.css";
+
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { useToast } from "@/hooks/use-toast";
+import Navbar from "@/components/layout/navbar";
+import { WorkflowCanvas } from "@/components/workflow/workflow-canvas";
+import { ComponentPalette } from "@/components/workflow/component-palette";
+import { PropertiesPanel } from "@/components/workflow/properties-panel";
+import { AnalysisTabs } from "@/components/workflow/analysis-tabs";
+import { 
+  WorkflowData, 
+  WorkflowNode,
+  initialNodes,
+  initialEdges,
+  nodeTypes 
+} from "@/lib/workflow-types";
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
-import { useLocation } from 'wouter';
 import { useAuth } from '@/hooks/useAuth';
-import { useToast } from '@/hooks/use-toast';
 import {
   ArrowUp,
   ArrowDown,
@@ -24,7 +51,18 @@ import {
   Type
 } from 'lucide-react';
 import MarkdownRenderer from '@/components/workflow/markdown-renderer';
-import AnalysisTabs from '@/components/workflow/analysis-tabs';
+
+interface Workflow {
+  id: number;
+  name: string;
+  description: string;
+  flowData: WorkflowData;
+  status: 'draft' | 'active' | 'archived';
+  aiAnalysis?: any;
+  mermaidCode?: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 interface WorkflowStep {
   id: string;
@@ -33,10 +71,11 @@ interface WorkflowStep {
 }
 
 export default function WorkflowBuilder() {
+  const [location] = useLocation();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
   const { isAuthenticated, isLoading } = useAuth();
   const [, setLocation] = useLocation();
-  const queryClient = useQueryClient();
-  const { toast } = useToast();
   const [workflowName, setWorkflowName] = useState('');
   const [workflowDescription, setWorkflowDescription] = useState('');
   const [steps, setSteps] = useState<WorkflowStep[]>([]);
@@ -44,6 +83,15 @@ export default function WorkflowBuilder() {
   const [textInput, setTextInput] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<any>(null);
+  const workflowId = location.includes('/workflow/') ? 
+    parseInt(location.split('/workflow/')[1]) : null;
+
+  // Initialize all hooks at the top level
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [selectedNode, setSelectedNode] = useState<WorkflowNode | null>(null);
+  const [workflow, setWorkflow] = useState<Workflow | null>(null);
+  const reactFlowWrapper = useRef<HTMLDivElement>(null);
 
   if (isLoading) {
     return (
@@ -167,7 +215,7 @@ export default function WorkflowBuilder() {
         });
       }
     }
-  }, [toast]);
+  }, [toast, setSteps, setWorkflowDescription, setWorkflowName]);
 
   // Save workflow mutation
   const saveWorkflowMutation = useMutation({
