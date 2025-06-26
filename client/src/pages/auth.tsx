@@ -7,11 +7,13 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { useAuth } from "@/hooks/useAuth";
 import { ArrowRight, CheckCircle } from "lucide-react";
 
 export default function Auth() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const { refetch } = useAuth();
   const [loading, setLoading] = useState(false);
 
   const [loginForm, setLoginForm] = useState({
@@ -39,6 +41,7 @@ export default function Auth() {
           title: "Success",
           description: "Logged in successfully!",
         });
+        await refetch(); // Update auth state
         setLocation("/");
       }
     } catch (error: any) {
@@ -65,6 +68,7 @@ export default function Auth() {
           title: "Account Created!",
           description: "Welcome! Your account is ready to use.",
         });
+        await refetch(); // Update auth state
         setLocation("/");
       }
     } catch (error: any) {
@@ -92,6 +96,7 @@ export default function Auth() {
           title: "Demo Access",
           description: "Logged in with demo account!",
         });
+        await refetch(); // Update auth state
         setLocation("/");
       }
     } catch (error: any) {
