@@ -118,15 +118,42 @@ export default function Templates() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground text-sm mb-4 line-clamp-3">
+                  <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
                     {template.description}
                   </p>
+                  
+                  {/* Workflow Steps Preview */}
+                  {template.flow_data?.steps && (
+                    <div className="mb-4">
+                      <h4 className="text-xs font-medium text-muted-foreground mb-2">Workflow Steps:</h4>
+                      <div className="space-y-1">
+                        {template.flow_data.steps.slice(0, 3).map((step: any, index: number) => (
+                          <div key={step.id} className="flex items-center gap-2 text-xs">
+                            <div className={`w-2 h-2 rounded-full ${
+                              step.type === 'start' ? 'bg-green-500' :
+                              step.type === 'end' ? 'bg-red-500' :
+                              step.type === 'decision' ? 'bg-yellow-500' :
+                              'bg-blue-500'
+                            }`} />
+                            <span className="text-muted-foreground truncate">
+                              {index + 1}. {step.text}
+                            </span>
+                          </div>
+                        ))}
+                        {template.flow_data.steps.length > 3 && (
+                          <div className="text-xs text-muted-foreground pl-4">
+                            +{template.flow_data.steps.length - 3} more steps
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                   
                   <div className="flex items-center justify-between pt-4 border-t border">
                     <div className="flex items-center gap-4 text-xs text-muted-foreground">
                       <div className="flex items-center gap-1">
                         <Clock className="w-3 h-3" />
-                        5-10 min
+                        {template.flow_data?.steps?.length || 0} steps
                       </div>
                       <div className="flex items-center gap-1">
                         <Users className="w-3 h-3" />
