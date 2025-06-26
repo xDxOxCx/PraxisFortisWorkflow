@@ -49,63 +49,56 @@ export default function Navbar() {
             </div>
             <div className="hidden md:block ml-10">
               <div className="flex items-baseline space-x-8">
-                <Link href="/">
-                  <a className={`px-3 py-2 text-sm font-medium transition-colors ${
-                    isActive('/') 
-                      ? 'text-slate-blue' 
-                      : 'text-muted-foreground hover:text-emerald-green'
-                  }`}>
-                    Dashboard
-                  </a>
+                <Link href="/" className={`px-3 py-2 text-sm font-medium transition-colors ${
+                  isActive('/') 
+                    ? 'text-slate-blue' 
+                    : 'text-muted-foreground hover:text-emerald-green'
+                }`}>
+                  Dashboard
                 </Link>
-                <Link href="/workflow-builder">
-                  <a className={`px-3 py-2 text-sm font-medium transition-colors ${
-                    isActive('/workflow-builder') || location.startsWith('/workflow-builder')
-                      ? 'text-slate-blue' 
-                      : 'text-silver-gray hover:text-emerald-green'
-                  }`}>
-                    New Workflow
-                  </a>
+                <Link href="/workflow-builder" className={`px-3 py-2 text-sm font-medium transition-colors ${
+                  isActive('/workflow-builder') || location.startsWith('/workflow-builder')
+                    ? 'text-slate-blue' 
+                    : 'text-silver-gray hover:text-emerald-green'
+                }`}>
+                  New Workflow
                 </Link>
-                <Link href="/templates">
-                  <a className={`px-3 py-2 text-sm font-medium transition-colors ${
-                    isActive('/templates') 
-                      ? 'text-slate-blue' 
-                      : 'text-muted-foreground hover:text-emerald-green'
-                  }`}>
-                    Templates
-                  </a>
+                <Link href="/templates" className={`px-3 py-2 text-sm font-medium transition-colors ${
+                  isActive('/templates') 
+                    ? 'text-slate-blue' 
+                    : 'text-muted-foreground hover:text-emerald-green'
+                }`}>
+                  Templates
                 </Link>
-                <Link href="/settings">
-                  <a className={`px-3 py-2 text-sm font-medium transition-colors ${
-                    isActive('/settings') 
-                      ? 'text-slate-blue' 
-                      : 'text-muted-foreground hover:text-emerald-green'
-                  }`}>
-                    Settings
-                  </a>
+                <Link href="/settings" className={`px-3 py-2 text-sm font-medium transition-colors ${
+                  isActive('/settings') 
+                    ? 'text-slate-blue' 
+                    : 'text-muted-foreground hover:text-emerald-green'
+                }`}>
+                  Settings
                 </Link>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-3 lg:space-x-6">
             {user?.subscriptionStatus === 'free' && (
-              <>
-                <div className="text-sm text-muted-foreground">
-                  <span className="font-medium">Free Trial</span> • 
-                  <span className="text-emerald-green ml-1">
-                    {user.totalWorkflows || 0}/1 trial workflow used
+              <div className="flex items-center space-x-3 lg:space-x-4">
+                <div className="text-xs lg:text-sm text-muted-foreground whitespace-nowrap">
+                  <span className="font-medium text-navy">Free Trial</span>
+                  <span className="mx-1 lg:mx-2">•</span>
+                  <span className="text-emerald-green font-medium">
+                    {user.totalWorkflows || 0}/1 trial
                   </span>
                 </div>
                 <Button 
                   onClick={handleUpgrade}
-                  className="bg-emerald-green text-white hover:bg-emerald-green/90"
+                  className="bg-emerald-green text-white hover:bg-emerald-green/90 whitespace-nowrap text-xs lg:text-sm"
                   size="sm"
                 >
-                  Upgrade to Pro
+                  Upgrade
                 </Button>
-              </>
+              </div>
             )}
 
             <DropdownMenu>
@@ -122,11 +115,9 @@ export default function Navbar() {
                   </span>
                 </div>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem asChild>
-                  <Link href="/settings">
-                    <a className="w-full">Settings</a>
-                  </Link>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem onClick={() => setLocation('/settings')} className="cursor-pointer">
+                  Settings
                 </DropdownMenuItem>
                 <DropdownMenuItem 
                   onClick={async () => {
