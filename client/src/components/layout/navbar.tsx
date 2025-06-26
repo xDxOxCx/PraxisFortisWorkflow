@@ -36,105 +36,103 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-white shadow-sleek border-b border-light-silver/50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Left side navigation */}
-          <div className="flex items-center space-x-8">
-            <div className="flex items-center space-x-6">
-              <Link href="/" className={`px-3 py-2 text-sm font-medium transition-colors ${
-                isActive('/') 
-                  ? 'text-navy font-semibold' 
-                  : 'text-muted-foreground hover:text-navy'
-              }`}>
-                Dashboard
-              </Link>
-              <Link href="/workflow-builder" className={`px-3 py-2 text-sm font-medium transition-colors ${
-                isActive('/workflow-builder') || location.startsWith('/workflow-builder')
-                  ? 'text-navy font-semibold' 
-                  : 'text-muted-foreground hover:text-navy'
-              }`}>
-                New Workflow
-              </Link>
-              <Link href="/templates" className={`px-3 py-2 text-sm font-medium transition-colors ${
-                isActive('/templates') 
-                  ? 'text-navy font-semibold' 
-                  : 'text-muted-foreground hover:text-navy'
-              }`}>
-                Templates
-              </Link>
-              <Link href="/settings" className={`px-3 py-2 text-sm font-medium transition-colors ${
-                isActive('/settings') 
-                  ? 'text-navy font-semibold' 
-                  : 'text-muted-foreground hover:text-navy'
-              }`}>
-                Settings
-              </Link>
-            </div>
-
-            {/* Trial counter on left side */}
-            {user?.subscriptionStatus === 'free' && (
-              <div className="ml-6 pl-6 border-l border-gray-300">
-                <div className="text-sm text-muted-foreground">
-                  <span className="text-navy font-medium">Free Trial:</span>
-                  <span className="ml-2 text-emerald-green font-semibold">
-                    {user.totalWorkflows || 0}/1 workflows used
-                  </span>
-                </div>
+    <>
+      {/* Top header bar */}
+      <header className="bg-white shadow-sm border-b border-gray-200 h-16 flex items-center justify-center">
+        <Link href="/">
+          <h1 className="text-2xl font-bold text-navy hover:text-emerald-green transition-colors">
+            Workflow Optimization Tool
+          </h1>
+        </Link>
+        
+        {/* User menu in top right */}
+        <div className="absolute right-6 top-4">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div className="flex items-center space-x-2 cursor-pointer">
+                <Avatar className="w-8 h-8">
+                  <AvatarImage src={user?.profileImageUrl} />
+                  <AvatarFallback className="bg-navy text-white">
+                    {user?.firstName?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="text-sm font-medium text-navy">
+                  {user?.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : user?.email}
+                </span>
               </div>
-            )}
-          </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem 
+                onClick={async () => {
+                  const { supabase } = await import('@/lib/supabaseClient');
+                  await supabase.auth.signOut();
+                }}
+                className="text-red-600 cursor-pointer"
+              >
+                Sign Out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </header>
 
-          {/* Centered logo */}
-          <div className="absolute left-1/2 transform -translate-x-1/2">
-            <Link href="/">
-              <h1 className="text-xl font-bold cursor-pointer text-navy hover:text-emerald-green transition-colors">
-                Workflow Optimization Tool
-              </h1>
+      {/* Left sidebar */}
+      <nav className="fixed left-0 top-16 bottom-0 w-64 bg-gray-50 border-r border-gray-200 overflow-y-auto">
+        <div className="p-6 space-y-6">
+          {/* Navigation Links */}
+          <div className="space-y-2">
+            <Link href="/" className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
+              isActive('/') 
+                ? 'bg-navy text-white' 
+                : 'text-gray-700 hover:bg-gray-100'
+            }`}>
+              Dashboard
+            </Link>
+            <Link href="/workflow-builder" className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
+              isActive('/workflow-builder') || location.startsWith('/workflow-builder')
+                ? 'bg-navy text-white' 
+                : 'text-gray-700 hover:bg-gray-100'
+            }`}>
+              New Workflow
+            </Link>
+            <Link href="/templates" className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
+              isActive('/templates') 
+                ? 'bg-navy text-white' 
+                : 'text-gray-700 hover:bg-gray-100'
+            }`}>
+              Templates
+            </Link>
+            <Link href="/settings" className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
+              isActive('/settings') 
+                ? 'bg-navy text-white' 
+                : 'text-gray-700 hover:bg-gray-100'
+            }`}>
+              Settings
             </Link>
           </div>
 
-          {/* Right side - user menu and upgrade */}
-          <div className="flex items-center space-x-4">
-            {user?.subscriptionStatus === 'free' && (
-              <Button 
-                onClick={handleUpgrade}
-                className="bg-emerald-green text-white hover:bg-emerald-green/90"
-                size="sm"
-              >
-                Upgrade to Pro
-              </Button>
-            )}
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <div className="flex items-center space-x-2 cursor-pointer">
-                  <Avatar className="w-8 h-8">
-                    <AvatarImage src={user?.profileImageUrl} />
-                    <AvatarFallback className="bg-navy text-white">
-                      {user?.firstName?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
-                    </AvatarFallback>
-                  </Avatar>
-                  <span className="text-sm font-medium text-navy">
-                    {user?.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : user?.email}
+          {/* Trial Status */}
+          {user?.subscriptionStatus === 'free' && (
+            <div className="border-t border-gray-200 pt-6">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h3 className="text-sm font-semibold text-navy mb-2">Free Trial</h3>
+                <p className="text-sm text-gray-600 mb-3">
+                  <span className="font-medium text-emerald-green">
+                    {user.totalWorkflows || 0}/1 workflows used
                   </span>
-                </div>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem 
-                  onClick={async () => {
-                    const { supabase } = await import('@/lib/supabaseClient');
-                    await supabase.auth.signOut();
-                  }}
-                  className="text-red-600 cursor-pointer"
+                </p>
+                <Button 
+                  onClick={handleUpgrade}
+                  className="w-full bg-emerald-green text-white hover:bg-emerald-green/90"
+                  size="sm"
                 >
-                  Sign Out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+                  Upgrade to Pro
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
-      </div>
-    </nav>
+      </nav>
+    </>
   );
 }

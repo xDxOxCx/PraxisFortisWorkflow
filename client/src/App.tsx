@@ -13,6 +13,7 @@ import Templates from "@/pages/templates";
 import Settings from "@/pages/settings";
 import Pricing from "@/pages/pricing";
 import Subscribe from "@/pages/subscribe";
+import AppLayout from "./components/layout/app-layout";
 
 
 function Router() {
@@ -72,7 +73,7 @@ function App() {
           <Route component={NotFound} />
         </>
       ) : (
-        <>
+        <AppLayout>
           <Route path="/" component={Home} />
           <Route path="/workflow-builder" component={WorkflowBuilder} />
           <Route path="/workflow-builder/:id" component={WorkflowBuilder} />
@@ -80,7 +81,7 @@ function App() {
           <Route path="/settings" component={Settings} />
           <Route path="/subscribe" component={Subscribe} />
           <Route component={NotFound} />
-        </>
+        </AppLayout>
       )}
     </Switch>
   );

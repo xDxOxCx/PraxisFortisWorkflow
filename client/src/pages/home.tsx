@@ -24,7 +24,6 @@ import {
   Info,
   Edit
 } from "lucide-react";
-import Navbar from "@/components/layout/navbar";
 
 interface UserStats {
   totalWorkflows: number;
@@ -140,10 +139,8 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div>
+      <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h2 className="text-3xl font-montserrat font-bold text-slate-blue mb-2">Dashboard</h2>
           <p className="text-muted-foreground">Manage your workflows and track optimization progress</p>
