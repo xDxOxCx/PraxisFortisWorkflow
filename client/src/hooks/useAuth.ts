@@ -46,6 +46,22 @@ export function useAuth() {
       email,
       password,
     });
+    
+    // If sign in successful, call auth callback to create user in database
+    if (data.session && !error) {
+      try {
+        await fetch('/api/auth/callback', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${data.session.access_token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+      } catch (callbackError) {
+        console.error('Error calling auth callback:', callbackError);
+      }
+    }
+    
     return { data, error };
   };
 

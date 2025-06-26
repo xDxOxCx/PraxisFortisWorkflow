@@ -18,62 +18,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
   setupSession(app);
   setupAuthRoutes(app);
 
-  // Auth endpoints
-  app.post('/api/auth/signup', async (req, res) => {
+  // Auth callback to create user in database after Supabase auth
+  app.post('/api/auth/callback', async (req, res) => {
     try {
-      const { email, password, firstName, lastName } = req.body;
-
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            first_name: firstName,
-            last_name: lastName,
-          }
-        }
+      const authHeader = req.headers.authorization;
+      
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      const token = authHeader.substring(7);
+      const { data: { user }, error } = await supabase.auth.getUser(token);
+      
+      if (error || !user) {
+        return res.status(401).json({ message: "Invalid token" });
+      }
+      
+      // Upsert user in your database
+      await storage.upsertUser({
+        id: user.id,
+        email: user.email!,
+        firstName: user.user_metadata?.first_name || null,
+        lastName: user.user_metadata?.last_name || null,
+        subscriptionStatus: "free",
+        workflowsUsedThisMonth: 0,
+        totalWorkflows: 0,
       });
-
-      if (error) {
-        return res.status(400).json({ message: error.message });
-      }
-
-      res.json({ success: true, data });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  });
-
-  app.post('/api/auth/signin', async (req, res) => {
-    try {
-      const { email, password } = req.body;
-
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) {
-        return res.status(400).json({ message: error.message });
-      }
-
-      res.json({ success: true, data });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  });
-
-  app.post('/api/auth/signout', async (req, res) => {
-    try {
-      const { error } = await supabase.auth.signOut();
-
-      if (error) {
-        return res.status(400).json({ message: error.message });
-      }
 
       res.json({ success: true });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      console.error('Auth callback error:', error);
+      res.status(500).json({ message: "Internal server error" });
     }
   });
 
@@ -85,7 +60,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User stats endpoint
   app.get('/api/user/stats', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
 
       if (!user) {
@@ -114,7 +89,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Workflows endpoints
   app.get('/api/workflows', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const workflows = await storage.getWorkflows(userId);
       res.json(workflows);
     } catch (error) {
@@ -125,7 +100,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/workflows', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
 
       if (!user) {
@@ -160,7 +135,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/workflows/:id', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const workflowId = parseInt(req.params.id);
       const workflow = await storage.getWorkflow(workflowId, userId);
 
@@ -177,7 +152,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.patch('/api/workflows/:id', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const workflowId = parseInt(req.params.id);
 
       const workflow = await storage.updateWorkflow({
@@ -195,7 +170,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete('/api/workflows/:id', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const workflowId = parseInt(req.params.id);
 
       await storage.deleteWorkflow(workflowId, userId);
@@ -209,7 +184,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // AI Analysis endpoint
   app.post('/api/workflows/:id/analyze', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const workflowId = parseInt(req.params.id);
 
       const workflow = await storage.getWorkflow(workflowId, userId);
@@ -315,7 +290,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     // Create Stripe checkout session
     app.post('/api/create-checkout-session', isAuthenticated, async (req: any, res) => {
       try {
-        const userId = req.user.claims.sub;
+        const userId = req.user.id;
         const user = await storage.getUser(userId);
 
         if (!user) {
