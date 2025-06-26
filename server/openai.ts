@@ -35,6 +35,8 @@ export interface WorkflowAnalysis {
 export async function analyzeWorkflow(workflowData: any, workflowName: string): Promise<WorkflowAnalysis> {
   try {
     console.log("Starting OpenAI analysis for workflow:", workflowName);
+    console.log("OpenAI API Key available:", !!process.env.OPENAI_API_KEY);
+    console.log("Workflow data:", JSON.stringify(workflowData, null, 2));
     
     const prompt = `Analyze this healthcare workflow using Lean methodology. Provide optimization recommendations.
 

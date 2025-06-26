@@ -77,11 +77,36 @@ export default function WorkflowBuilder() {
           const response = await fetch(`/api/templates/${templateId}`);
           if (response.ok) {
             const template = await response.json();
+            console.log('Loading template:', template);
+            
             setWorkflowName(template.name);
             setWorkflowDescription(template.description);
             
-            if (template.flow_data && template.flow_data.steps) {
-              setSteps(template.flow_data.steps);
+            // Convert template flow_data to workflow steps
+            let workflowSteps = [];
+            if (template.flow_data && template.flow_data.nodes) {
+              // Template uses nodes/edges format - convert to steps
+              const nodes = template.flow_data.nodes;
+              workflowSteps = nodes
+                .filter((node: any) => node.type !== 'decision') // Skip decision nodes for simplicity
+                .map((node: any, index: number) => ({
+                  id: node.id || `template-${index}`,
+                  text: node.data?.label || node.data?.description || `Step ${index + 1}`,
+                  type: node.type === 'start' ? 'start' : 
+                        node.type === 'end' ? 'end' : 'process'
+                }));
+            } else if (template.flow_data && Array.isArray(template.flow_data.steps)) {
+              // Template already has steps format
+              workflowSteps = template.flow_data.steps.map((step: any, index: number) => ({
+                id: step.id || `template-${index}`,
+                text: step.text || step.name || step.description || `Step ${index + 1}`,
+                type: step.type || 'process'
+              }));
+            }
+            
+            if (workflowSteps.length > 0) {
+              setSteps(workflowSteps);
+              console.log('Loaded', workflowSteps.length, 'steps from template');
             }
           }
         } catch (error) {

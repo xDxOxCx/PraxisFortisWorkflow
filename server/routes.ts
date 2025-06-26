@@ -170,6 +170,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Direct workflow analysis endpoint (for unsaved workflows)
+  app.post('/api/workflows/analyze', isAuthenticated, async (req: any, res) => {
+    try {
+      const { name, description, steps } = req.body;
+      
+      if (!name || !steps || steps.length === 0) {
+        return res.status(400).json({ message: "Missing workflow name or steps" });
+      }
+
+      console.log("Analyzing workflow:", name, "with", steps.length, "steps");
+      
+      const workflowData = { steps };
+      const analysis = await analyzeWorkflow(workflowData, name);
+      
+      console.log("Analysis completed successfully");
+      res.json(analysis);
+    } catch (error) {
+      console.error("Error analyzing workflow:", error);
+      res.status(500).json({ message: "Failed to analyze workflow" });
+    }
+  });
+
   // Templates endpoints
   app.get('/api/templates', async (_req, res) => {
     try {
