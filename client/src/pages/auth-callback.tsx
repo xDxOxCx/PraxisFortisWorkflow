@@ -1,10 +1,10 @@
-import { useEffect } from 'react';
-import { useLocation } from 'wouter';
-import { supabase } from '@/lib/supabaseClient';
-import { apiRequest } from '@/lib/queryClient';
+
+import { useEffect } from "react";
+import { supabase } from "@/lib/supabaseClient";
+import { useToast } from "@/hooks/use-toast";
 
 export default function AuthCallback() {
-  const [, setLocation] = useLocation();
+  const { toast } = useToast();
 
   useEffect(() => {
     const handleAuthCallback = async () => {
@@ -12,37 +12,42 @@ export default function AuthCallback() {
         const { data, error } = await supabase.auth.getSession();
         
         if (error) {
-          console.error('Auth error:', error);
-          setLocation('/');
+          toast({
+            title: "Authentication Error",
+            description: error.message,
+            variant: "destructive",
+          });
+          window.location.href = "/auth";
           return;
         }
 
         if (data.session) {
-          // Send user data to backend
-          await apiRequest('POST', '/api/auth/callback', {
-            access_token: data.session.access_token,
-            refresh_token: data.session.refresh_token,
-            user: data.session.user,
+          toast({
+            title: "Success",
+            description: "Email verified successfully!",
           });
-          
-          setLocation('/');
+          window.location.href = "/";
         } else {
-          setLocation('/');
+          window.location.href = "/auth";
         }
-      } catch (error) {
-        console.error('Error in auth callback:', error);
-        setLocation('/');
+      } catch (error: any) {
+        toast({
+          title: "Error",
+          description: "Something went wrong during authentication",
+          variant: "destructive",
+        });
+        window.location.href = "/auth";
       }
     };
 
     handleAuthCallback();
-  }, [setLocation]);
+  }, [toast]);
 
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="text-center">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
-        <p>Completing sign in...</p>
+        <h2 className="text-xl font-semibold mb-2">Verifying your account...</h2>
+        <p className="text-muted-foreground">Please wait while we verify your email.</p>
       </div>
     </div>
   );

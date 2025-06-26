@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import { useAuth } from "@/hooks/useAuth";
 import { Eye, EyeOff } from "lucide-react";
 
 export default function AuthForm() {
@@ -17,28 +17,36 @@ export default function AuthForm() {
     lastName: "",
   });
   const { toast } = useToast();
+  const { signUp, signIn } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      const endpoint = isSignUp ? "/api/auth/signup" : "/api/auth/signin";
-      const payload = isSignUp ? formData : { email: formData.email, password: formData.password };
+      let result;
       
-      await apiRequest(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      if (isSignUp) {
+        result = await signUp(formData.email, formData.password);
+      } else {
+        result = await signIn(formData.email, formData.password);
+      }
+
+      if (result.error) {
+        throw new Error(result.error.message);
+      }
 
       toast({
         title: "Success",
-        description: isSignUp ? "Account created successfully!" : "Signed in successfully!",
+        description: isSignUp 
+          ? "Account created! Please check your email to verify your account." 
+          : "Signed in successfully!",
       });
 
-      // Redirect to home page
-      window.location.href = "/";
+      // Redirect will happen automatically via auth state change
+      if (!isSignUp) {
+        window.location.href = "/";
+      }
     } catch (error: any) {
       toast({
         title: "Error",

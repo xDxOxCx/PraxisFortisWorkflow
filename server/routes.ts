@@ -5,6 +5,9 @@ import { storage } from "./storage";
 import { analyzeWorkflow } from "./openai";
 import { setupSession, setupAuthRoutes, isAuthenticated } from "./auth";
 import express from "express";
+import { z } from "zod";
+import { bypassAuth } from "./auth";
+import { supabase } from "./supabaseClient";
 
 const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: "2024-06-20",
@@ -14,6 +17,65 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Setup session and authentication
   setupSession(app);
   setupAuthRoutes(app);
+
+  // Auth endpoints
+  app.post('/api/auth/signup', async (req, res) => {
+    try {
+      const { email, password, firstName, lastName } = req.body;
+
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            first_name: firstName,
+            last_name: lastName,
+          }
+        }
+      });
+
+      if (error) {
+        return res.status(400).json({ message: error.message });
+      }
+
+      res.json({ success: true, data });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post('/api/auth/signin', async (req, res) => {
+    try {
+      const { email, password } = req.body;
+
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        return res.status(400).json({ message: error.message });
+      }
+
+      res.json({ success: true, data });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post('/api/auth/signout', async (req, res) => {
+    try {
+      const { error } = await supabase.auth.signOut();
+
+      if (error) {
+        return res.status(400).json({ message: error.message });
+      }
+
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
 
   // Health check
   app.get("/api/health", (_req, res) => {
@@ -25,7 +87,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
-      
+
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
@@ -65,7 +127,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
-      
+
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
@@ -101,11 +163,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.user.claims.sub;
       const workflowId = parseInt(req.params.id);
       const workflow = await storage.getWorkflow(workflowId, userId);
-      
+
       if (!workflow) {
         return res.status(404).json({ message: "Workflow not found" });
       }
-      
+
       res.json(workflow);
     } catch (error) {
       console.error("Error fetching workflow:", error);
@@ -117,13 +179,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const workflowId = parseInt(req.params.id);
-      
+
       const workflow = await storage.updateWorkflow({
         id: workflowId,
         userId,
         ...req.body
       });
-      
+
       res.json(workflow);
     } catch (error) {
       console.error("Error updating workflow:", error);
@@ -135,7 +197,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const workflowId = parseInt(req.params.id);
-      
+
       await storage.deleteWorkflow(workflowId, userId);
       res.json({ message: "Workflow deleted successfully" });
     } catch (error) {
@@ -149,14 +211,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const workflowId = parseInt(req.params.id);
-      
+
       const workflow = await storage.getWorkflow(workflowId, userId);
       if (!workflow) {
         return res.status(404).json({ message: "Workflow not found" });
       }
 
       const analysis = await analyzeWorkflow(workflow.flowData, workflow.name);
-      
+
       const updatedWorkflow = await storage.updateWorkflow({
         id: workflowId,
         userId,
@@ -186,11 +248,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const templateId = parseInt(req.params.id);
       const template = await storage.getTemplate(templateId);
-      
+
       if (!template) {
         return res.status(404).json({ message: "Template not found" });
       }
-      
+
       res.json(template);
     } catch (error) {
       console.error("Error fetching template:", error);
@@ -217,7 +279,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           case 'customer.subscription.updated':
             const subscription = event.data.object as Stripe.Subscription;
             const customer = await stripe.customers.retrieve(subscription.customer as string) as Stripe.Customer;
-            
+
             if (customer.email) {
               const user = await storage.getUserByEmail(customer.email);
               if (user) {
@@ -230,7 +292,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           case 'customer.subscription.deleted':
             const deletedSub = event.data.object as Stripe.Subscription;
             const deletedCustomer = await stripe.customers.retrieve(deletedSub.customer as string) as Stripe.Customer;
-            
+
             if (deletedCustomer.email) {
               const user = await storage.getUserByEmail(deletedCustomer.email);
               if (user) {
@@ -255,7 +317,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       try {
         const userId = req.user.claims.sub;
         const user = await storage.getUser(userId);
-        
+
         if (!user) {
           return res.status(404).json({ message: "User not found" });
         }
