@@ -73,15 +73,17 @@ function App() {
           <Route component={NotFound} />
         </>
       ) : (
-        <AppLayout>
-          <Route path="/" component={Home} />
-          <Route path="/workflow-builder" component={WorkflowBuilder} />
-          <Route path="/workflow-builder/:id" component={WorkflowBuilder} />
-          <Route path="/templates" component={Templates} />
-          <Route path="/settings" component={Settings} />
-          <Route path="/subscribe" component={Subscribe} />
+        <>
+          <AppLayout>
+            <Route path="/" component={Home} />
+            <Route path="/workflow-builder" component={WorkflowBuilder} />
+            <Route path="/workflow-builder/:id" component={WorkflowBuilder} />
+            <Route path="/templates" component={Templates} />
+            <Route path="/settings" component={Settings} />
+            <Route path="/subscribe" component={Subscribe} />
+          </AppLayout>
           <Route component={NotFound} />
-        </AppLayout>
+        </>
       )}
     </Switch>
   );

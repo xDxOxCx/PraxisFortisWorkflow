@@ -68,6 +68,15 @@ The Vite configuration handles client-side routing and API proxying in developme
 
 ## Recent Changes
 
+- **June 26, 2025 - Professional Sidebar Navigation Implemented**:
+  - Completely redesigned navigation with clean top header and left sidebar
+  - Centered main logo in top header for professional appearance
+  - Created dedicated left sidebar with Dashboard, New Workflow, Templates, and Settings
+  - Positioned trial status and upgrade button within sidebar for clean organization
+  - Fixed routing issue where 404 page was incorrectly appearing in dashboard
+  - Updated layout structure with proper AppLayout wrapper for authenticated users
+  - Removed cramped top navigation elements in favor of spacious sidebar design
+
 - **June 26, 2025 - Navigation Bar Layout Fixed**:
   - Fixed spacing and layout issues in navigation bar where elements were bunched together
   - Properly separated Free Trial status, Upgrade button, and user avatar with adequate spacing
