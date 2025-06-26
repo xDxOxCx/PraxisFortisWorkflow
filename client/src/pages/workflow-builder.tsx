@@ -35,6 +35,7 @@ export default function WorkflowBuilder() {
   const workflowId = params.id ? parseInt(params.id) : null;
   
   const [workflowName, setWorkflowName] = useState("Untitled Workflow");
+  const [workflowDescription, setWorkflowDescription] = useState("");
   const [workflowData, setWorkflowData] = useState<WorkflowData>({ nodes: [], edges: [] });
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
   const [showAnalysis, setShowAnalysis] = useState(false);
@@ -118,13 +119,35 @@ export default function WorkflowBuilder() {
   // Analyze workflow mutation
   const analyzeWorkflowMutation = useMutation({
     mutationFn: async () => {
-      if (!workflowId) {
-        throw new Error("Please save the workflow first before analyzing.");
+      // Convert React Flow nodes to simple steps format
+      const steps = workflowData.nodes.map(node => ({
+        id: node.id,
+        text: node.data.label,
+        type: node.type
+      }));
+
+      const analysisData = {
+        name: workflowName,
+        description: workflowDescription,
+        steps: steps
+      };
+
+      const response = await fetch('/api/analyze-workflow', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(analysisData)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Analysis failed: ${response.status}`);
       }
-      return await apiRequest("POST", `/api/workflows/${workflowId}/analyze`);
+
+      return await response.json();
     },
-    onSuccess: async (response) => {
-      const analysis = await response.json();
+    onSuccess: (analysis) => {
       setAiAnalysis(analysis);
       setShowAnalysis(true);
       toast({
@@ -175,15 +198,6 @@ export default function WorkflowBuilder() {
       toast({
         title: "Empty Workflow", 
         description: "Please add some components to your workflow before analyzing.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (!workflowId) {
-      toast({
-        title: "Save Required",
-        description: "Please save the workflow first before analyzing.",
         variant: "destructive",
       });
       return;
