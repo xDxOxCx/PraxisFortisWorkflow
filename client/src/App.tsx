@@ -80,6 +80,7 @@ function App() {
             <Route path="/" component={Home} />
             <Route path="/workflow-builder" component={WorkflowBuilder} />
             <Route path="/workflow-builder/:id" component={WorkflowBuilder} />
+            <Route path="/analysis-results" component={AnalysisResults} />
             <Route path="/templates" component={Templates} />
             <Route path="/settings" component={Settings} />
             <Route path="/subscribe" component={Subscribe} />

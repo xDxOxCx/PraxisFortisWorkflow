@@ -218,11 +218,7 @@ export default function WorkflowBuilder() {
       
       toast({
         title: "Analysis Complete",
-        description: "Analysis ready! Click to view results.",
-        action: {
-          label: "View Results",
-          onClick: () => setLocation('/analysis-results')
-        }
+        description: "Redirecting to analysis results...",
       });
 
       // Navigate immediately to results
