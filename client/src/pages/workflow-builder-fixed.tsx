@@ -46,11 +46,10 @@ interface WorkflowStep {
 }
 
 export default function WorkflowBuilder() {
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { isAuthenticated, isLoading } = useAuth();
-  const [, setLocation] = useLocation();
   
   // All state hooks declared at the top level - NEVER conditionally
   const [workflowName, setWorkflowName] = useState('');
@@ -64,6 +63,32 @@ export default function WorkflowBuilder() {
   // All other hooks at top level
   const workflowId = location.includes('/workflow/') ? 
     parseInt(location.split('/workflow/')[1]) : null;
+
+  // Save workflow mutation - MUST be declared before any conditional returns
+  const saveWorkflowMutation = useMutation({
+    mutationFn: async () => {
+      const workflowData = { steps };
+      return await apiRequest("POST", "/api/workflows", {
+        name: workflowName,
+        description: workflowDescription,
+        flow_data: workflowData,
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Workflow Saved",
+        description: "Your workflow has been saved successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/workflows'] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Save Failed",
+        description: "Failed to save workflow.",
+        variant: "destructive",
+      });
+    },
+  });
 
   // Check for template parameter in URL
   useEffect(() => {
@@ -166,32 +191,6 @@ export default function WorkflowBuilder() {
       }
     }
   }, [toast]);
-
-  // Save workflow mutation
-  const saveWorkflowMutation = useMutation({
-    mutationFn: async () => {
-      const workflowData = { steps };
-      return await apiRequest("POST", "/api/workflows", {
-        name: workflowName,
-        description: workflowDescription,
-        flow_data: workflowData,
-      });
-    },
-    onSuccess: () => {
-      toast({
-        title: "Workflow Saved",
-        description: "Your workflow has been saved successfully.",
-      });
-      queryClient.invalidateQueries({ queryKey: ['/api/workflows'] });
-    },
-    onError: (error) => {
-      toast({
-        title: "Save Failed",
-        description: "Failed to save workflow.",
-        variant: "destructive",
-      });
-    },
-  });
 
   // Step management functions
   const addStep = () => {
