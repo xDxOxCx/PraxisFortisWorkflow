@@ -533,7 +533,7 @@ export default function WorkflowBuilder() {
 
                     {/* Formatted markdown display */}
                     <div className="bg-white rounded-lg p-6 shadow-sm">
-                      <MarkdownRenderer markdown={analysisResult.markdownReport || 'No analysis report available'} />
+                      <MarkdownRenderer content={analysisResult.markdownReport || 'No analysis report available'} />
                     </div>
                   </div>
                 </div>
