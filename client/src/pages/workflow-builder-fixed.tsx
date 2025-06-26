@@ -134,10 +134,7 @@ export default function WorkflowBuilder() {
           }));
           setSteps(typedSteps);
         }
-        toast({
-          title: "Template Loaded",
-          description: `Loaded "${template.name}" template with ${template.flow_data?.steps?.length || 0} steps`,
-        });
+
       } else {
         toast({
           title: "Template Not Found",
