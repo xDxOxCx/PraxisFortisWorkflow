@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -20,6 +20,7 @@ import {
   TrendingUp,
   AlertTriangle
 } from 'lucide-react';
+import MarkdownRenderer from '@/components/workflow/markdown-renderer';
 
 interface WorkflowStep {
   id: string;
@@ -30,7 +31,7 @@ interface WorkflowStep {
 export default function WorkflowBuilder() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  
+
   // State management
   const [workflowName, setWorkflowName] = useState('');
   const [workflowDescription, setWorkflowDescription] = useState('');
@@ -44,7 +45,7 @@ export default function WorkflowBuilder() {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const templateId = urlParams.get('template');
-    
+
     if (templateId) {
       // Hardcoded templates to avoid API dependency
       const templates = {
@@ -121,7 +122,7 @@ export default function WorkflowBuilder() {
       };
 
       const template = templates[templateId as keyof typeof templates];
-      
+
       if (template) {
         setWorkflowName(template.name);
         setWorkflowDescription(template.description);
@@ -171,27 +172,27 @@ export default function WorkflowBuilder() {
   // Step management functions
   const addStep = () => {
     if (!newStepText.trim()) return;
-    
+
     const newStep: WorkflowStep = {
       id: Date.now().toString(),
       text: newStepText,
       type: 'process'
     };
-    
+
     setSteps([...steps, newStep]);
     setNewStepText('');
   };
 
   const createFromText = () => {
     if (!textInput.trim()) return;
-    
+
     const lines = textInput.split('\n').filter(line => line.trim());
     const newSteps: WorkflowStep[] = lines.map((line, index) => ({
       id: `${Date.now()}-${index}`,
       text: line.trim(),
       type: index === 0 ? 'start' : index === lines.length - 1 ? 'end' : 'process'
     }));
-    
+
     setSteps([...steps, ...newSteps]);
     setTextInput('');
   };
@@ -274,7 +275,7 @@ export default function WorkflowBuilder() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="mb-6">
           <div className="flex items-center justify-between">
@@ -367,7 +368,7 @@ export default function WorkflowBuilder() {
                   Create Steps from Text
                 </Button>
               </div>
-              
+
               {/* Single step input */}
               <div className="border-t pt-4">
                 <label className="block text-sm font-medium mb-2" style={{color: 'hsl(215, 25%, 27%)'}}>
@@ -446,7 +447,7 @@ export default function WorkflowBuilder() {
                           <ArrowDown className="w-3 h-3" />
                         </Button>
                       </div>
-                      
+
                       <div className="flex-1">
                         <Input
                           value={step.text}
@@ -454,7 +455,7 @@ export default function WorkflowBuilder() {
                           className="border-none p-0 font-medium"
                         />
                       </div>
-                      
+
                       <div className="flex items-center gap-2">
                         <span className={`px-2 py-1 text-xs rounded ${
                           step.type === 'start' ? 'bg-green-100 text-green-800' :
@@ -477,7 +478,7 @@ export default function WorkflowBuilder() {
                   ))}
                 </div>
               )}
-              
+
               {/* Analyze Button - positioned after workflow steps */}
               {steps.length > 0 && (
                 <div className="mt-6 text-center">
@@ -529,12 +530,10 @@ export default function WorkflowBuilder() {
                       <h3 className="text-lg font-semibold text-navy-900 mb-2">Analysis Summary</h3>
                       <p className="text-sm text-gray-600">Complete A3 Action Plan with efficiency scores, problem analysis, and implementation roadmap</p>
                     </div>
-                    
+
                     {/* Formatted markdown display */}
                     <div className="bg-white rounded-lg p-6 shadow-sm">
-                      <pre className="whitespace-pre-wrap text-sm leading-relaxed text-gray-800 font-sans">
-                        {analysisResult.markdownReport || 'No analysis report available'}
-                      </pre>
+                      <MarkdownRenderer markdown={analysisResult.markdownReport || 'No analysis report available'} />
                     </div>
                   </div>
                 </div>

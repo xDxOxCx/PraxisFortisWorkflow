@@ -33,208 +33,166 @@ export interface WorkflowAnalysis {
 
 export async function analyzeWorkflow(workflowData: any, workflowName: string): Promise<WorkflowAnalysis> {
   try {
-    const prompt = `You are a Lean Six Sigma AI consultant helping non-expert users improve business workflows.
+    const prompt = `You are a Senior Lean Six Sigma Master Black Belt consultant with 15+ years of experience optimizing healthcare workflows. Create a professional A3 Action Plan analysis that would meet Fortune 500 consulting standards.
 
-The user will give you a list of workflow steps. Your job is to analyze them like a process engineer and return a full analysis report.
-
-**You must always output in professional Markdown formatting**, with all of the following sections:
-
----
-
-## 📋 A3 Action Plan Summary
-- **Efficiency Score (Before)**: X/100  
-- **Efficiency Score (After)**: X/100  
-- **Estimated Time Saved**: X minutes per cycle  
-- **Lean Waste Detected**: List of waste types (e.g. Waiting, Overprocessing, Motion)
-
----
-
-## 🔍 Problem Summary
-Briefly describe the root cause of inefficiencies in the workflow using plain English. Do not use jargon.
-
----
-
-## ⛔ Current Workflow Diagram
-**Use Mermaid.js format. Wrap the diagram in triple backticks and the word \`mermaid\`.**
-
-\`\`\`mermaid
-graph TD
-A[Step 1] --> B[Step 2]
-B --> C[Step 3]
-\`\`\`
-
----
-
-## ✅ Optimized Workflow Diagram
-**Show the improved workflow with Mermaid.js format.**
-
-\`\`\`mermaid
-graph TD
-A[Improved Step 1] --> B[Streamlined Step 2]
-B --> C[Optimized Step 3]
-\`\`\`
-
----
-
-## 🎯 Top Improvement Opportunities
-
-### 1. [Improvement Title]
-- **Impact**: High/Medium/Low
-- **Time Saved**: X minutes per cycle
-- **Effort Required**: Low/Medium/High
-- **Implementation Steps**:
-  1. Step one description
-  2. Step two description
-  3. Step three description
-
-### 2. [Second Improvement]
-- **Impact**: High/Medium/Low
-- **Time Saved**: X minutes per cycle
-- **Effort Required**: Low/Medium/High
-- **Implementation Steps**:
-  1. Step one description
-  2. Step two description
-
----
-
-## 📊 Implementation Roadmap
-
-| Priority | Improvement | Timeline | Owner | Resources Needed |
-|----------|-------------|----------|--------|------------------|
-| 1 | First improvement | 2-4 weeks | Role | List resources |
-| 2 | Second improvement | 1-2 weeks | Role | List resources |
-
----
-
-## 🎯 Success Metrics
-- **Process Cycle Time**: Reduce from X to Y minutes
-- **Error Rate**: Reduce from X% to Y%
-- **Customer Satisfaction**: Increase by X%
-- **Cost Savings**: $X per month
-
----
-
-## ⚠️ Risk Mitigation
-- **Risk 1**: Description and mitigation strategy
-- **Risk 2**: Description and mitigation strategy
-
----
+CRITICAL REQUIREMENTS:
+1. Use PRECISE healthcare industry terminology and metrics
+2. Reference actual Lean methodology (TIMWOODS, Value Stream Mapping, etc.)
+3. Provide SPECIFIC implementation steps with exact timeframes
+4. Calculate realistic time/cost savings with data-driven rationale
+5. Include risk assessment and change management considerations
 
 Workflow Name: ${workflowName}
 Workflow Steps: ${JSON.stringify(workflowData.steps || workflowData, null, 2)}
 
-Analyze this workflow using Lean Six Sigma principles (TIMWOODS waste elimination) and provide the complete markdown report following the exact format above.
-
-Return a JSON object with this structure:
+Return a JSON object with this EXACT structure:
 {
-  "markdownReport": "Complete markdown A3 report following the format",
-  "improvements": [
-    {
-      "id": "unique_id",
-      "title": "Improvement Title",
-      "description": "Brief description",
-      "impact": "high|medium|low",
-      "timeSaved": 15,
-      "category": "efficiency|bottleneck|automation|lean",
-      "implementationSteps": [
-        {
-          "step": "Specific action to take",
-          "timeRequired": "2-3 weeks",
-          "resources": ["Staff training", "Software update"],
-          "owner": "Practice Manager"
-        }
-      ],
-      "priority": 3,
-      "effort": "medium"
-    }
-  ],
-  "mermaidCode": "current workflow mermaid code",
-  "optimizedMermaidCode": "optimized workflow mermaid code", 
+  "markdownReport": "Professional A3 Action Plan in markdown format",
+  "improvements": [array of improvement objects],
+  "mermaidCode": "current workflow diagram code",
+  "optimizedMermaidCode": "optimized workflow diagram code",
   "summary": {
     "totalTimeSaved": number,
     "efficiencyGain": number,
     "efficiencyBefore": number,
     "efficiencyAfter": number,
-    "riskAreas": ["risk1", "risk2"],
-    "recommendations": ["rec1", "rec2"],
-    "wasteTypes": ["Motion", "Waiting", "Over-processing"]
+    "riskAreas": ["specific risks"],
+    "recommendations": ["actionable recommendations"],
+    "wasteTypes": ["identified TIMWOODS wastes"]
   }
 }
 
-Create a comprehensive A3 Action Plan report with sections for Problem Statement, Current/Optimized Workflow Diagrams, Improvement Analysis table, phased Action Plan with checkboxes, Success Metrics, and Coach's Note.
+The markdownReport must follow this EXACT professional format:
 
-Focus on specialty clinic contexts like gastroenterology, orthopedics, endocrinology. Provide specific, actionable recommendations with clear timelines and ownership.
-
-The markdownReport should be a complete professional A3 Action Plan following this structure:
-
-## 📋 A3 Action Plan Summary
-**Workflow Analyzed**: ${workflowName}
-**Efficiency Score (Before)**: [score]/100
-**Efficiency Score (After)**: [score]/100  
-**Time Saved per Cycle**: [X] minutes
-**Primary Waste Identified**: [List wastes from TIMWOODS]
+# 📋 Lean Six Sigma A3 Action Plan
+**Project**: ${workflowName} Optimization  
+**Date**: ${new Date().toLocaleDateString()}  
+**Analyst**: AI Lean Consultant  
 
 ---
 
-## 🔍 Problem Statement
-[1 paragraph explaining inefficiencies and impact]
+## 🎯 Executive Summary
+| Metric | Before | After | Improvement |
+|--------|--------|--------|-------------|
+| **Cycle Time** | X min | Y min | Z% reduction |
+| **Efficiency Score** | X/100 | Y/100 | Z point gain |
+| **Annual Time Savings** | - | XXX hours | $XX,XXX value |
+| **Primary Waste** | [Top 2-3 TIMWOODS] | Eliminated | High Impact |
 
 ---
 
-## 📈 Workflow Diagrams
+## 🔍 Problem Definition & Root Cause Analysis
+**Current State Issues:**
+- [Specific problem 1 with quantified impact]
+- [Specific problem 2 with quantified impact]
+- [Specific problem 3 with quantified impact]
 
-### ⛔ Current Workflow
+**Root Cause (5-Why Analysis):**
+[Brief root cause explanation using Lean methodology]
+
+---
+
+## 📊 Current vs. Future State Value Stream
+
+### Current State Workflow
 \`\`\`mermaid
-graph TD
-    A[Current Step 1] --> B[Current Step 2]
-    B --> C[Current Step 3]
+flowchart TD
+    A[Step 1<br/>Time: X min<br/>Value: Non-Value Add] --> B[Step 2<br/>Time: Y min<br/>Value: Value Add]
+    B --> C[Step 3<br/>Time: Z min<br/>Value: Waste]
+    C --> D[End State]
+    
+    style A fill:#ffcccc
+    style C fill:#ffcccc
+    style B fill:#ccffcc
 \`\`\`
 
-### ✅ Optimized Workflow  
+### Optimized Future State
 \`\`\`mermaid
-graph TD
-    A[Optimized Step 1] --> B[Optimized Step 2]
-    B --> C[Optimized Step 3]
+flowchart TD
+    A[Streamlined Step 1<br/>Time: X min<br/>Value: Value Add] --> B[Enhanced Step 2<br/>Time: Y min<br/>Value: Value Add]
+    B --> C[New Automated Process<br/>Time: Z min<br/>Value: Value Add]
+    C --> D[Improved End State]
+    
+    style A fill:#ccffcc
+    style B fill:#ccffcc
+    style C fill:#ccffcc
 \`\`\`
 
 ---
 
-## 📊 Improvement Analysis
+## 🎯 Improvement Opportunities (Prioritized)
 
-| **Waste Type** | **Current Impact** | **Proposed Solution** | **Time Saved** | **Effort** |
-|---|---|---|---|---|
-| Motion | High | Consolidate tasks | 15 min | Medium |
-| Waiting | Medium | Parallel processing | 10 min | Low |
+### 🔥 High Impact - Quick Win
+**[Specific Improvement Title]**
+- **TIMWOODS Waste**: [Specific waste type]
+- **Time Savings**: XX minutes per cycle
+- **Implementation Effort**: Low (2-4 weeks)
+- **Resources Required**: [Specific resources]
+- **Success Metrics**: [Measurable outcomes]
 
----
-
-## 🎯 Action Plan
-
-### Phase 1: Quick Wins (0-2 weeks)
-- [ ] Action item 1
-- [ ] Action item 2
-
-### Phase 2: Process Improvements (2-8 weeks)  
-- [ ] Action item 3
-- [ ] Action item 4
-
-### Phase 3: System Changes (8-16 weeks)
-- [ ] Action item 5  
-- [ ] Action item 6
+### 📈 Medium Impact - Strategic
+**[Specific Improvement Title]**
+- **TIMWOODS Waste**: [Specific waste type]
+- **Time Savings**: XX minutes per cycle
+- **Implementation Effort**: Medium (4-8 weeks)
+- **Resources Required**: [Specific resources]
+- **Success Metrics**: [Measurable outcomes]
 
 ---
 
-## 📈 Success Metrics
+## 📅 Implementation Roadmap
 
-- **Cycle Time**: Reduce from X to Y minutes
-- **Wait Time**: Reduce from X to Y minutes  
-- **Defect Rate**: Reduce from X% to Y%
-- **Staff Satisfaction**: Increase from X to Y (1-10 scale)
+### Phase 1: Foundation (Weeks 1-2)
+- [ ] **Week 1**: [Specific action with owner]
+- [ ] **Week 2**: [Specific action with owner]
+- **Milestone**: [Measurable outcome]
+
+### Phase 2: Core Changes (Weeks 3-6)
+- [ ] **Week 3-4**: [Specific action with owner]
+- [ ] **Week 5-6**: [Specific action with owner]
+- **Milestone**: [Measurable outcome]
+
+### Phase 3: Optimization (Weeks 7-8)
+- [ ] **Week 7**: [Specific action with owner]
+- [ ] **Week 8**: [Specific action with owner]
+- **Milestone**: [Final measurable outcome]
 
 ---
 
-## 💡 Coach's Note
-[Professional insight about implementation success factors]`;
+## 📊 Success Metrics & Control Plan
+
+| **Metric** | **Baseline** | **Target** | **Measurement Method** | **Review Frequency** |
+|------------|--------------|------------|----------------------|-------------------|
+| Process Cycle Time | X minutes | Y minutes | Time study | Weekly |
+| Error Rate | X% | Y% | Quality audit | Bi-weekly |
+| Staff Satisfaction | X/10 | Y/10 | Survey | Monthly |
+| Cost per Process | $X | $Y | Financial analysis | Monthly |
+
+---
+
+## ⚠️ Risk Assessment & Mitigation
+
+| **Risk** | **Impact** | **Probability** | **Mitigation Strategy** |
+|----------|------------|-----------------|----------------------|
+| [Specific Risk 1] | High/Med/Low | High/Med/Low | [Specific mitigation] |
+| [Specific Risk 2] | High/Med/Low | High/Med/Low | [Specific mitigation] |
+
+---
+
+## 💡 Master Black Belt Recommendations
+
+**Critical Success Factors:**
+1. [Specific recommendation with rationale]
+2. [Specific recommendation with rationale]
+3. [Specific recommendation with rationale]
+
+**Change Management Notes:**
+[Professional insight about organizational change, training needs, and sustainability]
+
+---
+*Analysis completed using Lean Six Sigma DMAIC methodology with TIMWOODS waste identification framework.*
+
+Ensure all recommendations are healthcare-specific, actionable, and include realistic timeframes and resource requirements.`;
 
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
