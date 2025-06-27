@@ -160,6 +160,31 @@
   .hover\:bg-slate-blue\/90:hover {
     background-color: hsl(215, 25%, 27%, 0.9);
   }
+  
+  /* Mobile-specific utilities */
+  .mobile-container {
+    @apply px-4 mx-auto max-w-sm sm:max-w-none sm:px-6 lg:px-8;
+  }
+  
+  .mobile-text-base {
+    @apply text-sm sm:text-base;
+  }
+  
+  .mobile-text-lg {
+    @apply text-base sm:text-lg;
+  }
+  
+  .mobile-text-xl {
+    @apply text-lg sm:text-xl;
+  }
+  
+  .mobile-padding {
+    @apply p-3 sm:p-4 md:p-6;
+  }
+  
+  .mobile-margin {
+    @apply m-2 sm:m-4 md:m-6;
+  }
 }
 
 /* React Flow Custom Styles */

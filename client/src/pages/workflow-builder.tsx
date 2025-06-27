@@ -16,6 +16,7 @@ import MermaidDiagram from "@/components/workflow/mermaid-diagram";
 import { WorkflowData, AIAnalysis } from "@/lib/workflow-types";
 import { Save, Brain, Undo, Redo, FileDown } from "lucide-react";
 import jsPDF from "jspdf";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 
 interface Workflow {
   id: number;
@@ -33,7 +34,8 @@ export default function WorkflowBuilder() {
   const [, navigate] = useLocation();
   const params = useParams();
   const workflowId = params.id ? parseInt(params.id) : null;
-  
+  const isMobile = useIsMobile();
+
   const [workflowName, setWorkflowName] = useState("Untitled Workflow");
   const [workflowDescription, setWorkflowDescription] = useState("");
   const [workflowData, setWorkflowData] = useState<WorkflowData>({ nodes: [], edges: [] });
@@ -88,11 +90,11 @@ export default function WorkflowBuilder() {
         title: "Workflow Saved",
         description: "Your workflow has been saved successfully.",
       });
-      
+
       if (!workflowId) {
         navigate(`/workflow-builder/${savedWorkflow.id}`);
       }
-      
+
       queryClient.invalidateQueries({ queryKey: ["/api/workflows"] });
     },
     onError: (error) => {
@@ -107,7 +109,7 @@ export default function WorkflowBuilder() {
         }, 500);
         return;
       }
-      
+
       toast({
         title: "Save Failed",
         description: error.message || "Failed to save workflow.",
@@ -167,7 +169,7 @@ export default function WorkflowBuilder() {
         }, 500);
         return;
       }
-      
+
       toast({
         title: "Analysis Failed",
         description: error.message || "Failed to analyze workflow.",
@@ -218,20 +220,20 @@ export default function WorkflowBuilder() {
 
     try {
       const pdf = new jsPDF();
-      
+
       // Add title
       pdf.setFontSize(20);
       pdf.text(workflowName, 20, 30);
-      
+
       // Add workflow info
       pdf.setFontSize(12);
       pdf.text(`Generated on: ${new Date().toLocaleDateString()}`, 20, 50);
       pdf.text(`Number of steps: ${workflowData.nodes.length}`, 20, 60);
-      
+
       // Add workflow steps
       pdf.setFontSize(14);
       pdf.text("Workflow Steps:", 20, 80);
-      
+
       let yPosition = 95;
       workflowData.nodes.forEach((node, index) => {
         if (yPosition > 270) {
@@ -246,13 +248,13 @@ export default function WorkflowBuilder() {
         }
         yPosition += 12;
       });
-      
+
       // Add AI analysis if available
       if (aiAnalysis.improvements && aiAnalysis.improvements.length > 0) {
         pdf.addPage();
         pdf.setFontSize(14);
         pdf.text("AI Analysis - Key Improvements:", 20, 30);
-        
+
         yPosition = 45;
         aiAnalysis.improvements.slice(0, 5).forEach((improvement, index) => {
           if (yPosition > 250) {
@@ -262,7 +264,7 @@ export default function WorkflowBuilder() {
           pdf.setFontSize(12);
           pdf.text(`${index + 1}. ${improvement.title}`, 20, yPosition);
           yPosition += 10;
-          
+
           pdf.setFontSize(10);
           const lines = pdf.splitTextToSize(improvement.description, 170);
           lines.forEach((line: string) => {
@@ -276,10 +278,10 @@ export default function WorkflowBuilder() {
           yPosition += 8;
         });
       }
-      
+
       // Save the PDF
       pdf.save(`${workflowName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_workflow.pdf`);
-      
+
       toast({
         title: "Export Complete",
         description: "PDF has been downloaded successfully.",
@@ -325,7 +327,7 @@ export default function WorkflowBuilder() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="mb-6">
           <h2 className="text-3xl font-montserrat font-bold text-slate-blue mb-2">Workflow Builder</h2>
@@ -369,7 +371,7 @@ export default function WorkflowBuilder() {
                     </Button>
                   </div>
                 </div>
-                
+
                 <div className="h-full">
                   <WorkflowCanvas
                     workflowData={workflowData}
@@ -412,7 +414,7 @@ export default function WorkflowBuilder() {
                     Export PDF
                   </Button>
                 </div>
-                
+
                 <div className="grid lg:grid-cols-2 gap-8">
                   <div>
                     <h4 className="font-semibold text-slate-blue mb-4">Improvement Recommendations</h4>
