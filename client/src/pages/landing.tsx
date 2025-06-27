@@ -44,35 +44,29 @@ export default function Landing() {
         </div>
       </nav>
       {/* Hero Section */}
-      <section className="relative py-12 sm:py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-navy-blue to-primary opacity-95"></div>
-        <div className="relative max-w-6xl mx-auto text-center">
-          <div className="mb-6 sm:mb-8">
-            <div className="inline-flex items-center justify-center w-16 sm:w-20 h-16 sm:h-20 bg-emerald-green/10 rounded-full mb-4 sm:mb-6">
-              <div className="w-10 sm:w-12 h-10 sm:h-12 bg-emerald-green rounded-full flex items-center justify-center">
-                <i className="fas fa-cogs text-primary-foreground text-lg sm:text-xl"></i>
-              </div>
-            </div>
-            <div className="max-w-4xl mx-auto">
-              <h1 className="text-2xl sm:text-4xl md:text-6xl font-montserrat font-bold text-primary-foreground mb-4 sm:mb-6 leading-tight px-2">
-                Transform Your Practice Operations with <span style={{color: 'hsl(158, 58%, 48%)'}}>AI-Powered</span> Workflow Optimization
+      <section className="py-20" style={{background: 'linear-gradient(to bottom right, hsl(215, 25%, 27%), hsl(208, 100%, 43%))'}}>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h1 className="text-4xl lg:text-5xl font-montserrat font-bold leading-tight mb-6 text-primary-foreground">
+                Your Workflow Hub
               </h1>
-              <p className="text-lg sm:text-xl text-primary-foreground/90 mb-6 sm:mb-8 font-open-sans px-2">
+              <p className="text-xl text-primary-foreground/90 mb-8 font-open-sans">
                 Create, Analyze & Improve your clinic operations — no Lean training needed. 
                 AI-powered workflow optimization for healthcare professionals.
               </p>
-              <div className="flex flex-col gap-3 sm:flex-row sm:gap-4 px-2">
+              <div className="flex flex-col sm:flex-row gap-4">
                 <Button 
                   onClick={handleGetStarted}
                   size="lg"
-                  className="bg-emerald-green text-white hover:bg-emerald-green/90 text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 w-full sm:w-auto"
+                  className="bg-emerald-green text-white hover:bg-emerald-green/90 text-lg px-8 py-4"
                 >
                   Start Free Trial
                 </Button>
                 <Button 
                   variant="outline" 
                   size="lg"
-                  className="border-2 text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 w-full sm:w-auto"
+                  className="border-2 text-lg px-8 py-4"
                   style={{
                     borderColor: 'hsl(158, 58%, 48%)',
                     color: 'hsl(158, 58%, 48%)',
@@ -87,27 +81,90 @@ export default function Landing() {
                     e.currentTarget.style.color = 'hsl(158, 58%, 48%)';
                   }}
                 >
-                  <Play className="w-4 sm:w-5 h-4 sm:h-5 mr-2" />
+                  <Play className="w-5 h-5 mr-2" />
                   Watch Demo
                 </Button>
               </div>
+              <div className="mt-8 flex items-center space-x-6 text-sm text-primary-foreground/90">
+                <div className="flex items-center space-x-2">
+                  <CheckCircle className="w-5 h-5" style={{color: 'hsl(158, 58%, 48%)'}} />
+                  <span>No credit card required</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <CheckCircle className="w-5 h-5" style={{color: 'hsl(158, 58%, 48%)'}} />
+                  <span>1 free trial workflow</span>
+                </div>
+              </div>
+            </div>
+            <div className="relative">
+              <Card className="bg-card shadow-2xl">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="font-montserrat font-semibold" style={{color: 'hsl(215, 25%, 27%)'}}>
+                      Patient Check-in Workflow
+                    </h3>
+                    <span className="px-3 py-1 rounded-full text-sm font-medium" style={{
+                      backgroundColor: 'hsl(158, 58%, 48%, 0.1)',
+                      color: 'hsl(158, 58%, 48%)'
+                    }}>
+                      Optimized
+                    </span>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{backgroundColor: 'hsl(158, 58%, 48%)'}}>
+                        <Play className="w-4 h-4 text-primary-foreground" />
+                      </div>
+                      <span className="text-slate-blue text-sm">Patient Arrival</span>
+                    </div>
+                    <div className="ml-4 border-l-2 border pl-6 py-2">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                          <i className="fas fa-clipboard text-primary-foreground text-xs"></i>
+                        </div>
+                        <span className="text-muted-foreground text-sm">Digital Check-in</span>
+                      </div>
+                    </div>
+                    <div className="ml-4 border-l-2 border pl-6 py-2">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-6 h-6 bg-amber-500 rounded-full flex items-center justify-center">
+                          <i className="fas fa-question text-primary-foreground text-xs"></i>
+                        </div>
+                        <span className="text-muted-foreground text-sm">Insurance Verification</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 bg-muted-foreground rounded-full flex items-center justify-center">
+                        <i className="fas fa-stop text-primary-foreground text-xs"></i>
+                      </div>
+                      <span className="text-slate-blue text-sm">Ready for Provider</span>
+                    </div>
+                  </div>
+                  <div className="mt-4 pt-4 border-t border">
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>Time Saved: <strong style={{color: 'hsl(158, 58%, 48%)'}}>12 minutes</strong></span>
+                      <span>Efficiency: <strong style={{color: 'hsl(158, 58%, 48%)'}}>+34%</strong></span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>
       </section>
-
       {/* Features Section */}
-      <section className="py-12 sm:py-16 bg-card">
+      <section className="py-16 bg-card">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8 sm:mb-12">
-            <h2 className="text-2xl sm:text-3xl font-montserrat font-bold mb-2 sm:mb-4" style={{color: 'hsl(215, 25%, 27%)'}}>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-montserrat font-bold mb-4" style={{color: 'hsl(215, 25%, 27%)'}}>
               Why Practice Managers Choose Our Tool
             </h2>
-            <p className="text-lg sm:text-xl" style={{color: 'hsl(210, 14%, 53%)'}}>
+            <p className="text-xl" style={{color: 'hsl(210, 14%, 53%)'}}>
               Professional workflow optimization without the complexity
             </p>
           </div>
-          <div className="grid gap-6 md:grid-cols-3 md:gap-8">
+
+          <div className="grid md:grid-cols-3 gap-8">
             <Card>
               <CardContent className="p-6 text-center">
                 <div className="relative w-16 h-16 mx-auto mb-4">

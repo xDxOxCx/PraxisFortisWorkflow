@@ -44,7 +44,7 @@ export default function Navbar() {
             Workflow Optimization Tool
           </h1>
         </Link>
-
+        
         {/* User menu in top right */}
         <div className="absolute right-6 top-4">
           <DropdownMenu>

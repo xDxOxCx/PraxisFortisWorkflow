@@ -31,7 +31,7 @@ export default function Pricing() {
   return (
     <div className="min-h-screen" style={{backgroundColor: 'hsl(210, 20%, 98%)'}}>
       {isAuthenticated && <Navbar />}
-
+      
       {/* Header */}
       {!isAuthenticated && (
         <nav className="bg-white shadow-sm border-b border">
@@ -68,9 +68,9 @@ export default function Pricing() {
           </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3 md:gap-8 max-w-6xl mx-auto">
+        <div className="grid lg:grid-cols-3 gap-8">
           {/* Free Plan */}
-          <Card className="relative border-2 border-muted">
+          <Card className="border border">
             <CardContent className="p-8">
               <div className="text-center mb-8">
                 <h3 className="text-xl font-montserrat font-bold text-slate-blue mb-2">Free</h3>
@@ -263,7 +263,7 @@ export default function Pricing() {
           <h3 className="text-2xl font-montserrat font-bold text-slate-blue text-center mb-8">
             Feature Comparison
           </h3>
-
+          
           <Card>
             <CardContent className="p-6">
               <div className="overflow-x-auto">
@@ -339,7 +339,7 @@ export default function Pricing() {
           <h3 className="text-2xl font-montserrat font-bold text-slate-blue text-center mb-8">
             Frequently Asked Questions
           </h3>
-
+          
           <div className="grid md:grid-cols-2 gap-8">
             <Card>
               <CardContent className="p-6">
@@ -351,7 +351,7 @@ export default function Pricing() {
                 </p>
               </CardContent>
             </Card>
-
+            
             <Card>
               <CardContent className="p-6">
                 <h4 className="font-montserrat font-semibold text-slate-blue mb-2">
@@ -362,7 +362,7 @@ export default function Pricing() {
                 </p>
               </CardContent>
             </Card>
-
+            
             <Card>
               <CardContent className="p-6">
                 <h4 className="font-montserrat font-semibold text-slate-blue mb-2">
@@ -373,7 +373,7 @@ export default function Pricing() {
                 </p>
               </CardContent>
             </Card>
-
+            
             <Card>
               <CardContent className="p-6">
                 <h4 className="font-montserrat font-semibold text-slate-blue mb-2">

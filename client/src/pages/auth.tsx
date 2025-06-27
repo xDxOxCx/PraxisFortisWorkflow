@@ -112,13 +112,22 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
-      <div className="max-w-md w-full mx-auto">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-[hsl(220,50%,30%)] mb-2">
+            Workflow Optimizer
+          </h1>
+          <p className="text-[hsl(210,10%,55%)]">
+            Streamline your healthcare workflows with AI
+          </p>
+        </div>
+
         <Card className="shadow-xl border-0">
-          <CardHeader className="text-center px-4 sm:px-6">
-            <CardTitle className="text-lg sm:text-xl text-[hsl(220,50%,30%)]">
+          <CardHeader className="text-center">
+            <CardTitle className="text-xl text-[hsl(220,50%,30%)]">
               Get Started
             </CardTitle>
-            <CardDescription className="text-sm sm:text-base">
+            <CardDescription>
               Create an account or sign in to begin optimizing your workflows
             </CardDescription>
           </CardHeader>
@@ -181,7 +190,7 @@ export default function Auth() {
                       required
                     />
                   </div>
-
+                  
                   <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
                     <div className="flex items-center gap-2 text-green-700">
                       <CheckCircle className="w-4 h-4" />

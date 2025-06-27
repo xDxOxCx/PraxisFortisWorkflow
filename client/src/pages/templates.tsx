@@ -104,25 +104,31 @@ export default function Templates() {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {filteredTemplates.map((template) => (
-              <Card key={template.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader className="p-4 sm:p-6">
-                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                    <CardTitle className="text-base sm:text-lg text-slate-blue">{template.name}</CardTitle>
-                    <Badge variant="secondary" className="text-xs self-start sm:self-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredTemplates.map((template: Template) => (
+              <Card key={template.id} className="hover:shadow-lg transition-shadow duration-200">
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-lg bg-slate-blue/10 flex items-center justify-center">
+                        <FileText className="w-4 h-4 text-slate-blue" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-lg font-semibold" style={{color: 'hsl(215, 25%, 27%)'}}>
+                          {template.name}
+                        </CardTitle>
+                      </div>
+                    </div>
+                    <Badge variant="secondary" className="text-xs">
                       {template.category}
                     </Badge>
                   </div>
-                  <p className="text-sm">
-                    {template.description}
-                  </p>
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
                     {template.description}
                   </p>
-
+                  
                   {/* Workflow Steps Preview */}
                   {template.flow_data?.steps && (
                     <div className="mb-4">
@@ -149,7 +155,7 @@ export default function Templates() {
                       </div>
                     </div>
                   )}
-
+                  
                   <div className="flex items-center justify-between pt-4 border-t border">
                     <div className="flex items-center gap-4 text-xs text-muted-foreground">
                       <div className="flex items-center gap-1">
