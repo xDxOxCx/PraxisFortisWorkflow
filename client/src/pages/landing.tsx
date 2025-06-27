@@ -93,18 +93,9 @@ export default function Landing() {
               </div>
             </div>
           </div>
+        </div>
       </section>
-      {/* Dashboard Preview */}
-          <div className="mt-12 sm:mt-16 relative px-2 sm:px-0">
-            <div className="bg-gradient-to-r from-emerald-500/20 to-primary/20 backdrop-blur-sm rounded-xl sm:rounded-2xl p-4 sm:p-8 border border-emerald-500/30">
-              <div className="text-center mb-4 sm:mb-6">
-                <h3 className="text-lg sm:text-xl font-montserrat font-semibold text-primary-foreground mb-2">
-                  Live Workflow Dashboard
-                </h3>
-                <p className="text-sm sm:text-base text-primary-foreground/80">
-                  Real-time insights into your practice efficiency
-                </p>
-              </div>
+
       {/* Features Section */}
       <section className="py-12 sm:py-16 bg-card">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">

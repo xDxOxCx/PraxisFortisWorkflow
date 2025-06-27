@@ -511,7 +511,41 @@ export default function WorkflowBuilder() {
             </Card>
           </div>
 
-
+          {/* Right Sidebar - Quick Tips */}
+          <div className="lg:col-span-4 space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold text-slate-blue">
+                  Quick Tips
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 rounded-full bg-emerald-500 mt-2"></div>
+                    <div>
+                      <p className="text-sm font-medium">Start Simple</p>
+                      <p className="text-xs text-muted-foreground">Begin with 3-5 main steps</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 rounded-full bg-emerald-500 mt-2"></div>
+                    <div>
+                      <p className="text-sm font-medium">Be Specific</p>
+                      <p className="text-xs text-muted-foreground">Use clear, actionable language</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 rounded-full bg-emerald-500 mt-2"></div>
+                    <div>
+                      <p className="text-sm font-medium">AI Analysis</p>
+                      <p className="text-xs text-muted-foreground">Get optimization suggestions</p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     </div>
