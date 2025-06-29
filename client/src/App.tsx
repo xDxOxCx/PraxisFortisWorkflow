@@ -8,6 +8,7 @@ import ResetPassword from "./pages/reset-password";
 import NotFound from "./pages/not-found";
 import Landing from "@/pages/landing";
 import Home from "@/pages/home";
+import SimpleHome from "@/pages/simple-home";
 import ConsultingHome from "@/pages/consulting-home";
 import WorkflowBuilder from "@/pages/workflow-builder-working";
 import AnalysisResults from "@/pages/analysis-results-new";
@@ -23,31 +24,41 @@ function Router() {
 
   return (
     <Switch>
-      {/* Always accessible routes */}
-      <Route path="/consulting" component={ConsultingHome} />
+      {/* Simple home page */}
+      <Route path="/" component={SimpleHome} />
+      
+      {/* Workflow optimizer tool */}
       <Route path="/workflow-optimizer" component={Landing} />
+      
+      {/* Other public routes */}
+      <Route path="/consulting" component={ConsultingHome} />
       <Route path="/pricing" component={Pricing} />
       <Route path="/auth/callback" component={AuthCallback} />
       <Route path="/auth" component={Auth} />
       <Route path="/reset-password" component={ResetPassword} />
 
-      {/* Home route - conditional based on auth */}
-      <Route path="/">
-        {() => {
-          if (isLoading) {
-            return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
-          }
-          return isAuthenticated ? <Home /> : <Landing />;
-        }}
+      {/* Protected routes for authenticated users */}
+      <Route path="/dashboard">
+        {() => isAuthenticated ? <Home /> : <Auth />}
       </Route>
-
-      {/* Protected routes - only show if authenticated */}
-      <Route path="/workflow-builder" component={isAuthenticated ? WorkflowBuilder : NotFound} />
-      <Route path="/workflow-builder/:id" component={isAuthenticated ? WorkflowBuilder : NotFound} />
-      <Route path="/analysis-results" component={isAuthenticated ? AnalysisResults : NotFound} />
-      <Route path="/templates" component={isAuthenticated ? Templates : NotFound} />
-      <Route path="/settings" component={isAuthenticated ? Settings : NotFound} />
-      <Route path="/subscribe" component={isAuthenticated ? Subscribe : NotFound} />
+      <Route path="/workflow-builder">
+        {() => isAuthenticated ? <WorkflowBuilder /> : <Auth />}
+      </Route>
+      <Route path="/workflow-builder/:id">
+        {() => isAuthenticated ? <WorkflowBuilder /> : <Auth />}
+      </Route>
+      <Route path="/analysis-results">
+        {() => isAuthenticated ? <AnalysisResults /> : <Auth />}
+      </Route>
+      <Route path="/templates">
+        {() => isAuthenticated ? <Templates /> : <Auth />}
+      </Route>
+      <Route path="/settings">
+        {() => isAuthenticated ? <Settings /> : <Auth />}
+      </Route>
+      <Route path="/subscribe">
+        {() => isAuthenticated ? <Subscribe /> : <Auth />}
+      </Route>
 
       {/* 404 fallback */}
       <Route component={NotFound} />
