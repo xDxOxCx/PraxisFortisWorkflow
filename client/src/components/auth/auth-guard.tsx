@@ -1,35 +1,35 @@
 
-import { useAuth } from "@/hooks/useAuth";
-import { Button } from "@/components/ui/button";
-import { useLocation } from "wouter";
+import React from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { Navigate } from 'wouter';
 
 interface AuthGuardProps {
   children: React.ReactNode;
 }
 
-export default function AuthGuard({ children }: AuthGuardProps) {
-  const { isAuthenticated, isLoading } = useAuth();
-  const [, setLocation] = useLocation();
+export function AuthGuard({ children }: AuthGuardProps) {
+  const { data: user, isLoading, error } = useQuery({
+    queryKey: ['user'],
+    queryFn: async () => {
+      const response = await fetch('/api/auth/user');
+      if (!response.ok) {
+        throw new Error('Not authenticated');
+      }
+      return response.json();
+    },
+    retry: false,
+  });
 
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-navy"></div>
       </div>
     );
   }
 
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Please sign in to continue</h1>
-          <Button onClick={() => setLocation('/landing')}>
-            Go to Sign In
-          </Button>
-        </div>
-      </div>
-    );
+  if (error || !user?.user) {
+    return <Navigate to="/auth" replace />;
   }
 
   return <>{children}</>;

@@ -1,286 +1,309 @@
+
 import type { Express } from "express";
-import { createServer, type Server } from "http";
-import Stripe from "stripe";
-import { storage } from "./storage";
+import { createServer } from "http";
 import { analyzeWorkflow } from "./openai";
-import { setupSimpleAuth, isAuthenticated } from "./simpleAuth";
-import express from "express";
+import { storage } from "./storage";
 
-const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2023-10-16",
-}) : null;
+// Demo authentication data
+const DEMO_USERS = [
+  { 
+    id: 1, 
+    email: "demo@workflow-optimizer.com", 
+    password: "demo123", 
+    firstName: "Demo", 
+    lastName: "User",
+    subscriptionStatus: "free",
+    totalWorkflows: 0,
+    monthlyWorkflows: 0
+  },
+  { 
+    id: 2, 
+    email: "test@healthcare.com", 
+    password: "test123", 
+    firstName: "Test", 
+    lastName: "User",
+    subscriptionStatus: "pro",
+    totalWorkflows: 5,
+    monthlyWorkflows: 2
+  },
+];
 
-export async function registerRoutes(app: Express): Promise<Server> {
-  setupSimpleAuth(app);
+// Sample workflow templates
+const TEMPLATES = [
+  {
+    id: 1,
+    name: "Patient Check-in Process",
+    description: "Streamline patient arrival and registration",
+    category: "Patient Care",
+    difficulty: "Beginner",
+    estimatedTime: "15 minutes",
+    steps: [
+      "Patient arrives at reception",
+      "Verify insurance information",
+      "Update patient demographics",
+      "Collect copayment",
+      "Direct patient to waiting area",
+      "Notify clinical staff of arrival"
+    ]
+  },
+  {
+    id: 2,
+    name: "Prescription Management",
+    description: "Efficient medication ordering and tracking",
+    category: "Clinical",
+    difficulty: "Intermediate",
+    estimatedTime: "20 minutes",
+    steps: [
+      "Review patient medication history",
+      "Check for drug interactions",
+      "Generate prescription",
+      "Send to pharmacy",
+      "Schedule follow-up",
+      "Document in patient record"
+    ]
+  },
+  {
+    id: 3,
+    name: "Lab Results Processing",
+    description: "Handle incoming lab results efficiently",
+    category: "Clinical",
+    difficulty: "Advanced",
+    estimatedTime: "25 minutes",
+    steps: [
+      "Receive lab results electronically",
+      "Review for critical values",
+      "Route to appropriate provider",
+      "Contact patient with results",
+      "Schedule follow-up if needed",
+      "File in patient chart"
+    ]
+  },
+  {
+    id: 4,
+    name: "Appointment Scheduling",
+    description: "Optimize patient appointment booking",
+    category: "Administrative",
+    difficulty: "Beginner",
+    estimatedTime: "10 minutes",
+    steps: [
+      "Check provider availability",
+      "Verify patient insurance",
+      "Book appointment slot",
+      "Send confirmation to patient",
+      "Add to provider schedule",
+      "Set appointment reminders"
+    ]
+  },
+  {
+    id: 5,
+    name: "Billing and Claims Processing",
+    description: "Streamline insurance claims submission",
+    category: "Administrative",
+    difficulty: "Advanced",
+    estimatedTime: "30 minutes",
+    steps: [
+      "Verify service codes",
+      "Check insurance eligibility",
+      "Generate claim form",
+      "Submit to insurance",
+      "Track claim status",
+      "Process payment or denial"
+    ]
+  }
+];
 
-  app.get("/api/health", (_req, res) => {
-    res.json({ status: "ok", timestamp: new Date().toISOString() });
-  });
+// Authentication middleware
+const requireAuth = (req: any, res: any, next: any) => {
+  if (!req.session?.user) {
+    return res.status(401).json({ error: "Not authenticated" });
+  }
+  next();
+};
 
-  app.get('/api/user/stats', isAuthenticated, async (req: any, res) => {
+export async function registerRoutes(app: Express) {
+  const server = createServer(app);
+
+  // Authentication routes
+  app.post("/api/auth/login", async (req, res) => {
     try {
-      const userId = req.user.id;
-      const user = await storage.getUser(userId);
-
+      const { email, password } = req.body;
+      
+      const user = DEMO_USERS.find(u => u.email === email && u.password === password);
       if (!user) {
-        return res.status(404).json({ message: "User not found" });
+        return res.status(401).json({ error: "Invalid credentials" });
       }
 
-      const workflows = await storage.getWorkflows(userId);
-      const totalTimeSaved = workflows.reduce((acc, w) => acc + ((w.aiAnalysis as any)?.summary?.totalTimeSaved || 0), 0);
-      const avgEfficiency = workflows.length > 0 
-        ? workflows.reduce((acc, w) => acc + ((w.aiAnalysis as any)?.summary?.efficiencyGain || 0), 0) / workflows.length 
-        : 0;
-
-      res.json({
-        totalWorkflows: user.totalWorkflows || 0,
-        monthlyWorkflows: user.workflowsUsedThisMonth || 0,
-        timeSaved: totalTimeSaved,
-        efficiency: Math.round(avgEfficiency),
-        subscriptionStatus: user.subscriptionStatus || 'free'
+      req.session.user = user;
+      res.json({ 
+        success: true, 
+        user: user,
+        message: "Logged in successfully" 
       });
     } catch (error) {
-      console.error("Error fetching user stats:", error);
-      res.status(500).json({ message: "Failed to fetch user stats" });
+      console.error("Login error:", error);
+      res.status(500).json({ error: "Login failed" });
     }
   });
 
-  app.get('/api/workflows', isAuthenticated, async (req: any, res) => {
+  app.post("/api/auth/signup", async (req, res) => {
     try {
-      const userId = req.user.id;
-      const workflows = await storage.getWorkflows(userId);
+      const { email, password, firstName, lastName } = req.body;
+      
+      // Check if user already exists
+      const existingUser = DEMO_USERS.find(u => u.email === email);
+      if (existingUser) {
+        return res.status(400).json({ error: "User already exists" });
+      }
+
+      // Create new user
+      const newUser = {
+        id: DEMO_USERS.length + 1,
+        email,
+        password,
+        firstName,
+        lastName,
+        subscriptionStatus: "free" as const,
+        totalWorkflows: 0,
+        monthlyWorkflows: 0
+      };
+
+      DEMO_USERS.push(newUser);
+      req.session.user = newUser;
+
+      res.json({ 
+        success: true, 
+        user: newUser,
+        message: "Account created successfully" 
+      });
+    } catch (error) {
+      console.error("Signup error:", error);
+      res.status(500).json({ error: "Signup failed" });
+    }
+  });
+
+  app.post("/api/auth/logout", (req, res) => {
+    req.session.destroy((err) => {
+      if (err) {
+        console.error("Logout error:", err);
+        return res.status(500).json({ error: "Logout failed" });
+      }
+      res.json({ success: true, message: "Logged out successfully" });
+    });
+  });
+
+  app.get("/api/auth/user", requireAuth, (req, res) => {
+    res.json({ user: req.session.user });
+  });
+
+  // Workflow routes
+  app.get("/api/workflows", requireAuth, async (req, res) => {
+    try {
+      const userId = req.session.user.id;
+      const workflows = await storage.getUserWorkflows(userId.toString());
       res.json(workflows);
     } catch (error) {
       console.error("Error fetching workflows:", error);
-      res.status(500).json({ message: "Failed to fetch workflows" });
+      res.status(500).json({ error: "Failed to fetch workflows" });
     }
   });
 
-  app.post('/api/workflows', isAuthenticated, async (req: any, res) => {
+  app.post("/api/workflows", requireAuth, async (req, res) => {
     try {
-      const userId = req.user.id;
-      const user = await storage.getUser(userId);
+      const userId = req.session.user.id;
+      const { name, description, steps } = req.body;
 
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-
-      if (user.subscriptionStatus === 'free' && user.totalWorkflows >= 1) {
+      // Check workflow limits for free users
+      if (req.session.user.subscriptionStatus === 'free' && req.session.user.totalWorkflows >= 1) {
         return res.status(403).json({ 
-          message: "Free trial limit reached. Please upgrade to create more workflows.",
-          code: "TRIAL_LIMIT_REACHED"
+          error: "Free trial limit reached. Please upgrade to create more workflows." 
         });
       }
 
       const workflow = await storage.createWorkflow({
-        userId,
-        name: req.body.name,
-        description: req.body.description || '',
-        flowData: req.body.flowData,
-        status: 'draft'
+        userId: userId.toString(),
+        name,
+        description,
+        steps,
+        flowData: { nodes: [], edges: [] }
       });
 
-      await storage.incrementWorkflowUsage(userId);
+      // Update user's workflow count
+      req.session.user.totalWorkflows += 1;
+      req.session.user.monthlyWorkflows += 1;
+
       res.json(workflow);
     } catch (error) {
       console.error("Error creating workflow:", error);
-      res.status(500).json({ message: "Failed to create workflow" });
+      res.status(500).json({ error: "Failed to create workflow" });
     }
   });
 
-  app.get('/api/workflows/:id', isAuthenticated, async (req: any, res) => {
+  app.put("/api/workflows/:id", requireAuth, async (req, res) => {
     try {
-      const userId = req.user.id;
-      const workflowId = parseInt(req.params.id);
-      const workflow = await storage.getWorkflow(workflowId, userId);
-
-      if (!workflow) {
-        return res.status(404).json({ message: "Workflow not found" });
-      }
-
-      res.json(workflow);
-    } catch (error) {
-      console.error("Error fetching workflow:", error);
-      res.status(500).json({ message: "Failed to fetch workflow" });
-    }
-  });
-
-  app.patch('/api/workflows/:id', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.id;
-      const workflowId = parseInt(req.params.id);
-
-      const workflow = await storage.updateWorkflow({
-        id: workflowId,
-        userId,
-        ...req.body
-      });
-
+      const workflowId = req.params.id;
+      const updates = req.body;
+      
+      const workflow = await storage.updateWorkflow(workflowId, updates);
       res.json(workflow);
     } catch (error) {
       console.error("Error updating workflow:", error);
-      res.status(500).json({ message: "Failed to update workflow" });
+      res.status(500).json({ error: "Failed to update workflow" });
     }
   });
 
-  app.delete('/api/workflows/:id', isAuthenticated, async (req: any, res) => {
+  app.delete("/api/workflows/:id", requireAuth, async (req, res) => {
     try {
-      const userId = req.user.id;
-      const workflowId = parseInt(req.params.id);
-
-      await storage.deleteWorkflow(workflowId, userId);
-      res.json({ message: "Workflow deleted successfully" });
+      const workflowId = req.params.id;
+      await storage.deleteWorkflow(workflowId);
+      res.json({ success: true });
     } catch (error) {
       console.error("Error deleting workflow:", error);
-      res.status(500).json({ message: "Failed to delete workflow" });
+      res.status(500).json({ error: "Failed to delete workflow" });
     }
   });
 
-  // NEW SIMPLE ANALYSIS ENDPOINT
-  app.post('/api/analyze-workflow', async (req: any, res) => {
+  // Template routes
+  app.get("/api/templates", (req, res) => {
+    res.json(TEMPLATES);
+  });
+
+  app.get("/api/templates/:id", (req, res) => {
+    const template = TEMPLATES.find(t => t.id === parseInt(req.params.id));
+    if (!template) {
+      return res.status(404).json({ error: "Template not found" });
+    }
+    res.json(template);
+  });
+
+  // AI Analysis route
+  app.post("/api/analyze-workflow", requireAuth, async (req, res) => {
     try {
-      console.log("Analysis endpoint called by user:", req.user?.id);
-      console.log("Request headers:", req.headers);
-      console.log("Request body:", req.body);
-
-      const { name, workflowName, steps } = req.body;
-      const actualWorkflowName = workflowName || name;
-
-      if (!actualWorkflowName || !steps || !Array.isArray(steps)) {
-        return res.status(400).json({ message: "Missing workflow name or steps" });
+      const { workflowName, steps } = req.body;
+      
+      if (!workflowName || !steps || !Array.isArray(steps)) {
+        return res.status(400).json({ error: "Invalid workflow data" });
       }
 
-      const analysis = await analyzeWorkflow(steps, actualWorkflowName);
-
-      console.log("Sending analysis response");
-      res.json(analysis);
+      console.log("Analyzing workflow:", workflowName, "with", steps.length, "steps");
+      
+      const analysis = await analyzeWorkflow(steps, workflowName);
+      res.json({ analysis });
     } catch (error) {
-      console.error("Analysis error:", error);
-      res.status(500).json({ message: "Analysis failed: " + (error as Error).message });
+      console.error("Error analyzing workflow:", error);
+      res.status(500).json({ error: "Failed to analyze workflow" });
     }
   });
 
-  // Templates endpoints
-  app.get('/api/templates', async (_req, res) => {
-    try {
-      const templates = await storage.getTemplates();
-      res.json(templates);
-    } catch (error) {
-      console.error("Error fetching templates:", error);
-      res.status(500).json({ message: "Failed to fetch templates" });
-    }
-  });
-
-  app.get('/api/templates/:id', async (req, res) => {
-    try {
-      const templateId = parseInt(req.params.id);
-      const template = await storage.getTemplate(templateId);
-
-      if (!template) {
-        return res.status(404).json({ message: "Template not found" });
-      }
-
-      res.json(template);
-    } catch (error) {
-      console.error("Error fetching template:", error);
-      res.status(500).json({ message: "Failed to fetch template" });
-    }
-  });
-
-  // Stripe webhook for subscription updates
-  if (stripe) {
-    app.post('/api/webhooks/stripe', express.raw({ type: 'application/json' }), async (req, res) => {
-      const sig = req.headers['stripe-signature'] as string;
-      let event;
-
-      try {
-        event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET!);
-      } catch (err: any) {
-        console.error('Webhook signature verification failed:', err.message);
-        return res.status(400).send(`Webhook Error: ${err.message}`);
-      }
-
-      try {
-        switch (event.type) {
-          case 'customer.subscription.created':
-          case 'customer.subscription.updated':
-            const subscription = event.data.object as Stripe.Subscription;
-            const customer = await stripe.customers.retrieve(subscription.customer as string) as Stripe.Customer;
-
-            if (customer.email) {
-              const user = await storage.getUserByEmail(customer.email);
-              if (user) {
-                await storage.updateUserStripeInfo(user.id, customer.id, subscription.id);
-                await storage.updateSubscriptionStatus(user.id, subscription.status);
-              }
-            }
-            break;
-
-          case 'customer.subscription.deleted':
-            const deletedSub = event.data.object as Stripe.Subscription;
-            const deletedCustomer = await stripe.customers.retrieve(deletedSub.customer as string) as Stripe.Customer;
-
-            if (deletedCustomer.email) {
-              const user = await storage.getUserByEmail(deletedCustomer.email);
-              if (user) {
-                await storage.updateSubscriptionStatus(user.id, 'canceled');
-              }
-            }
-            break;
-
-          default:
-            console.log(`Unhandled event type: ${event.type}`);
-        }
-
-        res.json({ received: true });
-      } catch (error) {
-        console.error('Error processing webhook:', error);
-        res.status(500).json({ error: 'Webhook processing failed' });
-      }
+  // Statistics route
+  app.get("/api/stats", requireAuth, (req, res) => {
+    const user = req.session.user;
+    res.json({
+      totalWorkflows: user.totalWorkflows || 0,
+      monthlyWorkflows: user.monthlyWorkflows || 0,
+      subscriptionStatus: user.subscriptionStatus || 'free',
+      trialWorkflowsRemaining: user.subscriptionStatus === 'free' ? Math.max(0, 1 - (user.totalWorkflows || 0)) : null
     });
+  });
 
-    // Create Stripe checkout session
-    app.post('/api/create-checkout-session', isAuthenticated, async (req: any, res) => {
-      try {
-        const userId = req.user.id;
-        const user = await storage.getUser(userId);
-
-        if (!user) {
-          return res.status(404).json({ message: "User not found" });
-        }
-
-        const { planType } = req.body;
-        const priceId = planType === 'starter' ? process.env.STRIPE_STARTER_PRICE_ID : process.env.STRIPE_PRO_PRICE_ID;
-
-        if (!priceId) {
-          return res.status(400).json({ message: "Invalid plan type" });
-        }
-
-        const session = await stripe.checkout.sessions.create({
-          customer_email: user.email || undefined,
-          payment_method_types: ['card'],
-          line_items: [
-            {
-              price: priceId,
-              quantity: 1,
-            },
-          ],
-          mode: 'subscription',
-          success_url: `${req.headers.origin}/settings?success=true`,
-          cancel_url: `${req.headers.origin}/subscribe?canceled=true`,
-          metadata: {
-            userId: user.id,
-          },
-        });
-
-        res.json({ url: session.url });
-      } catch (error) {
-        console.error('Error creating checkout session:', error);
-        res.status(500).json({ message: "Failed to create checkout session" });
-      }
-    });
-  }
-
-  const httpServer = createServer(app);
-  return httpServer;
+  return server;
 }

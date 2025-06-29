@@ -1,227 +1,107 @@
+// Simple in-memory storage for demo purposes
+// In production, this would connect to a real database
 
-import {
-  users,
-  workflows,
-  templates,
-  type User,
-  type UpsertUser,
-  type Workflow,
-  type InsertWorkflow,
-  type UpdateWorkflow,
-  type Template,
-  type InsertTemplate,
-} from "@shared/schema";
-import { db } from "./db";
-import { eq, sql } from "drizzle-orm";
-
-export interface IStorage {
-  // User operations
-  getUser(id: number): Promise<User | undefined>;
-  getUserByEmail(email: string): Promise<User | undefined>;
-  createUser(email: string, passwordHash: string): Promise<User>;
-  updateUserStripeInfo(userId: number, stripeCustomerId: string, stripeSubscriptionId: string): Promise<User>;
-  updateSubscriptionStatus(userId: number, status: string): Promise<User>;
-  incrementWorkflowUsage(userId: number): Promise<User>;
-  resetMonthlyWorkflows(userId: number): Promise<User>;
-
-  // Workflow operations
-  getWorkflows(userId: string): Promise<Workflow[]>;
-  getWorkflow(id: number, userId: string): Promise<Workflow | undefined>;
-  createWorkflow(workflow: InsertWorkflow): Promise<Workflow>;
-  updateWorkflow(workflow: UpdateWorkflow): Promise<Workflow>;
-  deleteWorkflow(id: number, userId: string): Promise<void>;
-
-  // Template operations
-  getTemplates(): Promise<Template[]>;
-  getTemplate(id: number): Promise<Template | undefined>;
-  createTemplate(template: InsertTemplate): Promise<Template>;
+interface User {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  subscriptionStatus: 'free' | 'starter' | 'pro';
+  totalWorkflows: number;
+  monthlyWorkflows: number;
 }
 
-export class DatabaseStorage implements IStorage {
-  async getUser(id: number): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.id, id));
-    return user || undefined;
+interface Workflow {
+  id: string;
+  userId: string;
+  name: string;
+  description?: string;
+  steps: string[];
+  flowData?: any;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+class Storage {
+  private users: Map<string, User> = new Map();
+  private workflows: Map<string, Workflow> = new Map();
+
+  async getUser(userId: string): Promise<User | null> {
+    return this.users.get(userId) || null;
   }
 
-  async getUserByEmail(email: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.email, email));
-    return user || undefined;
+  async upsertUser(userData: Omit<User, 'id'> & { id?: string }): Promise<User> {
+    const userId = userData.id || Math.random().toString(36).substr(2, 9);
+    const user: User = {
+      id: userId,
+      email: userData.email,
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      subscriptionStatus: userData.subscriptionStatus,
+      totalWorkflows: userData.totalWorkflows,
+      monthlyWorkflows: userData.monthlyWorkflows,
+    };
+
+    this.users.set(userId, user);
+    return user;
   }
 
-  async upsertUser(userData: UpsertUser): Promise<User> {
-    console.log('Upserting user:', userData.id, userData.email);
-
-    try {
-      // First check if user exists by Supabase ID
-      const existingUserById = await this.getUser(userData.id);
-      
-      if (existingUserById) {
-        // Update existing user by ID
-        const [user] = await db
-          .update(users)
-          .set({
-            email: userData.email,
-            firstName: userData.firstName || existingUserById.firstName,
-            lastName: userData.lastName || existingUserById.lastName,
-            updatedAt: new Date(),
-          })
-          .where(eq(users.id, userData.id))
-          .returning();
-        
-        console.log('Updated existing user by ID:', user.id);
-        return user;
+  async getUserWorkflows(userId: string): Promise<Workflow[]> {
+    const userWorkflows: Workflow[] = [];
+    for (const workflow of this.workflows.values()) {
+      if (workflow.userId === userId) {
+        userWorkflows.push(workflow);
       }
-
-      // Check if user exists by email (legacy user)
-      const existingUserByEmail = await this.getUserByEmail(userData.email);
-      
-      if (existingUserByEmail) {
-        // Update existing user's ID to match Supabase ID
-        const [user] = await db
-          .update(users)
-          .set({
-            id: userData.id, // Update to use Supabase ID
-            firstName: userData.firstName || existingUserByEmail.firstName,
-            lastName: userData.lastName || existingUserByEmail.lastName,
-            updatedAt: new Date(),
-          })
-          .where(eq(users.email, userData.email))
-          .returning();
-        
-        console.log('Updated existing user by email to use Supabase ID:', user.id);
-        return user;
-      }
-
-      // Create new user
-      const [user] = await db
-        .insert(users)
-        .values({
-          id: userData.id,
-          email: userData.email,
-          firstName: userData.firstName || null,
-          lastName: userData.lastName || null,
-          subscriptionStatus: userData.subscriptionStatus || 'free',
-          workflowsUsedThisMonth: userData.workflowsUsedThisMonth || 0,
-          totalWorkflows: userData.totalWorkflows || 0,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        })
-        .returning();
-      
-      console.log('Created new user:', user.id);
-      return user;
-    } catch (error: any) {
-      console.error('Upsert user error:', error);
-      throw new Error(`Failed to upsert user: ${error.message}`);
     }
+    return userWorkflows.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   }
 
-  async updateUserStripeInfo(userId: string, stripeCustomerId: string, stripeSubscriptionId: string): Promise<User> {
-    const [user] = await db
-      .update(users)
-      .set({
-        stripeCustomerId,
-        stripeSubscriptionId,
-        updatedAt: new Date(),
-      })
-      .where(eq(users.id, userId))
-      .returning();
-    return user;
+  async createWorkflow(data: {
+    userId: string;
+    name: string;
+    description?: string;
+    steps: string[];
+    flowData?: any;
+  }): Promise<Workflow> {
+    const id = Math.random().toString(36).substr(2, 9);
+    const workflow: Workflow = {
+      id,
+      userId: data.userId,
+      name: data.name,
+      description: data.description,
+      steps: data.steps,
+      flowData: data.flowData,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    this.workflows.set(id, workflow);
+    return workflow;
   }
 
-  async updateSubscriptionStatus(userId: string, status: string): Promise<User> {
-    const [user] = await db
-      .update(users)
-      .set({
-        subscriptionStatus: status,
-        updatedAt: new Date(),
-      })
-      .where(eq(users.id, userId))
-      .returning();
-    return user;
-  }
+  async updateWorkflow(workflowId: string, updates: Partial<Workflow>): Promise<Workflow | null> {
+    const workflow = this.workflows.get(workflowId);
+    if (!workflow) {
+      return null;
+    }
 
-  async incrementWorkflowUsage(userId: string): Promise<User> {
-    const [user] = await db
-      .update(users)
-      .set({
-        workflowsUsedThisMonth: sql`${users.workflowsUsedThisMonth} + 1`,
-        totalWorkflows: sql`${users.totalWorkflows} + 1`,
-        updatedAt: new Date(),
-      })
-      .where(eq(users.id, userId))
-      .returning();
-    return user;
-  }
+    const updatedWorkflow = {
+      ...workflow,
+      ...updates,
+      updatedAt: new Date(),
+    };
 
-  async resetMonthlyWorkflows(userId: string): Promise<User> {
-    const [user] = await db
-      .update(users)
-      .set({
-        workflowsUsedThisMonth: 0,
-        lastWorkflowReset: new Date(),
-        updatedAt: new Date(),
-      })
-      .where(eq(users.id, userId))
-      .returning();
-    return user;
-  }
-
-  async getWorkflows(userId: string): Promise<Workflow[]> {
-    return await db.select().from(workflows).where(eq(workflows.userId, userId));
-  }
-
-  async getWorkflow(id: number, userId: string): Promise<Workflow | undefined> {
-    const [workflow] = await db
-      .select()
-      .from(workflows)
-      .where(eq(workflows.id, id) && eq(workflows.userId, userId));
-    return workflow || undefined;
-  }
-
-  async createWorkflow(workflow: InsertWorkflow): Promise<Workflow> {
-    const [newWorkflow] = await db
-      .insert(workflows)
-      .values(workflow)
-      .returning();
-    return newWorkflow;
-  }
-
-  async updateWorkflow(workflow: UpdateWorkflow): Promise<Workflow> {
-    const { id, ...updateData } = workflow;
-    const [updatedWorkflow] = await db
-      .update(workflows)
-      .set({
-        ...updateData,
-        updatedAt: new Date(),
-      })
-      .where(eq(workflows.id, id))
-      .returning();
+    this.workflows.set(workflowId, updatedWorkflow);
     return updatedWorkflow;
   }
 
-  async deleteWorkflow(id: number, userId: string): Promise<void> {
-    await db
-      .delete(workflows)
-      .where(eq(workflows.id, id) && eq(workflows.userId, userId));
+  async deleteWorkflow(workflowId: string): Promise<boolean> {
+    return this.workflows.delete(workflowId);
   }
 
-  async getTemplates(): Promise<Template[]> {
-    return await db.select().from(templates).where(eq(templates.isPublic, true));
-  }
-
-  async getTemplate(id: number): Promise<Template | undefined> {
-    const [template] = await db.select().from(templates).where(eq(templates.id, id));
-    return template || undefined;
-  }
-
-  async createTemplate(template: InsertTemplate): Promise<Template> {
-    const [newTemplate] = await db
-      .insert(templates)
-      .values(template)
-      .returning();
-    return newTemplate;
+  async getWorkflow(workflowId: string): Promise<Workflow | null> {
+    return this.workflows.get(workflowId) || null;
   }
 }
 
-export const storage = new DatabaseStorage();
+export const storage = new Storage();

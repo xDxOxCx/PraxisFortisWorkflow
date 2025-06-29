@@ -1,459 +1,288 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { CheckCircle, Brain, BarChart3, Users, ArrowRight, Star, Play } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
-import Navbar from "@/components/layout/navbar";
-import { Link } from "wouter";
+import React from 'react';
+import { Link } from 'wouter';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { CheckCircle, Workflow, TrendingUp, Users, Clock, Shield } from 'lucide-react';
 
 export default function Landing() {
-  const { isAuthenticated } = useAuth();
-
-  const handleGetStarted = () => {
-    if (isAuthenticated) {
-      // Redirect to dashboard if already authenticated
-      window.location.href = "/";
-    } else {
-      // Redirect to auth page
-      window.location.href = "/auth";
-    }
-  };
-
   return (
-    <div className="min-h-screen" style={{backgroundColor: 'hsl(210, 20%, 98%)'}}>
+    <div className="min-h-screen bg-pearl-white">
       {/* Navigation */}
-      <nav className="bg-white shadow-sm border-b border">
+      <nav className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <h1 className="text-xl font-montserrat font-bold" style={{color: 'hsl(215, 25%, 27%)'}}>
-                Workflow Optimization Tool
-              </h1>
+            <div className="flex items-center space-x-2">
+              <Workflow className="h-8 w-8 text-navy" />
+              <span className="text-xl font-bold text-navy">Workflow Optimizer</span>
             </div>
             <div className="flex items-center space-x-4">
-              <a href="#pricing" className="px-3 py-2 text-sm font-medium hover:text-emerald-green" style={{color: 'hsl(210, 14%, 53%)'}}>
-                Pricing
-              </a>
-              <Button 
-                onClick={handleGetStarted}
-                className="bg-emerald-green text-white hover:bg-emerald-green/90"
-              >
-                Sign In
-              </Button>
+              <Link href="/pricing">
+                <Button variant="ghost" className="text-navy">Pricing</Button>
+              </Link>
+              <Link href="/auth">
+                <Button className="bg-navy hover:bg-navy/90">Get Started</Button>
+              </Link>
             </div>
           </div>
         </div>
       </nav>
+
       {/* Hero Section */}
-      <section className="py-20" style={{background: 'linear-gradient(to bottom right, hsl(215, 25%, 27%), hsl(208, 100%, 43%))'}}>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h1 className="text-4xl lg:text-5xl font-montserrat font-bold leading-tight mb-6 text-primary-foreground">
-                Your Workflow Hub
-              </h1>
-              <p className="text-xl text-primary-foreground/90 mb-8 font-open-sans">
-                Create, Analyze & Improve your clinic operations — no Lean training needed. 
-                AI-powered workflow optimization for healthcare professionals.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button 
-                  onClick={handleGetStarted}
-                  size="lg"
-                  className="bg-emerald-green text-white hover:bg-emerald-green/90 text-lg px-8 py-4"
-                >
-                  Start Free Trial
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="lg"
-                  className="border-2 text-lg px-8 py-4"
-                  style={{
-                    borderColor: 'hsl(158, 58%, 48%)',
-                    color: 'hsl(158, 58%, 48%)',
-                    backgroundColor: 'transparent'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = 'hsl(158, 58%, 48%)';
-                    e.currentTarget.style.color = 'white';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'transparent';
-                    e.currentTarget.style.color = 'hsl(158, 58%, 48%)';
-                  }}
-                >
-                  <Play className="w-5 h-5 mr-2" />
-                  Watch Demo
-                </Button>
-              </div>
-              <div className="mt-8 flex items-center space-x-6 text-sm text-primary-foreground/90">
-                <div className="flex items-center space-x-2">
-                  <CheckCircle className="w-5 h-5" style={{color: 'hsl(158, 58%, 48%)'}} />
-                  <span>No credit card required</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <CheckCircle className="w-5 h-5" style={{color: 'hsl(158, 58%, 48%)'}} />
-                  <span>1 free trial workflow</span>
-                </div>
-              </div>
-            </div>
-            <div className="relative">
-              <Card className="bg-card shadow-2xl">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-montserrat font-semibold" style={{color: 'hsl(215, 25%, 27%)'}}>
-                      Patient Check-in Workflow
-                    </h3>
-                    <span className="px-3 py-1 rounded-full text-sm font-medium" style={{
-                      backgroundColor: 'hsl(158, 58%, 48%, 0.1)',
-                      color: 'hsl(158, 58%, 48%)'
-                    }}>
-                      Optimized
-                    </span>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{backgroundColor: 'hsl(158, 58%, 48%)'}}>
-                        <Play className="w-4 h-4 text-primary-foreground" />
-                      </div>
-                      <span className="text-slate-blue text-sm">Patient Arrival</span>
-                    </div>
-                    <div className="ml-4 border-l-2 border pl-6 py-2">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
-                          <i className="fas fa-clipboard text-primary-foreground text-xs"></i>
-                        </div>
-                        <span className="text-muted-foreground text-sm">Digital Check-in</span>
-                      </div>
-                    </div>
-                    <div className="ml-4 border-l-2 border pl-6 py-2">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-6 h-6 bg-amber-500 rounded-full flex items-center justify-center">
-                          <i className="fas fa-question text-primary-foreground text-xs"></i>
-                        </div>
-                        <span className="text-muted-foreground text-sm">Insurance Verification</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 bg-muted-foreground rounded-full flex items-center justify-center">
-                        <i className="fas fa-stop text-primary-foreground text-xs"></i>
-                      </div>
-                      <span className="text-slate-blue text-sm">Ready for Provider</span>
-                    </div>
-                  </div>
-                  <div className="mt-4 pt-4 border-t border">
-                    <div className="flex justify-between text-xs text-muted-foreground">
-                      <span>Time Saved: <strong style={{color: 'hsl(158, 58%, 48%)'}}>12 minutes</strong></span>
-                      <span>Efficiency: <strong style={{color: 'hsl(158, 58%, 48%)'}}>+34%</strong></span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+      <section className="py-20 px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          <h1 className="text-5xl font-bold text-navy mb-6">
+            Optimize Your Healthcare Workflows with AI
+          </h1>
+          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+            Streamline your medical practice operations, reduce inefficiencies, and improve patient experience with intelligent workflow analysis.
+          </p>
+          <div className="flex justify-center space-x-4">
+            <Link href="/auth">
+              <Button size="lg" className="bg-navy hover:bg-navy/90">
+                Start Free Trial
+              </Button>
+            </Link>
+            <Link href="/pricing">
+              <Button size="lg" variant="outline" className="border-navy text-navy">
+                View Pricing
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
+
       {/* Features Section */}
-      <section className="py-16 bg-card">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-montserrat font-bold mb-4" style={{color: 'hsl(215, 25%, 27%)'}}>
-              Why Practice Managers Choose Our Tool
+      <section className="py-20 px-4 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-navy mb-4">
+              Everything You Need to Optimize Your Practice
             </h2>
-            <p className="text-xl" style={{color: 'hsl(210, 14%, 53%)'}}>
-              Professional workflow optimization without the complexity
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Our comprehensive platform helps healthcare professionals identify bottlenecks, reduce waste, and implement proven improvement methodologies.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            <Card>
-              <CardContent className="p-6 text-center">
-                <div className="relative w-16 h-16 mx-auto mb-4">
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-lg"></div>
-                  <div className="absolute inset-1 rounded-xl bg-card flex items-center justify-center">
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center">
-                      <i className="fas fa-brain text-primary-foreground text-sm"></i>
-                    </div>
-                  </div>
-                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-200 rounded-full animate-pulse"></div>
-                </div>
-                <h3 className="text-lg font-montserrat font-semibold text-slate-blue mb-2">
-                  AI-Powered Analysis
-                </h3>
-                <p className="text-muted-foreground">
-                  Get instant insights and improvement recommendations using advanced AI trained on healthcare workflows.
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <Card className="shadow-sleek">
+              <CardHeader>
+                <TrendingUp className="h-12 w-12 text-emerald mb-4" />
+                <CardTitle className="text-navy">AI-Powered Analysis</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">
+                  Get intelligent insights into your workflows with advanced AI analysis that identifies inefficiencies and suggests improvements.
                 </p>
               </CardContent>
             </Card>
 
-            <Card>
-              <CardContent className="p-6 text-center">
-                <div className="relative w-16 h-16 mx-auto mb-4">
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-400 to-blue-600 shadow-lg"></div>
-                  <div className="absolute inset-1 rounded-xl bg-card flex items-center justify-center">
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
-                      <i className="fas fa-mouse-pointer text-primary-foreground text-sm"></i>
-                    </div>
-                  </div>
-                  <div className="absolute -bottom-1 -left-1 w-3 h-3 bg-blue-200 rounded-full"></div>
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-300 rounded-full"></div>
-                </div>
-                <h3 className="text-lg font-montserrat font-semibold text-slate-blue mb-2">
-                  Drag & Drop Builder
-                </h3>
-                <p className="text-muted-foreground">
-                  Create professional workflow diagrams in minutes with our intuitive drag-and-drop interface.
+            <Card className="shadow-sleek">
+              <CardHeader>
+                <Users className="h-12 w-12 text-emerald mb-4" />
+                <CardTitle className="text-navy">Visual Workflow Builder</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">
+                  Create and visualize your workflows with our intuitive drag-and-drop interface designed specifically for healthcare processes.
                 </p>
               </CardContent>
             </Card>
 
-            <Card>
-              <CardContent className="p-6 text-center">
-                <div className="relative w-16 h-16 mx-auto mb-4">
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 shadow-lg"></div>
-                  <div className="absolute inset-1 rounded-xl bg-card flex items-center justify-center">
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
-                      <i className="fas fa-chart-line text-primary-foreground text-sm"></i>
-                    </div>
-                  </div>
-                  <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-amber-300 rounded-full"></div>
-                  <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-orange-200 rounded-full animate-bounce" style={{animationDelay: '0.5s'}}></div>
-                </div>
-                <h3 className="text-lg font-montserrat font-semibold text-slate-blue mb-2">
-                  Measurable Results
-                </h3>
-                <p className="text-muted-foreground">
-                  Track time savings and efficiency gains with detailed analytics and professional reports.
+            <Card className="shadow-sleek">
+              <CardHeader>
+                <Clock className="h-12 w-12 text-emerald mb-4" />
+                <CardTitle className="text-navy">Time & Cost Savings</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">
+                  Reduce patient wait times, optimize staff productivity, and cut operational costs with data-driven workflow improvements.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-sleek">
+              <CardHeader>
+                <Shield className="h-12 w-12 text-emerald mb-4" />
+                <CardTitle className="text-navy">Proven Methodologies</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">
+                  Apply Lean Six Sigma principles with guided implementations that are proven to work in healthcare environments.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-sleek">
+              <CardHeader>
+                <CheckCircle className="h-12 w-12 text-emerald mb-4" />
+                <CardTitle className="text-navy">Ready-Made Templates</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">
+                  Start quickly with pre-built workflow templates for common healthcare processes like patient check-in and billing.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-sleek">
+              <CardHeader>
+                <Workflow className="h-12 w-12 text-emerald mb-4" />
+                <CardTitle className="text-navy">PDF Export</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600">
+                  Export your workflow analyses and improvement plans as professional PDF reports to share with your team.
                 </p>
               </CardContent>
             </Card>
           </div>
         </div>
       </section>
+
       {/* Pricing Section */}
-      <section id="pricing" className="py-16" style={{backgroundColor: 'hsl(210, 20%, 98%)'}}>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-montserrat font-bold text-slate-blue mb-4">
-              Simple, Transparent Pricing
-            </h2>
-            <p className="text-xl text-muted-foreground">
-              Choose the plan that works best for your practice
-            </p>
+      <section className="py-20 px-4 bg-pearl-white">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-navy mb-4">Simple, Transparent Pricing</h2>
+            <p className="text-gray-600">Choose the plan that fits your practice size and needs</p>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Free Plan */}
-            <Card className="border border">
-              <CardContent className="p-8">
-                <div className="text-center mb-8">
-                  <h3 className="text-xl font-montserrat font-bold text-slate-blue mb-2">Free</h3>
-                  <div className="text-4xl font-montserrat font-bold text-slate-blue">$0</div>
-                  <p className="text-muted-foreground">per month</p>
+            <Card className="shadow-sleek">
+              <CardHeader className="text-center">
+                <CardTitle className="text-2xl text-navy">Free</CardTitle>
+                <div className="text-4xl font-bold text-navy">$0</div>
+                <CardDescription>Perfect for trying out the platform</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <div className="flex items-center">
+                    <CheckCircle className="h-5 w-5 text-emerald mr-2" />
+                    <span>1 free trial workflow</span>
+                  </div>
+                  <div className="flex items-center">
+                    <CheckCircle className="h-5 w-5 text-emerald mr-2" />
+                    <span>AI-powered analysis</span>
+                  </div>
+                  <div className="flex items-center">
+                    <CheckCircle className="h-5 w-5 text-emerald mr-2" />
+                    <span>Basic templates</span>
+                  </div>
                 </div>
-                <ul className="space-y-4 mb-8">
-                  <li className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-emerald-green" />
-                    <span className="text-slate-blue">1 free trial workflow</span>
-                  </li>
-                  <li className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-emerald-green" />
-                    <span className="text-slate-blue">AI-powered analysis</span>
-                  </li>
-                  <li className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-emerald-green" />
-                    <span className="text-slate-blue">Basic visualization</span>
-                  </li>
-                  <li className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-emerald-green" />
-                    <span className="text-slate-blue">Template library access</span>
-                  </li>
-                </ul>
-                <Button 
-                  onClick={handleGetStarted}
-                  variant="outline" 
-                  className="w-full border-2 border hover:border-emerald-green hover:text-emerald-green"
-                >
-                  Get Started Free
-                </Button>
+                <Link href="/auth">
+                  <Button className="w-full bg-navy hover:bg-navy/90">Get Started</Button>
+                </Link>
               </CardContent>
             </Card>
 
             {/* Starter Plan */}
-            <Card className="border-2 border-emerald-green relative">
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                <span className="bg-emerald-green text-primary-foreground px-4 py-1 rounded-full text-sm font-medium">
+            <Card className="shadow-sleek border-emerald border-2 relative">
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                <span className="bg-emerald text-white px-4 py-1 rounded-full text-sm font-medium">
                   Most Popular
                 </span>
               </div>
-              <CardContent className="p-8">
-                <div className="text-center mb-8">
-                  <h3 className="text-xl font-montserrat font-bold text-slate-blue mb-2">Starter</h3>
-                  <div className="text-4xl font-montserrat font-bold text-slate-blue">$19</div>
-                  <p className="text-muted-foreground">per month</p>
+              <CardHeader className="text-center">
+                <CardTitle className="text-2xl text-navy">Starter</CardTitle>
+                <div className="text-4xl font-bold text-navy">$19</div>
+                <CardDescription>per month - Great for small practices</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <div className="flex items-center">
+                    <CheckCircle className="h-5 w-5 text-emerald mr-2" />
+                    <span>10 workflows per month</span>
+                  </div>
+                  <div className="flex items-center">
+                    <CheckCircle className="h-5 w-5 text-emerald mr-2" />
+                    <span>PDF exports</span>
+                  </div>
+                  <div className="flex items-center">
+                    <CheckCircle className="h-5 w-5 text-emerald mr-2" />
+                    <span>All templates</span>
+                  </div>
+                  <div className="flex items-center">
+                    <CheckCircle className="h-5 w-5 text-emerald mr-2" />
+                    <span>Priority email support</span>
+                  </div>
                 </div>
-                <ul className="space-y-4 mb-8">
-                  <li className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-emerald-green" />
-                    <span className="text-slate-blue">10 workflows per month</span>
-                  </li>
-                  <li className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-emerald-green" />
-                    <span className="text-slate-blue">Advanced AI analysis</span>
-                  </li>
-                  <li className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-emerald-green" />
-                    <span className="text-slate-blue">PDF exports</span>
-                  </li>
-                  <li className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-emerald-green" />
-                    <span className="text-slate-blue">Priority email support</span>
-                  </li>
-                  <li className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-emerald-green" />
-                    <span className="text-slate-blue">Template library access</span>
-                  </li>
-                </ul>
-                <Button 
-                  onClick={handleGetStarted}
-                  className="w-full bg-emerald-green text-white hover:bg-emerald-green/90"
-                >
-                  Start Free Trial
-                </Button>
+                <Link href="/subscribe?plan=starter">
+                  <Button className="w-full bg-emerald hover:bg-emerald/90">Choose Starter</Button>
+                </Link>
               </CardContent>
             </Card>
 
             {/* Pro Plan */}
-            <Card className="border border">
-              <CardContent className="p-8">
-                <div className="text-center mb-8">
-                  <h3 className="text-xl font-montserrat font-bold text-slate-blue mb-2">Pro</h3>
-                  <div className="text-4xl font-montserrat font-bold text-slate-blue">$49</div>
-                  <p className="text-muted-foreground">per month</p>
+            <Card className="shadow-sleek">
+              <CardHeader className="text-center">
+                <CardTitle className="text-2xl text-navy">Pro</CardTitle>
+                <div className="text-4xl font-bold text-navy">$49</div>
+                <CardDescription>per month - For growing practices</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <div className="flex items-center">
+                    <CheckCircle className="h-5 w-5 text-emerald mr-2" />
+                    <span>Unlimited workflows</span>
+                  </div>
+                  <div className="flex items-center">
+                    <CheckCircle className="h-5 w-5 text-emerald mr-2" />
+                    <span>Advanced AI analysis</span>
+                  </div>
+                  <div className="flex items-center">
+                    <CheckCircle className="h-5 w-5 text-emerald mr-2" />
+                    <span>Custom templates</span>
+                  </div>
+                  <div className="flex items-center">
+                    <CheckCircle className="h-5 w-5 text-emerald mr-2" />
+                    <span>Priority support</span>
+                  </div>
+                  <div className="flex items-center">
+                    <CheckCircle className="h-5 w-5 text-emerald mr-2" />
+                    <span>Team collaboration</span>
+                  </div>
                 </div>
-                <ul className="space-y-4 mb-8">
-                  <li className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-emerald-green" />
-                    <span className="text-slate-blue">Unlimited workflows</span>
-                  </li>
-                  <li className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-emerald-green" />
-                    <span className="text-slate-blue">Advanced AI recommendations</span>
-                  </li>
-                  <li className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-emerald-green" />
-                    <span className="text-slate-blue">PDF exports</span>
-                  </li>
-                  <li className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-emerald-green" />
-                    <span className="text-slate-blue">Priority support</span>
-                  </li>
-                  <li className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-emerald-green" />
-                    <span className="text-slate-blue">Team collaboration</span>
-                  </li>
-                </ul>
-                <Button 
-                  onClick={handleGetStarted}
-                  className="w-full bg-emerald-green text-white hover:bg-emerald-green/90"
-                >
-                  Start 14-Day Trial
-                </Button>
+                <Link href="/subscribe?plan=pro">
+                  <Button className="w-full bg-navy hover:bg-navy/90">Choose Pro</Button>
+                </Link>
               </CardContent>
             </Card>
-
-            {/* Enterprise Plan */}
-            <Card className="border border">
-              <CardContent className="p-8">
-                <div className="text-center mb-8">
-                  <h3 className="text-xl font-montserrat font-bold text-slate-blue mb-2">Enterprise</h3>
-                  <div className="text-4xl font-montserrat font-bold text-slate-blue">Custom</div>
-                  <p className="text-muted-foreground">pricing</p>
-                </div>
-                <ul className="space-y-4 mb-8">
-                  <li className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-emerald-green" />
-                    <span className="text-slate-blue">Multi-clinic management</span>
-                  </li>
-                  <li className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-emerald-green" />
-                    <span className="text-slate-blue">White-label solution</span>
-                  </li>
-                  <li className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-emerald-green" />
-                    <span className="text-slate-blue">Custom integrations</span>
-                  </li>
-                  <li className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-emerald-green" />
-                    <span className="text-slate-blue">Dedicated support</span>
-                  </li>
-                  <li className="flex items-center space-x-3">
-                    <CheckCircle className="w-5 h-5 text-emerald-green" />
-                    <span className="text-slate-blue">Advanced analytics</span>
-                  </li>
-                </ul>
-                <Button 
-                  variant="outline"
-                  className="w-full border-2 border-deep-navy text-slate-blue hover:bg-deep-navy hover:text-primary-foreground"
-                >
-                  Contact Sales
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="text-center mt-12">
-            <p className="text-muted-foreground">All plans include a 14-day free trial. No credit card required.</p>
           </div>
         </div>
       </section>
+
+      {/* CTA Section */}
+      <section className="py-20 px-4 bg-white">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl font-bold text-navy mb-4">
+            Ready to Transform Your Healthcare Workflows?
+          </h2>
+          <p className="text-xl text-gray-600 mb-8">
+            Join healthcare professionals who are already saving time and improving patient care.
+          </p>
+          <Link href="/auth">
+            <Button size="lg" className="bg-emerald hover:bg-emerald/90">
+              Start Your Free Trial
+            </Button>
+          </Link>
+        </div>
+      </section>
+
       {/* Footer */}
-      <footer className="text-primary-foreground py-12" style={{backgroundColor: 'hsl(215, 25%, 27%)'}}>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
-              <h3 className="text-lg font-montserrat font-bold mb-4 text-primary-foreground">Workflow Optimization Tool</h3>
-              <p className="text-muted-foreground text-sm">
-                AI-powered workflow optimization for specialty clinic practice managers.
-              </p>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4 text-primary-foreground">Product</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-primary-foreground">Features</a></li>
-                <li><a href="#pricing" className="hover:text-primary-foreground">Pricing</a></li>
-                <li><a href="#" className="hover:text-primary-foreground">Templates</a></li>
-                <li><a href="#" className="hover:text-primary-foreground">API</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4 text-primary-foreground">Support</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-primary-foreground">Help Center</a></li>
-                <li><a href="#" className="hover:text-primary-foreground">Contact Us</a></li>
-                <li><a href="#" className="hover:text-primary-foreground">Status</a></li>
-                <li><a href="#" className="hover:text-primary-foreground">Community</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4 text-primary-foreground">Company</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-primary-foreground">About</a></li>
-                <li><a href="#" className="hover:text-primary-foreground">Blog</a></li>
-                <li><a href="#" className="hover:text-primary-foreground">Privacy</a></li>
-                <li><a href="#" className="hover:text-primary-foreground">Terms</a></li>
-              </ul>
-            </div>
+      <footer className="bg-navy text-white py-12">
+        <div className="max-w-7xl mx-auto px-4 text-center">
+          <div className="flex items-center justify-center space-x-2 mb-4">
+            <Workflow className="h-6 w-6" />
+            <span className="text-lg font-semibold">Workflow Optimizer</span>
           </div>
-          <div className="border-t border mt-8 pt-8 flex items-center justify-between">
-            <p className="text-muted-foreground text-sm">© 2024 Workflow Optimization Tool. All rights reserved.</p>
-            <div className="flex space-x-4">
-              <a href="#" className="text-muted-foreground hover:text-primary-foreground">
-                <i className="fab fa-linkedin"></i>
-              </a>
-              <a href="#" className="text-muted-foreground hover:text-primary-foreground">
-                <i className="fab fa-twitter"></i>
-              </a>
-            </div>
+          <p className="text-gray-300">
+            Streamlining healthcare workflows with intelligent automation.
+          </p>
+          <div className="mt-8 pt-8 border-t border-gray-700">
+            <p className="text-gray-400 text-sm">
+              © 2024 Workflow Optimizer. All rights reserved.
+            </p>
           </div>
         </div>
       </footer>

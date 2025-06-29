@@ -1,64 +1,63 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/useAuth";
-import { Eye, EyeOff } from "lucide-react";
+import React, { useState } from 'react';
+import { useNavigate } from 'wouter';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useToast } from '@/hooks/use-toast';
 
-export default function AuthForm() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+export function AuthForm() {
+  const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    firstName: "",
-    lastName: "",
+    email: '',
+    password: '',
+    firstName: '',
+    lastName: '',
   });
+  const navigate = useNavigate();
   const { toast } = useToast();
-  const { signUp, signIn } = useAuth();
+  const queryClient = useQueryClient();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      let result;
-      
-      if (isSignUp) {
-        result = await signUp(formData.email, formData.password);
-      } else {
-        result = await signIn(formData.email, formData.password);
-      }
-
-      if (result.error) {
-        throw new Error(result.error.message);
-      }
-
-      toast({
-        title: "Success",
-        description: isSignUp 
-          ? "Account created! Please check your email to verify your account." 
-          : "Signed in successfully!",
+  const authMutation = useMutation({
+    mutationFn: async (data: typeof formData) => {
+      const endpoint = isLogin ? '/api/auth/login' : '/api/auth/signup';
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
       });
 
-      // Redirect will happen automatically via auth state change
-      if (!isSignUp) {
-        window.location.href = "/";
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Authentication failed');
       }
-    } catch (error: any) {
+
+      return response.json();
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData(['user'], data);
+      toast({
+        title: "Success!",
+        description: data.message,
+      });
+      navigate('/dashboard');
+    },
+    onError: (error: Error) => {
       toast({
         title: "Error",
-        description: error.message || (isSignUp ? "Failed to create account" : "Failed to sign in"),
+        description: error.message,
         variant: "destructive",
       });
-    } finally {
-      setIsLoading(false);
-    }
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    authMutation.mutate(formData);
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({
       ...prev,
       [e.target.name]: e.target.value
@@ -66,135 +65,106 @@ export default function AuthForm() {
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-center">
-          {isSignUp ? "Create Account" : "Welcome Back"}
-        </CardTitle>
-        <CardDescription className="text-center">
-          {isSignUp 
-            ? "Create your account to start optimizing workflows" 
-            : "Sign in to access your workflow optimizer"
-          }
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {isSignUp && (
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label htmlFor="firstName" className="text-sm font-medium">
-                  First Name
-                </label>
-                <Input
-                  id="firstName"
-                  name="firstName"
-                  type="text"
-                  placeholder="John"
-                  value={formData.firstName}
-                  onChange={handleInputChange}
-                  required={isSignUp}
-                />
+    <div className="min-h-screen flex items-center justify-center bg-pearl-white">
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl font-bold text-navy">
+            {isLogin ? 'Sign In' : 'Create Account'}
+          </CardTitle>
+          <CardDescription>
+            {isLogin 
+              ? 'Welcome back to Workflow Optimizer' 
+              : 'Get started with your free trial'
+            }
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {!isLogin && (
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="firstName">First Name</Label>
+                  <Input
+                    id="firstName"
+                    name="firstName"
+                    type="text"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="lastName">Last Name</Label>
+                  <Input
+                    id="lastName"
+                    name="lastName"
+                    type="text"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
               </div>
-              <div className="space-y-2">
-                <label htmlFor="lastName" className="text-sm font-medium">
-                  Last Name
-                </label>
-                <Input
-                  id="lastName"
-                  name="lastName"
-                  type="text"
-                  placeholder="Doe"
-                  value={formData.lastName}
-                  onChange={handleInputChange}
-                  required={isSignUp}
-                />
-              </div>
+            )}
+
+            <div>
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
             </div>
-          )}
-          
-          <div className="space-y-2">
-            <label htmlFor="email" className="text-sm font-medium">
-              Email
-            </label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              placeholder="john@example.com"
-              value={formData.email}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <label htmlFor="password" className="text-sm font-medium">
-              Password
-            </label>
-            <div className="relative">
+
+            <div>
+              <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
                 name="password"
-                type={showPassword ? "text" : "password"}
-                placeholder="Enter your password"
+                type="password"
                 value={formData.password}
-                onChange={handleInputChange}
+                onChange={handleChange}
                 required
-                minLength={6}
               />
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
-              </Button>
             </div>
-            {isSignUp && (
-              <p className="text-xs text-muted-foreground">
-                Password must be at least 6 characters long
-              </p>
-            )}
+
+            <Button 
+              type="submit" 
+              className="w-full bg-navy hover:bg-navy/90"
+              disabled={authMutation.isPending}
+            >
+              {authMutation.isPending 
+                ? 'Please wait...' 
+                : (isLogin ? 'Sign In' : 'Create Account')
+              }
+            </Button>
+          </form>
+
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-600">
+              {isLogin ? "Don't have an account?" : "Already have an account?"}
+            </p>
+            <Button
+              variant="link"
+              onClick={() => setIsLogin(!isLogin)}
+              className="text-navy"
+            >
+              {isLogin ? 'Create Account' : 'Sign In'}
+            </Button>
           </div>
 
-          <Button
-            type="submit"
-            disabled={isLoading}
-            className="w-full"
-            size="lg"
-          >
-            {isLoading 
-              ? (isSignUp ? "Creating Account..." : "Signing in...") 
-              : (isSignUp ? "Create Account" : "Sign In")
-            }
-          </Button>
-        </form>
-
-        <div className="mt-4 text-center">
-          <Button
-            type="button"
-            variant="link"
-            onClick={() => setIsSignUp(!isSignUp)}
-            className="text-sm"
-          >
-            {isSignUp 
-              ? "Already have an account? Sign in" 
-              : "Don't have an account? Sign up"
-            }
-          </Button>
-        </div>
-
-        <p className="text-xs text-muted-foreground text-center mt-4">
-          By continuing, you agree to our Terms of Service and Privacy Policy.
-        </p>
-      </CardContent>
-    </Card>
+          <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+            <p className="text-sm font-medium text-gray-700 mb-2">Demo Account:</p>
+            <p className="text-xs text-gray-600">
+              Email: demo@workflow-optimizer.com<br />
+              Password: demo123
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

@@ -1,218 +1,141 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;500;600&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  /* Sleek Navy Blue, Emerald Green, and Silver Theme */
-  --background: hsl(0, 0%, 98%);
-  --foreground: hsl(220, 30%, 20%);
-  --muted: hsl(210, 15%, 92%);
-  --muted-foreground: hsl(210, 10%, 55%);
-  --popover: hsl(0, 0%, 100%);
-  --popover-foreground: hsl(220, 30%, 20%);
-  --card: hsl(0, 0%, 100%);
-  --card-foreground: hsl(220, 30%, 20%);
-  --border: hsl(210, 15%, 88%);
-  --input: hsl(210, 15%, 88%);
-  --primary: hsl(220, 50%, 30%);
-  --primary-foreground: hsl(0, 0%, 100%);
-  --secondary: hsl(210, 15%, 92%);
-  --secondary-foreground: hsl(220, 30%, 20%);
-  --accent: hsl(158, 60%, 50%);
-  --accent-foreground: hsl(0, 0%, 100%);
-  --destructive: hsl(0, 84%, 60%);
-  --destructive-foreground: hsl(0, 0%, 100%);
-  --ring: hsl(220, 50%, 30%);
-  --radius: 0.5rem;
-  
-  /* Brand Colors - Navy, Emerald, Silver */
-  --navy-blue: hsl(220, 50%, 30%);
-  --emerald-green: hsl(158, 60%, 50%);
-  --silver: hsl(210, 10%, 55%);
-  --light-silver: hsl(210, 15%, 92%);
-}
+@layer base {
+  :root {
+    /* Navy Blue (Primary) */
+    --primary: 220 50% 30%;
+    --primary-foreground: 210 20% 98%;
 
-.dark {
-  --background: hsl(215, 25%, 15%);
-  --foreground: hsl(210, 20%, 98%);
-  --muted: hsl(215, 20%, 25%);
-  --muted-foreground: hsl(215, 15%, 65%);
-  --popover: hsl(215, 25%, 18%);
-  --popover-foreground: hsl(210, 20%, 98%);
-  --card: hsl(215, 25%, 18%);
-  --card-foreground: hsl(210, 20%, 98%);
-  --border: hsl(215, 20%, 25%);
-  --input: hsl(215, 20%, 25%);
-  --primary: hsl(208, 100%, 53%);
-  --primary-foreground: hsl(215, 25%, 15%);
-  --secondary: hsl(215, 20%, 25%);
-  --secondary-foreground: hsl(210, 20%, 98%);
-  --accent: hsl(158, 48%, 55%);
-  --accent-foreground: hsl(215, 25%, 15%);
-  --destructive: hsl(0, 63%, 50%);
-  --destructive-foreground: hsl(210, 20%, 98%);
-  --ring: hsl(208, 100%, 53%);
-  --radius: 0.5rem;
+    /* Emerald Green (Accent) */
+    --accent: 158 60% 50%;
+    --accent-foreground: 210 20% 98%;
+
+    /* Silver Gray (Secondary) */
+    --secondary: 210 10% 55%;
+    --secondary-foreground: 220 50% 30%;
+
+    /* Pearl White (Background) */
+    --background: 210 20% 98%;
+    --foreground: 215 25% 27%;
+
+    /* Platinum (Muted) */
+    --muted: 210 14% 89%;
+    --muted-foreground: 210 10% 55%;
+
+    /* Card */
+    --card: 210 20% 98%;
+    --card-foreground: 215 25% 27%;
+
+    /* Popover */
+    --popover: 210 20% 98%;
+    --popover-foreground: 215 25% 27%;
+
+    /* Border */
+    --border: 210 14% 89%;
+    --input: 210 14% 89%;
+
+    /* Ring */
+    --ring: 220 50% 30%;
+
+    /* Chart colors */
+    --chart-1: 220 50% 30%;
+    --chart-2: 158 60% 50%;
+    --chart-3: 210 10% 55%;
+    --chart-4: 210 14% 89%;
+    --chart-5: 215 25% 27%;
+
+    /* Radius */
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
 }
 
 @layer base {
   * {
     @apply border-border;
   }
-
   body {
-    @apply bg-background text-foreground font-sans antialiased;
-    font-family: 'Open Sans', sans-serif;
-  }
-
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Montserrat', sans-serif;
+    @apply bg-background text-foreground;
+    font-family: 'Inter', sans-serif;
   }
 }
 
-@layer utilities {
-  .font-montserrat {
-    font-family: 'Montserrat', sans-serif;
-  }
-  
-  .font-open-sans {
-    font-family: 'Open Sans', sans-serif;
-  }
-
-  .text-royal-blue {
-    color: var(--royal-blue);
-  }
-
-  .text-slate-blue {
-    color: var(--slate-blue);
-  }
-
-  .text-silver-gray {
-    color: var(--silver-gray);
-  }
-
-  .text-emerald-green {
-    color: var(--emerald-green);
-  }
-
-  .text-sage-green {
-    color: var(--sage-green);
-  }
-
-  .text-pearl-white {
-    color: var(--pearl-white);
-  }
-
-  .bg-royal-blue {
-    background-color: var(--royal-blue);
-  }
-
-  .bg-slate-blue {
-    background-color: var(--slate-blue);
-  }
-
-  .bg-silver-gray {
-    background-color: var(--silver-gray);
-  }
-
-  .bg-platinum {
-    background-color: var(--platinum);
-  }
-
-  .bg-emerald-green {
-    background-color: var(--emerald-green);
-  }
-
-  .bg-sage-green {
-    background-color: var(--sage-green);
-  }
-
-  .bg-pearl-white {
-    background-color: var(--pearl-white);
-  }
-
-  .border-royal-blue {
-    border-color: var(--royal-blue);
-  }
-
-  .border-slate-blue {
-    border-color: var(--slate-blue);
-  }
-
-  .border-silver-gray {
-    border-color: var(--silver-gray);
-  }
-
-  .border-emerald-green {
-    border-color: var(--emerald-green);
-  }
-
-  .hover\:bg-emerald-green\/90:hover {
-    background-color: hsl(158, 58%, 48%, 0.9);
-  }
-
-  .hover\:bg-royal-blue\/90:hover {
-    background-color: hsl(208, 100%, 43%, 0.9);
-  }
-
-  .hover\:bg-slate-blue\/90:hover {
-    background-color: hsl(215, 25%, 27%, 0.9);
-  }
+/* Custom utility classes */
+.text-navy {
+  color: hsl(220, 50%, 30%);
 }
 
-/* React Flow Custom Styles */
-.react-flow__node {
-  @apply border border-gray-300 rounded-lg p-3 bg-white shadow-sm;
+.text-emerald {
+  color: hsl(158, 60%, 50%);
 }
 
-.react-flow__node.selected {
-  @apply border-emerald-green shadow-md;
+.text-silver {
+  color: hsl(210, 10%, 55%);
 }
 
-.react-flow__edge {
-  stroke: var(--silver-gray);
-  stroke-width: 2;
+.bg-navy {
+  background-color: hsl(220, 50%, 30%);
 }
 
-.react-flow__edge.selected {
-  stroke: var(--emerald-green);
-  stroke-width: 3;
+.bg-emerald {
+  background-color: hsl(158, 60%, 50%);
 }
 
-.react-flow__controls {
-  @apply bg-white rounded-lg shadow-sm;
-  border: 1px solid var(--platinum);
+.bg-silver {
+  background-color: hsl(210, 10%, 55%);
 }
 
-.react-flow__minimap {
-  @apply rounded-lg;
-  border: 1px solid var(--platinum);
+.bg-pearl-white {
+  background-color: hsl(210, 20%, 98%);
 }
 
-/* Component Palette Drag Styles */
-.component-dragging {
-  @apply opacity-50 transform rotate-2;
+.bg-platinum {
+  background-color: hsl(210, 14%, 89%);
 }
 
-.workflow-canvas {
-  background-color: var(--pearl-white);
+/* Gradient backgrounds */
+.gradient-navy-emerald {
+  background: linear-gradient(135deg, hsl(220, 50%, 30%) 0%, hsl(158, 60%, 50%) 100%);
 }
 
-/* Custom scrollbar */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
+.gradient-emerald-navy {
+  background: linear-gradient(135deg, hsl(158, 60%, 50%) 0%, hsl(220, 50%, 30%) 100%);
 }
 
-.custom-scrollbar::-webkit-scrollbar-track {
-  @apply bg-gray-100 rounded-full;
+/* Professional shadows */
+.shadow-professional {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  @apply bg-gray-300 rounded-full;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  @apply bg-gray-400;
+.shadow-sleek {
+  box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
