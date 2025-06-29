@@ -8,8 +8,6 @@ import ResetPassword from "./pages/reset-password";
 import NotFound from "./pages/not-found";
 import Landing from "@/pages/landing";
 import Home from "@/pages/home";
-import SimpleHome from "@/pages/simple-home";
-import ConsultingHome from "@/pages/consulting-home";
 import WorkflowBuilder from "@/pages/workflow-builder-working";
 import AnalysisResults from "@/pages/analysis-results-new";
 import Templates from "@/pages/templates";
@@ -24,44 +22,29 @@ function Router() {
 
   return (
     <Switch>
-      {/* Simple home page */}
-      <Route path="/" component={SimpleHome} />
-      
-      {/* Workflow optimizer tool */}
-      <Route path="/workflow-optimizer" component={Landing} />
-      
-      {/* Other public routes */}
-      <Route path="/consulting" component={ConsultingHome} />
-      <Route path="/pricing" component={Pricing} />
       <Route path="/auth/callback" component={AuthCallback} />
       <Route path="/auth" component={Auth} />
       <Route path="/reset-password" component={ResetPassword} />
 
-      {/* Protected routes for authenticated users */}
-      <Route path="/dashboard">
-        {() => isAuthenticated ? <Home /> : <Auth />}
-      </Route>
-      <Route path="/workflow-builder">
-        {() => isAuthenticated ? <WorkflowBuilder /> : <Auth />}
-      </Route>
-      <Route path="/workflow-builder/:id">
-        {() => isAuthenticated ? <WorkflowBuilder /> : <Auth />}
-      </Route>
-      <Route path="/analysis-results">
-        {() => isAuthenticated ? <AnalysisResults /> : <Auth />}
-      </Route>
-      <Route path="/templates">
-        {() => isAuthenticated ? <Templates /> : <Auth />}
-      </Route>
-      <Route path="/settings">
-        {() => isAuthenticated ? <Settings /> : <Auth />}
-      </Route>
-      <Route path="/subscribe">
-        {() => isAuthenticated ? <Subscribe /> : <Auth />}
-      </Route>
-
-      {/* 404 fallback */}
-      <Route component={NotFound} />
+      {isLoading || !isAuthenticated ? (
+        <>
+          <Route path="/" component={Landing} />
+          <Route path="/pricing" component={Pricing} />
+          <Route component={NotFound} />
+        </>
+      ) : (
+        <>
+          <Route path="/" component={Home} />
+          <Route path="/workflow-builder" component={WorkflowBuilder} />
+          <Route path="/workflow-builder/:id" component={WorkflowBuilder} />
+          <Route path="/analysis-results" component={AnalysisResults} />
+          <Route path="/templates" component={Templates} />
+          <Route path="/settings" component={Settings} />
+          <Route path="/pricing" component={Pricing} />
+          <Route path="/subscribe" component={Subscribe} />
+          <Route component={NotFound} />
+        </>
+      )}
     </Switch>
   );
 }

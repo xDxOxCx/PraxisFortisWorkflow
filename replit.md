@@ -68,17 +68,6 @@ The Vite configuration handles client-side routing and API proxying in developme
 
 ## Recent Changes
 
-- **June 27, 2025 - Consulting Website Integration**:
-  - Created comprehensive Praxis Fortis Consulting homepage (/consulting) as main business website
-  - Integrated workflow optimization tool as dropdown menu option for clients
-  - Added professional consulting services sections: Lean Six Sigma, Operational Excellence, Leadership Development
-  - Implemented client tools spotlight featuring workflow optimizer with "Available Now" status
-  - Added testimonials, achievements, and contact sections for full business presence
-  - Created breadcrumb navigation linking workflow optimizer back to consulting site
-  - Added "Powered by Praxis Fortis Consulting" branding to workflow tool
-  - Tool now accessible via dropdown menu: Client Tools → Workflow Optimizer
-  - Complete integration ready for www.praxisfortisconsulting.com deployment
-
 - **June 26, 2025 - Complete Authentication System Overhaul**:
   - Successfully replaced Supabase authentication with simple session-based PostgreSQL authentication
   - Eliminated email verification requirement that was blocking new user signups
