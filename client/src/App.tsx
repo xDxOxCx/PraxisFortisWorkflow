@@ -21,9 +21,13 @@ import AppLayout from "./components/layout/app-layout";
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <Switch>
-      {/* Always accessible public routes */}
+      {/* Public routes */}
       <Route path="/consulting" component={ConsultingHome} />
       <Route path="/workflow-optimizer" component={Landing} />
       <Route path="/pricing" component={Pricing} />
@@ -31,26 +35,23 @@ function Router() {
       <Route path="/auth" component={Auth} />
       <Route path="/reset-password" component={ResetPassword} />
 
-      {/* Authentication-dependent routes */}
-      {isLoading ? (
-        <Route component={() => <div>Loading...</div>} />
-      ) : !isAuthenticated ? (
+      {/* Conditional home route */}
+      <Route path="/" component={isAuthenticated ? Home : Landing} />
+
+      {/* Protected routes */}
+      {isAuthenticated && (
         <>
-          <Route path="/" component={Landing} />
-          <Route component={NotFound} />
-        </>
-      ) : (
-        <>
-          <Route path="/" component={Home} />
           <Route path="/workflow-builder" component={WorkflowBuilder} />
           <Route path="/workflow-builder/:id" component={WorkflowBuilder} />
           <Route path="/analysis-results" component={AnalysisResults} />
           <Route path="/templates" component={Templates} />
           <Route path="/settings" component={Settings} />
           <Route path="/subscribe" component={Subscribe} />
-          <Route component={NotFound} />
         </>
       )}
+
+      {/* 404 fallback */}
+      <Route component={NotFound} />
     </Switch>
   );
 }
