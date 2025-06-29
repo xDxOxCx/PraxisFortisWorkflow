@@ -24,7 +24,11 @@ export default function Landing() {
       <nav className="bg-white shadow-sm border-b border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
+            <div className="flex items-center space-x-4">
+              <Link href="/consulting" className="text-sm" style={{color: 'hsl(210, 14%, 53%)'}}>
+                ← Back to Praxis Fortis Consulting
+              </Link>
+              <div className="text-sm" style={{color: 'hsl(210, 14%, 53%)'}}>/</div>
               <h1 className="text-xl font-montserrat font-bold" style={{color: 'hsl(215, 25%, 27%)'}}>
                 Workflow Optimization Tool
               </h1>
@@ -48,6 +52,11 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
+              <div className="mb-4">
+                <span className="text-sm font-semibold text-emerald-green bg-emerald-green/10 px-3 py-1 rounded-full">
+                  Powered by Praxis Fortis Consulting
+                </span>
+              </div>
               <h1 className="text-4xl lg:text-5xl font-montserrat font-bold leading-tight mb-6 text-primary-foreground">
                 Your Workflow Hub
               </h1>

@@ -8,6 +8,7 @@ import ResetPassword from "./pages/reset-password";
 import NotFound from "./pages/not-found";
 import Landing from "@/pages/landing";
 import Home from "@/pages/home";
+import ConsultingHome from "@/pages/consulting-home";
 import WorkflowBuilder from "@/pages/workflow-builder-working";
 import AnalysisResults from "@/pages/analysis-results-new";
 import Templates from "@/pages/templates";
@@ -22,14 +23,20 @@ function Router() {
 
   return (
     <Switch>
+      {/* Always accessible public routes */}
+      <Route path="/consulting" component={ConsultingHome} />
+      <Route path="/workflow-optimizer" component={Landing} />
+      <Route path="/pricing" component={Pricing} />
       <Route path="/auth/callback" component={AuthCallback} />
       <Route path="/auth" component={Auth} />
       <Route path="/reset-password" component={ResetPassword} />
 
-      {isLoading || !isAuthenticated ? (
+      {/* Authentication-dependent routes */}
+      {isLoading ? (
+        <Route component={() => <div>Loading...</div>} />
+      ) : !isAuthenticated ? (
         <>
           <Route path="/" component={Landing} />
-          <Route path="/pricing" component={Pricing} />
           <Route component={NotFound} />
         </>
       ) : (
@@ -40,7 +47,6 @@ function Router() {
           <Route path="/analysis-results" component={AnalysisResults} />
           <Route path="/templates" component={Templates} />
           <Route path="/settings" component={Settings} />
-          <Route path="/pricing" component={Pricing} />
           <Route path="/subscribe" component={Subscribe} />
           <Route component={NotFound} />
         </>
