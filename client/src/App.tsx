@@ -21,13 +21,9 @@ import AppLayout from "./components/layout/app-layout";
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
   return (
     <Switch>
-      {/* Public routes */}
+      {/* Always accessible routes */}
       <Route path="/consulting" component={ConsultingHome} />
       <Route path="/workflow-optimizer" component={Landing} />
       <Route path="/pricing" component={Pricing} />
@@ -35,20 +31,23 @@ function Router() {
       <Route path="/auth" component={Auth} />
       <Route path="/reset-password" component={ResetPassword} />
 
-      {/* Conditional home route */}
-      <Route path="/" component={isAuthenticated ? Home : Landing} />
+      {/* Home route - conditional based on auth */}
+      <Route path="/">
+        {() => {
+          if (isLoading) {
+            return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+          }
+          return isAuthenticated ? <Home /> : <Landing />;
+        }}
+      </Route>
 
-      {/* Protected routes */}
-      {isAuthenticated && (
-        <>
-          <Route path="/workflow-builder" component={WorkflowBuilder} />
-          <Route path="/workflow-builder/:id" component={WorkflowBuilder} />
-          <Route path="/analysis-results" component={AnalysisResults} />
-          <Route path="/templates" component={Templates} />
-          <Route path="/settings" component={Settings} />
-          <Route path="/subscribe" component={Subscribe} />
-        </>
-      )}
+      {/* Protected routes - only show if authenticated */}
+      <Route path="/workflow-builder" component={isAuthenticated ? WorkflowBuilder : NotFound} />
+      <Route path="/workflow-builder/:id" component={isAuthenticated ? WorkflowBuilder : NotFound} />
+      <Route path="/analysis-results" component={isAuthenticated ? AnalysisResults : NotFound} />
+      <Route path="/templates" component={isAuthenticated ? Templates : NotFound} />
+      <Route path="/settings" component={isAuthenticated ? Settings : NotFound} />
+      <Route path="/subscribe" component={isAuthenticated ? Subscribe : NotFound} />
 
       {/* 404 fallback */}
       <Route component={NotFound} />
